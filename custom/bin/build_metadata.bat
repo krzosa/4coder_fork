@@ -1,6 +1,7 @@
 @echo off
 
-set code_home=%~dp0
+rem set code_home=%~dp0
+set code_home=C:\AProgramming\4ed\code\custom\
 if %code_home:~-1%==\ (set code_home=%code_home:~0,-1%)
 
 set src=%1
@@ -12,6 +13,8 @@ set opts=%opts% /GR- /EHa- /nologo /FC
 pushd ..\build
 set preproc_file=4coder_command_metadata.i
 set meta_macros=/DMETA_PASS
+
+
 cl /I"%code_home%" %opts% %debug% %code_home%\%src% /P /Fi%preproc_file% %meta_macros%
 cl %opts% ..\code\4coder_metadata_generator.cpp /Zi /Femetadata_generator
 metadata_generator -R "%code_home%" "%cd%\\%preproc_file%"

@@ -1654,7 +1654,7 @@ rgba_to_hsla(Vec4_f32 rgba){
         min = rgba.b;
     }
     delta = max - min;
-    
+
     hsla.z = (max + min)*.5f;
     if (delta == 0){
         hsla.x = 0.f;
@@ -1667,13 +1667,13 @@ rgba_to_hsla(Vec4_f32 rgba){
                 hsla.x = (rgba.g - rgba.b) / delta;
                 hsla.x += (rgba.g < rgba.b)*6.f;
             }break;
-            
+
             case 1:
             {
                 hsla.x = (rgba.b - rgba.r) / delta;
                 hsla.x += 2.f;
             }break;
-            
+
             case 2:
             {
                 hsla.x = (rgba.r - rgba.g) / delta;
@@ -1683,7 +1683,7 @@ rgba_to_hsla(Vec4_f32 rgba){
         hsla.x *= (1/6.f); //*60 / 360
         hsla.y = delta / (1.f - abs_f32(2.f*hsla.z - 1.f));
     }
-    
+
     return(hsla);
 }
 
@@ -3267,7 +3267,7 @@ thread_ctx_init(Thread_Context *tctx, Thread_Kind kind, Base_Allocator *allocato
     tctx->kind = kind;
     tctx->allocator = allocator;
     tctx->node_arena = make_arena(allocator, KB(4), 8);
-    
+
     tctx->prof_allocator = prof_allocator;
     tctx->prof_id_counter = 1;
     tctx->prof_arena = make_arena(prof_allocator, KB(16));
@@ -3566,7 +3566,7 @@ heap_allocate(Heap *heap, u64 size){
             }
             heap_assert_good(heap);
         }
-        
+
         if (first_try){
             u64 extension_size = clamp_bot(KB(64), size*2);
             heap__extend_automatic(heap, extension_size);
@@ -7054,27 +7054,27 @@ string_interpret_escapes(Arena *arena, String_Const_char string){
             {
                 string_append_character(&result, '\\');
             }break;
-            
+
             case 'n':
             {
                 string_append_character(&result, '\n');
             }break;
-            
+
             case 't':
             {
                 string_append_character(&result, '\t');
             }break;
-            
+
             case '"':
             {
                 string_append_character(&result, '\"');
             }break;
-            
+
             case '0':
             {
                 string_append_character(&result, '\0');
             }break;
-            
+
             default:
             {
                 char c[2] = {'\\'};

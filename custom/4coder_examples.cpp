@@ -15,7 +15,7 @@ group any series of edits into a single undo/redo record in the buffer's history
 Before any edits call history_group_begin and afterwards call history_group_end.
 After history_group_end all of the edits to the buffer supplied in history_group_begin
 will be merged, including all edits from function and command calls. */
- 
+
  View_ID view = get_active_view(app, Access_ReadWriteVisible);
  Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
  History_Group group = history_group_begin(app, buffer);
@@ -40,23 +40,23 @@ Second, we make our query bar and start showing it with start_query_bar. Until w
 call end_query_bar on the same bar, or the group's destructor runs, the bar struct
 needs to remain in memory. The easy way to accomplish this is to just let the bar be
 on the commands stack frame. */
- 
+
  i32 counter = 0;
- 
+
  Query_Bar_Group group(app);
  Query_Bar dumb_bar = {};
  dumb_bar.prompt = SCu8("Goes away at >= 10");
  if (!start_query_bar(app, &dumb_bar, 0)){
   return;
  }
- 
+
  Query_Bar bar = {};
  bar.prompt = SCu8("Counter = ");
  bar.string = SCu8("");
  if (!start_query_bar(app, &bar, 0)){
   return;
  }
- 
+
  for (;;){
   /* Notice here, we set the string of the query bar BEFORE we call get_next_input.
   get_next_input blocks this command until the next input is sent from the core. Whatever
@@ -67,12 +67,12 @@ up this command and we get a chance to modify the bar again. */
   if (counter >= 10){
    end_query_bar(app, &dumb_bar, 0);
   }
-  
+
   User_Input in = get_next_input(app, EventPropertyGroup_Any, EventProperty_Escape);
   if (in.abort){
    break;
   }
-  
+
   if (match_key_code(&in.event, KeyCode_Up)){
    counter += 1;
   }
@@ -95,17 +95,17 @@ thread that hands off control with the main thread of the 4coder core. When a co
 running in a view context thread, it can wait for inputs from the core by calling
 get_next_input. If your command gets inputs from the core, then default input handling
 isn't happening, so command bindings don't trigger unless you trigger them yourself. */
- 
+
  Query_Bar_Group group(app);
  Query_Bar bar = {};
  bar.prompt = SCu8("KeyCode = ");
  if (!start_query_bar(app, &bar, 0)){
   return;
  }
- 
+
  Key_Code code = 0;
  b32 is_dead_key = false;
- 
+
  for (;;){
   Scratch_Block scratch(app);
   if (code == 0){
@@ -142,23 +142,23 @@ thread that hands off control with the main thread of the 4coder core. When a co
 running in a view context thread, it can wait for inputs from the core by calling
 get_next_input. If your command gets inputs from the core, then default input handling
 isn't happening, so command bindings don't trigger unless you trigger them yourself. */
- 
+
  Query_Bar_Group group(app);
  Query_Bar bar = {};
  bar.prompt = SCu8("Weird String: ");
  if (!start_query_bar(app, &bar, 0)){
   return;
  }
- 
+
  u8 buffer[256];
  u64 size = 0;
- 
+
  for (;;){
   User_Input in = get_next_input(app, EventPropertyGroup_Any, EventProperty_Escape);
   if (in.abort){
    break;
   }
-  
+
   String_Const_u8 in_string = to_writable(&in);
   if (in_string.size > 0){
    size = clamp_top(in_string.size, sizeof(buffer));
@@ -190,7 +190,7 @@ CUSTOM_DOC("Example of query_user_string and query_user_number")
  u8 number_buffer[KB(1)];
  number_bar.string.str = number_buffer;
  number_bar.string_capacity = sizeof(number_buffer);
- 
+
  if (query_user_string(app, &string_bar)){
   if (string_bar.string.size > 0){
    if (query_user_number(app, &number_bar)){
@@ -207,62 +207,6 @@ CUSTOM_DOC("Example of query_user_string and query_user_number")
   }
  }
 }
-
-global Audio_Control the_music_control = {};
-
-CUSTOM_COMMAND_SIG(music_start)
-CUSTOM_DOC("Starts the music.")
-{
- local_persist Audio_Clip the_music_clip = {};
- if (the_music_clip.sample_count == 0){
-  Scratch_Block scratch(app);
-  FILE *file = def_search_normal_fopen(scratch, "audio_test/chtulthu.wav", "rb");
-  if (file != 0){
-   the_music_clip = audio_clip_from_wav_FILE(&global_permanent_arena, file);
-   fclose(file);
-  }
- }
- 
- if (!def_audio_is_playing(&the_music_control)){
-  the_music_control.loop = true;
-  the_music_control.channel_volume[0] = 1.f;
-  the_music_control.channel_volume[1] = 1.f;
-  def_audio_play_clip(the_music_clip, &the_music_control);
- }
-}
-
-CUSTOM_COMMAND_SIG(music_stop)
-CUSTOM_DOC("Stops the music.")
-{
- def_audio_stop(&the_music_control);
-}
-
-CUSTOM_COMMAND_SIG(hit_sfx)
-CUSTOM_DOC("Play the hit sound effect")
-{
- local_persist Audio_Clip the_hit_clip = {};
- if (the_hit_clip.sample_count == 0){
-  Scratch_Block scratch(app);
-  FILE *file = def_search_normal_fopen(scratch, "audio_test/hit.wav", "rb");
-  if (file != 0){
-   the_hit_clip = audio_clip_from_wav_FILE(&global_permanent_arena, file);
-   fclose(file);
-  }
- }
- 
- local_persist u32 index = 0;
- local_persist Audio_Control controls[8] = {};
- 
- Audio_Control *control = &controls[index%8];
- if (!def_audio_is_playing(control)){
-  control->loop = false;
-  control->channel_volume[0] = 1.f;
-  control->channel_volume[1] = 1.f;
-  def_audio_play_clip(the_hit_clip, control);
-  index += 1;
- }
-}
-
 
 // BOTTOM
 

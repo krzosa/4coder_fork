@@ -946,16 +946,6 @@ system_set_key_mode_sig(){
     mac_vars.key_mode = mode;
 }
 
-internal void
-system_set_source_mixer(void* ctx, Audio_Mix_Sources_Function* mix_func){
-    // TODO(allen): Audio on Mac
-}
-
-internal void
-system_set_destination_mixer(Audio_Mix_Destination_Function* mix_func){
-    // TODO(allen): Audio on Mac
-}
-
 ////////////////////////////////
 
 /**********************/

@@ -446,7 +446,7 @@ enum{
     ManagedObjectType_Error = 0,
     ManagedObjectType_Memory = 1,
     ManagedObjectType_Markers = 2,
-    
+
     ManagedObjectType_COUNT = 4,
 };
 
@@ -488,7 +488,7 @@ api(custom)
 struct Query_Bar_Group{
     Application_Links *app;
     View_ID view;
-    
+
     Query_Bar_Group(Application_Links *app);
     Query_Bar_Group(Application_Links *app, View_ID view);
     ~Query_Bar_Group();
@@ -529,10 +529,10 @@ struct Face_Metrics{
     f32 ascent;
     f32 descent;
     f32 line_skip;
-    
+
     f32 underline_yoff1;
     f32 underline_yoff2;
-    
+
     f32 max_advance;
     f32 space_advance;
     f32 decimal_digit_advance;
@@ -794,13 +794,5 @@ struct Process_State{
     b32 is_updating;
     i64 return_code;
 };
-
-////////////////////////////////
-
-// NOTE(allen): buffers are allocate with:
-// array_count = channel_count*sample_count
-// channel_count = 2
-typedef void Audio_Mix_Sources_Function(void *ctx, f32 *buffer, u32 sample_count);
-typedef void Audio_Mix_Destination_Function(i16 *dst, f32 *src, u32 sample_count);
 
 #endif
