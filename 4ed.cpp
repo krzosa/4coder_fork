@@ -287,6 +287,8 @@ App_Init_Sig(app_init){
     Application_Links app = {};
     app.tctx = tctx;
     app.cmd_context = models;
+
+    void custom_layer_init(Application_Links *app);
     custom_layer_init(&app);
 
     // NOTE(allen): init baked in buffers

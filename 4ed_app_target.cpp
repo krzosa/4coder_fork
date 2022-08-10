@@ -17,8 +17,10 @@
 #include "4coder_events.h"
 #include "4coder_types.h"
 #include "4coder_default_colors.h"
-#define STATIC_LINK_API
-#include "generated/custom_api.h"
+
+function Thread_Context* get_thread_context(Application_Links *app);
+function void print_message(Application_Links *app, String_Const_u8 message);
+function Profile_Global_List* get_core_profile_list(Application_Links *app);
 
 #include "4coder_string_match.h"
 #include "4coder_token.h"
@@ -81,7 +83,6 @@
 #include "4coder_command_map.cpp"
 #include "4coder_codepoint_map.cpp"
 
-#include "generated/custom_api.cpp"
 #define DYNAMIC_LINK_API
 #include "generated/system_api.cpp"
 #define DYNAMIC_LINK_API
@@ -93,7 +94,6 @@
 #include "generated/lexer_cpp.cpp"
 
 #include "4ed_api_definition.cpp"
-#include "generated/custom_api_constructor.cpp"
 #include "4ed_api_parser.cpp"
 
 #include "4ed_log.cpp"
