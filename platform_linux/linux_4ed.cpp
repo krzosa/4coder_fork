@@ -1753,8 +1753,6 @@ main(int argc, char **argv){
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&linuxvars.memory_tracker_mutex, &attr);
 
-    // pthread_mutex_init(&linuxvars.audio_mutex, &attr);
-    // pthread_cond_init(&linuxvars.audio_cond, NULL);
 
     // NOTE(allen): context setup
     {
