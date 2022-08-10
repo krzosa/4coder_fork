@@ -214,12 +214,9 @@ App_Init_Sig(app_init){
 
     managed_ids_init(tctx->allocator, &models->managed_id_set);
 
-    API_VTable_custom custom_vtable = {};
-    custom_api_fill_vtable(&custom_vtable);
     API_VTable_system system_vtable = {};
     system_api_fill_vtable(&system_vtable);
-    Custom_Layer_Init_Type *custom_init = api.init_apis(&custom_vtable, &system_vtable);
-    Assert(custom_init != 0);
+    system_api_read_vtable(&system_vtable);
 
     // NOTE(allen): coroutines
     coroutine_system_init(&models->coroutines);
@@ -292,7 +289,7 @@ App_Init_Sig(app_init){
     Application_Links app = {};
     app.tctx = tctx;
     app.cmd_context = models;
-    custom_init(&app);
+    custom_layer_init(&app);
 
     // NOTE(allen): init baked in buffers
     File_Init init_files[] = {

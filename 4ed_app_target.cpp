@@ -117,6 +117,6 @@
 #include "4ed_text_layout.cpp"
 #include "4ed_api_implementation.cpp"
 #include "4ed.cpp"
-
+#include "custom/4coder_default_bindings.cpp"
 // BOTTOM
 

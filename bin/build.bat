@@ -8,14 +8,14 @@ set N=-o 4ed
 set F=-g -DOS_WINDOWS=1 -DOS_LINUX=0 -DOS_MAC=0
 
 pushd %~dp0\..\custom
-clang 4coder_default_bindings.cpp   %W% %I% %F% -DMETA_PASS -E -o 4coder_command_metadata.i
-clang 4coder_metadata_generator.cpp %W% %I% %F% -o metadata_generator.exe
-metadata_generator.exe -R "." ".\\4coder_command_metadata.i"
+rem clang 4coder_default_bindings.cpp   %W% %I% %F% -DMETA_PASS -E -o 4coder_command_metadata.i
+rem clang 4coder_metadata_generator.cpp %W% %I% %F% -o metadata_generator.exe
+rem metadata_generator.exe -R "." ".\\4coder_command_metadata.i"
 popd
 
 pushd %~dp0\..\ship_files
 rem call ..\custom\bin\buildsuper_x64-win.bat
-clang ..\custom\4coder_default_bindings.cpp %W% %I% %F% -shared %N%_custom.dll
+rem clang ..\custom\4coder_default_bindings.cpp %W% %I% %F% -shared %N%_custom.dll
 clang ..\4ed_app_target.cpp %W% %I% %F% -shared %L% %N%_app.dll
 clang ..\platform_win32/win32_4ed.cpp %W% %I% %F% %L% %N%.exe -Wno-microsoft-goto
 popd

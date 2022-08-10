@@ -11,7 +11,7 @@ lexeme_hash(u64 seed, u8 *ptr, u64 size){
 }
 
 internal Lexeme_Table_Lookup
-lexeme_table_lookup(u64 *hash_array, String_Const_u8 *key_array, 
+lexeme_table_lookup(u64 *hash_array, String_Const_u8 *key_array,
                     Lexeme_Table_Value *value_array, i32 slot_count, u64 seed,
                     u8 *ptr, u64 size){
     Lexeme_Table_Lookup result = {};
