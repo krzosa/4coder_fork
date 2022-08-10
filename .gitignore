@@ -6,4 +6,6 @@ vc120.pdb
 *.dll
 *.pdb
 *.ilk
+*.exp
+*.lib
 *.obj
