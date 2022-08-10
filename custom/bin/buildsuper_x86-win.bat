@@ -32,7 +32,7 @@ set mode=%debug%
 if "%2" == "release" (set mode=%release%)
 
 set binname=%3
-if "%binname%" == "" set binname="custom_4coder"
+if "%binname%" == "" set binname="4ed_custom"
 
 set opts=/W4 /wd4310 /wd4100 /wd4201 /wd4505 /wd4996 /wd4127 /wd4510 /wd4512 /wd4610 /wd4457 /WX
 set opts=%opts% /GR- /nologo /FC
@@ -49,7 +49,7 @@ set build_dll=%build_dll% /EXPORT:get_version /EXPORT:init_apis
 call cl %opts% %meta_opts% "%target%"
 call cl %opts% "%custom_root%\4coder_metadata_generator.cpp" /Femetadata_generator
 metadata_generator -R "%custom_root%" "%cd%\%preproc_file%"
-call cl %opts% "%target%" /Fecustom_4coder %build_dll%
+call cl %opts% "%target%" /Fe4ed_custom %build_dll%
 
 REM file spammation preventation
 del metadata_generator*

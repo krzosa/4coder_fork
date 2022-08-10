@@ -1355,7 +1355,7 @@ main(int arg_count, char **args){
             char custom_fail_init_apis[] = "Failed to load custom code due to missing 'init_apis' symbol.  Try rebuilding with buildsuper";
 
             Scratch_Block scratch(mac_vars.tctx);
-            String_Const_u8 default_file_name = string_u8_litexpr("custom_4coder.so");
+            String_Const_u8 default_file_name = string_u8_litexpr("4ed_custom.so");
             String8List search_list = {};
             def_search_list_add_system_path(scratch, &search_list, SystemPath_CurrentDirectory);
             def_search_list_add_system_path(scratch, &search_list, SystemPath_UserDirectory);

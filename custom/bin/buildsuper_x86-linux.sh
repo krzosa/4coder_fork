@@ -25,7 +25,7 @@ g++ -I"$CODE_HOME" $meta_macros $arch $opts $debug -std=c++11 "$SOURCE" -E -o $p
 g++ -I"$CODE_HOME" $opts $debug -std=c++11 "$CODE_HOME/4coder_metadata_generator.cpp" -o "$CODE_HOME/metadata_generator"
 "$CODE_HOME/metadata_generator" -R "$CODE_HOME" "$PWD/$preproc_file"
 
-g++ -I"$CODE_HOME" $arch $opts $debug -std=gnu++0x "$SOURCE" -shared -o custom_4coder.so -fPIC
+g++ -I"$CODE_HOME" $arch $opts $debug -std=gnu++0x "$SOURCE" -shared -o 4ed_custom.so -fPIC
 
 rm "$CODE_HOME/metadata_generator"
 rm $preproc_file

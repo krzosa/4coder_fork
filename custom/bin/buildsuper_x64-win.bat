@@ -32,7 +32,7 @@ set mode=%debug%
 if "%2" == "release" (set mode=%release%)
 
 set binname=%3
-if "%binname%" == "" set binname="custom_4coder"
+if "%binname%" == "" set binname="4ed_custom"
 
 set opts=/W4 /wd4310 /wd4100 /wd4201 /wd4505 /wd4996 /wd4127 /wd4510 /wd4512 /wd4610 /wd4457 /WX
 set opts=%opts% /GR- /nologo /FC
