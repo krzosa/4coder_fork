@@ -207,7 +207,6 @@ App_Init_Sig(app_init){
     models->keep_playing = true;
     models->hard_exit = false;
 
-    models->config_api = api;
     models->virtual_event_arena = make_arena_system();
 
     profile_init(&models->profile_list);
@@ -216,7 +215,6 @@ App_Init_Sig(app_init){
 
     API_VTable_system system_vtable = {};
     system_api_fill_vtable(&system_vtable);
-    system_api_read_vtable(&system_vtable);
 
     // NOTE(allen): coroutines
     coroutine_system_init(&models->coroutines);

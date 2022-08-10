@@ -18,7 +18,7 @@ struct Plat_Settings{
     char *custom_dll;
     b8 custom_dll_is_strict;
     b8 fullscreen_window;
-    
+
     i32 window_w;
     i32 window_h;
     i32 window_x;
@@ -26,9 +26,9 @@ struct Plat_Settings{
     b8 set_window_pos;
     b8 set_window_size;
     b8 maximize_window;
-    
+
     b8 use_hinting;
-    
+
     char *user_directory;
 };
 
@@ -43,17 +43,11 @@ char **argv)
 
 typedef App_Read_Command_Line_Sig(App_Read_Command_Line);
 
-struct Custom_API{
-    _Get_Version_Type *get_version;
-    _Init_APIs_Type *init_apis;
-};
-
 #define App_Init_Sig(name) \
 void name(Thread_Context *tctx,     \
 Render_Target *target,    \
 void *base_ptr,           \
-String_Const_u8 current_directory,\
-Custom_API api)
+String_Const_u8 current_directory)
 
 typedef App_Init_Sig(App_Init);
 

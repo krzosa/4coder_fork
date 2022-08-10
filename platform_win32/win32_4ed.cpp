@@ -1993,7 +1993,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
         Scratch_Block scratch(win32vars.tctx);
         String_Const_u8 curdir = system_get_path(scratch, SystemPath_CurrentDirectory);
         curdir = string_mod_replace_character(curdir, '\\', '/');
-        app.init(win32vars.tctx, &target, base_ptr, curdir, {});
+        app.init(win32vars.tctx, &target, base_ptr, curdir);
     }
 
     //
