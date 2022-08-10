@@ -9,4 +9,4 @@ vc120.pdb
 *.exp
 *.lib
 *.obj
-# *.i
+*.i

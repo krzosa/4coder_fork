@@ -1919,8 +1919,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
     }
     log_os(" windowed dimensions: %d, %d\n"
            " initially maximized: %d",
-           window_rect.right - window_rect.left,
-           window_rect.bottom - window_rect.top,
+           (int)(window_rect.right - window_rect.left),
+           (int)(window_rect.bottom - window_rect.top),
            ((window_style & WS_MAXIMIZE) != 0));
 
     HGLRC window_opengl_context = 0;

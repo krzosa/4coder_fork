@@ -1,7 +1,7 @@
 @echo off
 
 rem todo last flags should be fixed
-set W=-Wno-writable-strings -Wno-deprecated-declarations -Wno-microsoft-goto -Wno-null-dereference -Wno-format
+set W=-Wno-writable-strings -Wno-deprecated-declarations -Wno-microsoft-goto -Wno-null-dereference
 set L=-luser32.lib -lwinmm.lib -lgdi32.lib -lopengl32.lib -lcomdlg32.lib -luserenv.lib -l..\dependencies/x64/freetype.lib
 set I=-I".." -I"..\custom" -I"..\dependencies/freetype2"
 set N=-o 4ed
@@ -11,9 +11,6 @@ pushd %~dp0\..\custom
 clang 4coder_default_bindings.cpp   %W% %I% %F% -DMETA_PASS -E -o 4coder_command_metadata.i
 clang 4coder_metadata_generator.cpp %W% %I% %F% -o metadata_generator.exe
 metadata_generator.exe -R "." ".\\4coder_command_metadata.i"
-
-del 4coder_command_metadata.i
-del metadata_generator.exe
 popd
 
 pushd %~dp0\..\ship_files

@@ -149,6 +149,7 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
                         }
                         action = CLAct_Nothing;
                     }break;
+                    InvalidDefaultCase;
                 }
             }break;
 
@@ -159,6 +160,7 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
                 i = argc;
                 mode = CLMode_App;
             }break;
+            InvalidDefaultCase;
         }
     }
 }
@@ -664,6 +666,7 @@ App_Step_Sig(app_step){
                     }
                 }
             }break;
+            InvalidDefaultCase;
         }
 
         if (event_was_handled && event->kind == InputEventKind_KeyStroke){

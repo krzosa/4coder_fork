@@ -236,10 +236,6 @@ enum{
 #define stringify_(a) #a
 #define stringify(a) stringify_(a)
 
-#if COMPILER_CL
-#define __VA_OPT__(x)
-#endif
-
 #define function static
 #define api(x)
 
@@ -302,6 +298,8 @@ enum{
 #define InvalidPath AssertMessage("invalid path")
 #define NotImplemented AssertMessage("not implemented")
 #define DontCompile NoSeriouslyDontCompile
+
+#define InvalidDefaultCase default: AssertMessage("Invalid default case in a switch statement")
 
 #define  B(x)  (x)
 #define KB(x) ((x) << 10)
