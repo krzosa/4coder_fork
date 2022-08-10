@@ -624,8 +624,8 @@ struct Record_Info{
 #endif
 
 #if !defined(META_PASS)
-#define CUSTOM_COMMAND_SIG(name) extern "C" __declspec(dllexport) void name(struct Application_Links *app)
-#define CUSTOM_UI_COMMAND_SIG(name) extern "C" __declspec(dllexport)void name(struct Application_Links *app)
+#define CUSTOM_COMMAND_SIG(name) export void name(struct Application_Links *app)
+#define CUSTOM_UI_COMMAND_SIG(name) export void name(struct Application_Links *app)
 #define CUSTOM_DOC(str)
 #define CUSTOM_ID(group, name) global Managed_ID name;
 #else

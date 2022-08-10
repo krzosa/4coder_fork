@@ -185,6 +185,12 @@
 # define CALL_CONVENTION
 #endif
 
+#if OS_WINDOWS
+#define export extern "C" __declspec(dllexport)
+#else
+#define export extern "C"
+#endif
+
 #if defined(JUST_GUESS_INTS)
 typedef signed char i8;
 typedef signed short i16;
@@ -1391,14 +1397,14 @@ struct Thread_Context{
   Arena_Node *used_first;
   Arena_Node *used_last;
   Arena_Node *free_arenas;
-  
+
   Base_Allocator *prof_allocator;
   Profile_ID prof_id_counter;
   Arena prof_arena;
   Profile_Record *prof_first;
   Profile_Record *prof_last;
   i32 prof_record_count;
-  
+
   void *user_data;
 };
 
@@ -1406,7 +1412,7 @@ struct Scratch_Block{
   Thread_Context *tctx;
   Arena *arena;
   Temp_Memory temp;
-  
+
   Scratch_Block(struct Thread_Context *tctx);
   Scratch_Block(struct Thread_Context *tctx, Arena *a1);
   Scratch_Block(struct Thread_Context *tctx, Arena *a1, Arena *a2);
