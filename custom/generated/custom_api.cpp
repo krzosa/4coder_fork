@@ -178,7 +178,6 @@ vtable->open_color_picker = open_color_picker;
 vtable->animate_in_n_milliseconds = animate_in_n_milliseconds;
 vtable->buffer_find_all_matches = buffer_find_all_matches;
 vtable->get_core_profile_list = get_core_profile_list;
-vtable->get_custom_layer_boundary_docs = get_custom_layer_boundary_docs;
 }
 #if defined(DYNAMIC_LINK_API)
 function void
@@ -361,7 +360,6 @@ open_color_picker = vtable->open_color_picker;
 animate_in_n_milliseconds = vtable->animate_in_n_milliseconds;
 buffer_find_all_matches = vtable->buffer_find_all_matches;
 get_core_profile_list = vtable->get_core_profile_list;
-get_custom_layer_boundary_docs = vtable->get_custom_layer_boundary_docs;
 }
 #undef DYNAMIC_LINK_API
 #endif

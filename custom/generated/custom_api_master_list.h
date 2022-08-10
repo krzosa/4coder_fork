@@ -176,4 +176,3 @@ api(custom) function void open_color_picker(Application_Links* app, Color_Picker
 api(custom) function void animate_in_n_milliseconds(Application_Links* app, u32 n);
 api(custom) function String_Match_List buffer_find_all_matches(Application_Links* app, Arena* arena, Buffer_ID buffer, i32 string_id, Range_i64 range, String_Const_u8 needle, Character_Predicate* predicate, Scan_Direction direction);
 api(custom) function Profile_Global_List* get_core_profile_list(Application_Links* app);
-api(custom) function Doc_Cluster* get_custom_layer_boundary_docs(Application_Links* app, Arena* arena);

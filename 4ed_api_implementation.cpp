@@ -338,7 +338,7 @@ buffer_seek_character_class(Application_Links *app, Buffer_ID buffer, Character_
         Scratch_Block scratch(app);
         Gap_Buffer *gap_buffer = &file->state.buffer;
         List_String_Const_u8 chunks_list = buffer_get_chunks(scratch, gap_buffer);
-        
+
         if (chunks_list.node_count > 0){
             // TODO(allen): If you are reading this comment, then I haven't revisited this to tighten it up yet.
             // buffer_seek_character_class was originally implemented using the chunk indexer helper
@@ -358,7 +358,7 @@ buffer_seek_character_class(Application_Links *app, Buffer_ID buffer, Character_
                 chunks.vals[chunks.count] = node->string;
                 chunks.count += 1;
             }
-            
+
             i64 size = buffer_size(gap_buffer);
             start_pos = clamp(-1, start_pos, size);
             Buffer_Chunk_Position pos = buffer_get_chunk_position(chunks, size, start_pos);
@@ -734,22 +734,22 @@ buffer_get_setting(Application_Links *app, Buffer_ID buffer_id, Buffer_Setting_I
             {
                 *value_out = file->settings.unimportant;
             }break;
-            
+
             case BufferSetting_Unkillable:
             {
                 *value_out = (file->settings.never_kill || file->settings.unkillable);
             }break;
-            
+
             case BufferSetting_ReadOnly:
             {
                 *value_out = file->settings.read_only;
             }break;
-            
+
             case BufferSetting_RecordsHistory:
             {
                 *value_out = history_is_activated(&file->state.history);
             }break;
-            
+
             default:
             {
                 result = false;
@@ -777,17 +777,17 @@ buffer_set_setting(Application_Links *app, Buffer_ID buffer_id, Buffer_Setting_I
                     file_set_unimportant(file, false);
                 }
             }break;
-            
+
             case BufferSetting_Unkillable:
             {
                 file->settings.unkillable = (value != 0);
             }break;
-            
+
             case BufferSetting_ReadOnly:
             {
                 file->settings.read_only = (value != 0);
             }break;
-            
+
             case BufferSetting_RecordsHistory:
             {
                 if (value){
@@ -801,14 +801,14 @@ buffer_set_setting(Application_Links *app, Buffer_ID buffer_id, Buffer_Setting_I
                     }
                 }
             }break;
-            
+
             default:
             {
                 result = 0;
             }break;
         }
     }
-    
+
     return(result);
 }
 
@@ -854,7 +854,7 @@ buffer_save(Application_Links *app, Buffer_ID buffer_id, String_Const_u8 file_na
 {
     Models *models = (Models*)app->cmd_context;
     Editing_File *file = imp_get_file(models, buffer_id);
-    
+
     b32 result = false;
     if (api_check_buffer(file)){
         b32 skip_save = false;
@@ -863,7 +863,7 @@ buffer_save(Application_Links *app, Buffer_ID buffer_id, String_Const_u8 file_na
                 skip_save = true;
             }
         }
-        
+
         if (!skip_save){
             Thread_Context *tctx = app->tctx;
             Scratch_Block scratch(tctx);
@@ -872,7 +872,7 @@ buffer_save(Application_Links *app, Buffer_ID buffer_id, String_Const_u8 file_na
             result = true;
         }
     }
-    
+
     return(result);
 }
 
@@ -891,16 +891,16 @@ buffer_kill(Application_Links *app, Buffer_ID buffer_id, Buffer_Kill_Flag flags)
                 if (models->end_buffer != 0){
                     models->end_buffer(app, file->id);
                 }
-                
+
                 buffer_unbind_name_low_level(working_set, file);
                 if (file->canon.name_size != 0){
                     buffer_unbind_file(working_set, file);
                 }
                 file_free(tctx, models, file);
                 working_set_free_file(&models->heap, working_set, file);
-                
+
                 Layout *layout = &models->layout;
-                
+
                 Node *order = &working_set->touch_order_sentinel;
                 Node *file_node = order->next;
                 for (Panel *panel = layout_get_first_open_panel(layout);
@@ -919,7 +919,7 @@ buffer_kill(Application_Links *app, Buffer_ID buffer_id, Buffer_Kill_Flag flags)
                         Assert(file_node != order);
                     }
                 }
-                
+
                 Child_Process_Container *child_processes = &models->child_processes;
                 for (Node *node = child_processes->child_process_active_list.next;
                      node != &child_processes->child_process_active_list;
@@ -929,7 +929,7 @@ buffer_kill(Application_Links *app, Buffer_ID buffer_id, Buffer_Kill_Flag flags)
                         child_process->out_file = 0;
                     }
                 }
-                
+
                 result = BufferKillResult_Killed;
             }
             else{
@@ -956,20 +956,20 @@ buffer_reopen(Application_Links *app, Buffer_ID buffer_id, Buffer_Reopen_Flag fl
             Plat_Handle handle = {};
             if (system_load_handle(scratch, (char*)file->canon.name_space, &handle)){
                 File_Attributes attributes = system_load_attributes(handle);
-                
+
                 char *file_memory = push_array(scratch, char, (i32)attributes.size);
-                
+
                 if (file_memory != 0){
                     if (system_load_file(handle, file_memory, (i32)attributes.size)){
                         system_load_close(handle);
-                        
+
                         // TODO(allen): try(perform a diff maybe apply edits in reopen)
-                        
+
                         i32 line_numbers[16];
                         i32 column_numbers[16];
                         View *vptrs[16];
                         i32 vptr_count = 0;
-                        
+
                         Layout *layout = &models->layout;
                         for (Panel *panel = layout_get_first_open_panel(layout);
                              panel != 0;
@@ -985,15 +985,15 @@ buffer_reopen(Application_Links *app, Buffer_ID buffer_id, Buffer_Reopen_Flag fl
                                 ++vptr_count;
                             }
                         }
-                        
+
                         Working_Set *working_set = &models->working_set;
                         file_free(tctx, models, file);
                         working_set_file_default_settings(working_set, file);
                         file_create_from_string(tctx, models, file, SCu8(file_memory, attributes.size), attributes);
-                        
+
                         for (i32 i = 0; i < vptr_count; ++i){
                             view_set_file(tctx, models, vptrs[i], file);
-                            
+
                             vptrs[i]->file = file;
                             i64 line = line_numbers[i];
                             i64 col = column_numbers[i];
@@ -1303,13 +1303,13 @@ panel_set_split(Application_Links *app, Panel_ID panel_id, Panel_Split_Kind kind
                 {
                     panel->split.v_f32 = clamp(0.f, t, 1.f);
                 }break;
-                
+
                 case PanelSplitKind_FixedPixels_Max:
                 case PanelSplitKind_FixedPixels_Min:
                 {
                     panel->split.v_i32 = i32_round32(t);
                 }break;
-                
+
                 default:
                 {
                     print_message(app, string_u8_litexpr("Invalid split kind passed to panel_set_split, no change made to view layout"));
@@ -1451,7 +1451,7 @@ view_get_setting(Application_Links *app, View_ID view_id, View_Setting_ID settin
 {
     Models *models = (Models*)app->cmd_context;
     View *view = imp_get_view(models, view_id);
-    
+
     b32 result = false;
     if (api_check_view(view)){
         result = true;
@@ -1460,17 +1460,17 @@ view_get_setting(Application_Links *app, View_ID view_id, View_Setting_ID settin
             {
                 *value_out = view->show_whitespace;
             }break;
-            
+
             case ViewSetting_ShowScrollbar:
             {
                 *value_out = !view->hide_scrollbar;
             }break;
-            
+
             case ViewSetting_ShowFileBar:
             {
                 *value_out = !view->hide_file_bar;
             }break;
-            
+
             default:
             {
                 result = false;
@@ -1485,7 +1485,7 @@ view_set_setting(Application_Links *app, View_ID view_id, View_Setting_ID settin
 {
     Models *models = (Models*)app->cmd_context;
     View *view = imp_get_view(models, view_id);
-    
+
     b32 result = false;
     if (api_check_view(view)){
         result = true;
@@ -1494,17 +1494,17 @@ view_set_setting(Application_Links *app, View_ID view_id, View_Setting_ID settin
             {
                 view->show_whitespace = (b8)value;
             }break;
-            
+
             case ViewSetting_ShowScrollbar:
             {
                 view->hide_scrollbar = (b8)!value;
             }break;
-            
+
             case ViewSetting_ShowFileBar:
             {
                 view->hide_file_bar = (b8)!value;
             }break;
-            
+
             default:
             {
                 result = false;
@@ -1637,7 +1637,7 @@ view_set_mark(Application_Links *app, View_ID view_id, Buffer_Seek seek)
 {
     Models *models = (Models*)app->cmd_context;
     View *view = imp_get_view(models, view_id);
-    
+
     b32 result = false;
     if (api_check_view(view)){
         Editing_File *file = view->file;
@@ -1831,19 +1831,19 @@ get_managed_scope_with_multiple_dependencies(Application_Links *app, Managed_Sco
 {
     Models *models = (Models*)app->cmd_context;
     Lifetime_Allocator *lifetime_allocator = &models->lifetime_allocator;
-    
+
     Scratch_Block scratch(app);
-    
+
     // TODO(allen): revisit this
     struct Node_Ptr{
         Node_Ptr *next;
         Lifetime_Object *object_ptr;
     };
-    
+
     Node_Ptr *first = 0;
     Node_Ptr *last = 0;
     i32 member_count = 0;
-    
+
     b32 filled_array = true;
     for (i32 i = 0; i < count; i += 1){
         Dynamic_Workspace *workspace = get_dynamic_workspace(models, scopes[i]);
@@ -1851,13 +1851,13 @@ get_managed_scope_with_multiple_dependencies(Application_Links *app, Managed_Sco
             filled_array = false;
             break;
         }
-        
+
         switch (workspace->user_type){
             case DynamicWorkspace_Global:
             {
                 // NOTE(allen): (global_scope INTERSECT X) == X for all X, therefore we emit nothing when a global group is in the key list.
             }break;
-            
+
             case DynamicWorkspace_Unassociated:
             case DynamicWorkspace_Buffer:
             case DynamicWorkspace_View:
@@ -1869,7 +1869,7 @@ get_managed_scope_with_multiple_dependencies(Application_Links *app, Managed_Sco
                 new_node->object_ptr = object;
                 member_count += 1;
             }break;
-            
+
             case DynamicWorkspace_Intersected:
             {
                 Lifetime_Key *key = (Lifetime_Key*)workspace->user_back_ptr;
@@ -1884,14 +1884,14 @@ get_managed_scope_with_multiple_dependencies(Application_Links *app, Managed_Sco
                     }
                 }
             }break;
-            
+
             default:
             {
                 InvalidPath;
             }break;
         }
     }
-    
+
     Managed_Scope result = 0;
     if (filled_array){
         Lifetime_Object **object_ptr_array = push_array(scratch, Lifetime_Object*, member_count);
@@ -1906,7 +1906,7 @@ get_managed_scope_with_multiple_dependencies(Application_Links *app, Managed_Sco
         Lifetime_Key *key = lifetime_get_or_create_intersection_key(lifetime_allocator, object_ptr_array, member_count);
         result = (Managed_Scope)key->dynamic_workspace.scope_id;
     }
-    
+
     return(result);
 }
 
@@ -2640,7 +2640,7 @@ buffer_set_face(Application_Links *app, Buffer_ID buffer_id, Face_ID id)
 {
     Models *models = (Models*)app->cmd_context;
     Editing_File *file = imp_get_file(models, buffer_id);
-    
+
     b32 did_change = false;
     if (api_check_buffer(file)){
         Face *face = font_set_face_from_id(&models->font_set, id);
@@ -2912,13 +2912,13 @@ text_layout_create(Application_Links *app, Buffer_ID buffer_id, Rect_f32 rect, B
     if (api_check_buffer(file)){
         Thread_Context *tctx = app->tctx;
         Face *face = file_get_face(models, file);
-        
+
         Gap_Buffer *buffer = &file->state.buffer;
-        
+
         Layout_Function *layout_func = file_get_layout_func(file);
-        
+
         Vec2_f32 dim = rect_dim(rect);
-        
+
         i64 line_count = buffer_line_count(buffer);
         i64 line_number = buffer_point.line_number;
         f32 y = -buffer_point.pixel_shift.y;
@@ -2933,13 +2933,13 @@ text_layout_create(Application_Links *app, Buffer_ID buffer_id, Rect_f32 rect, B
             }
             y = next_y;
         }
-        
+
         Range_i64 visible_line_number_range = Ii64(buffer_point.line_number, line_number);
         Range_i64 visible_range = Ii64(buffer_get_first_pos_from_line_number(buffer, visible_line_number_range.min),
                                        buffer_get_last_pos_from_line_number(buffer, visible_line_number_range.max));
-        
+
         i64 item_count = range_size_inclusive(visible_range);
-        
+
         Arena arena = make_arena_system();
         Arena *arena_ptr = push_array_zero(&arena, Arena, 1);
         *arena_ptr = arena;
@@ -2992,16 +2992,16 @@ text_layout_line_on_screen(Application_Links *app, Text_Layout_ID layout_id, i64
     if (layout == 0){
         return(result);
     }
-    
+
     Layout_Function *layout_func = layout->layout_func;
-    
+
     Rect_f32 rect = layout->rect;
     if (range_contains_inclusive(layout->visible_line_number_range, line_number)){
         Editing_File *file = imp_get_file(models, layout->buffer_id);
         if (api_check_buffer(file)){
             f32 width = rect_width(rect);
             Face *face = file_get_face(models, file);
-            
+
             for (i64 line_number_it = layout->visible_line_number_range.first;;
                  line_number_it += 1){
                 Layout_Item_List line = file_get_line_layout(app->tctx, models, file,
@@ -3013,7 +3013,7 @@ text_layout_line_on_screen(Application_Links *app, Text_Layout_ID layout_id, i64
                 }
                 result.min = result.max;
             }
-            
+
             result += rect.y0 - layout->point.pixel_shift.y;
         }
     }
@@ -3023,7 +3023,7 @@ text_layout_line_on_screen(Application_Links *app, Text_Layout_ID layout_id, i64
     else if (line_number > layout->visible_line_number_range.max){
         result = If32(rect.y1, rect.y1);
     }
-    
+
     return(result);
 }
 
@@ -3037,14 +3037,14 @@ text_layout_character_on_screen(Application_Links *app, Text_Layout_ID layout_id
         if (api_check_buffer(file)){
             Gap_Buffer *buffer = &file->state.buffer;
             i64 line_number = buffer_get_line_index(buffer, pos) + 1;
-            
+
             if (range_contains_inclusive(layout->visible_line_number_range, line_number)){
                 Rect_f32 rect = layout->rect;
                 f32 width = rect_width(rect);
                 Face *face = file_get_face(models, file);
-                
+
                 Layout_Function *layout_func = layout->layout_func;
-                
+
                 f32 y = 0.f;
                 Layout_Item_List line = {};
                 for (i64 line_number_it = layout->visible_line_number_range.first;;
@@ -3057,7 +3057,7 @@ text_layout_character_on_screen(Application_Links *app, Text_Layout_ID layout_id
                     }
                     y += line.height;
                 }
-                
+
                 // TODO(allen): optimization: This is some fairly heavy computation.  We really
                 // need to accelerate the (pos -> item) lookup within a single
                 // Buffer_Layout_Item_List.
@@ -3081,7 +3081,7 @@ text_layout_character_on_screen(Application_Links *app, Text_Layout_ID layout_id
                         }
                     }
                 }
-                
+
                 Vec2_f32 shift = V2f32(rect.x0, rect.y0 + y) - layout->point.pixel_shift;
                 result.p0 += shift;
                 result.p1 += shift;
@@ -3200,12 +3200,6 @@ api(custom) function Profile_Global_List*
 get_core_profile_list(Application_Links *app){
     Models *models = (Models*)app->cmd_context;
     return(&models->profile_list);
-}
-
-api(custom) function Doc_Cluster*
-get_custom_layer_boundary_docs(Application_Links *app, Arena *arena){
-    API_Definition *api_def = custom_api_construct(arena);
-    return(doc_custom_api(arena, api_def));
 }
 
 // BOTTOM

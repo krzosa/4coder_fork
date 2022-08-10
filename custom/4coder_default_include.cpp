@@ -136,7 +136,6 @@
 #include "4coder_tutorial.cpp"
 #include "4coder_doc_content_types.cpp"
 #include "4coder_doc_commands.cpp"
-#include "4coder_docs.cpp"
 #include "4coder_variables.cpp"
 #include "4coder_search_list.cpp"
 
