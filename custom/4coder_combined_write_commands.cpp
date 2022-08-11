@@ -21,7 +21,7 @@ write_string(Application_Links *app, String_Const_u8 string){
 function void
 write_named_comment_string(Application_Links *app, char *type_string){
     Scratch_Block scratch(app);
-    String_Const_u8 name = def_get_config_string(scratch, vars_save_string_lit("user_name"));
+    String_Const_u8 name = debug_config_user_name;
     String_Const_u8 str = {};
     if (name.size > 0){
         str = push_u8_stringf(scratch, "// %s(%.*s): ", type_string, string_expand(name));
@@ -174,7 +174,7 @@ static Snippet default_snippets[] = {
     {"for",    "for (;;){\n\n}\n", 5, 10},
     {"///",    "////////////////////////////////", 32, 32},
     {"#guard", "#if !defined(Z)\n#define Z\n#endif\n", 0, 26},
-    
+
     {"op+",  "Z\noperator+(Z a, Z b){\n,\n}\n", 0, 23},
     {"op-",  "Z\noperator-(Z a, Z b){\n,\n}\n", 0, 23},
     {"op*",  "Z\noperator*(Z a, Z b){\n,\n}\n", 0, 23},
@@ -183,11 +183,11 @@ static Snippet default_snippets[] = {
     {"op-=", "Z&\noperator-=(Z &a, Z b){\n,\n}\n", 0, 26},
     {"op*=", "Z&\noperator*=(Z &a, Z b){\n,\n}\n", 0, 26},
     {"op/=", "Z&\noperator/=(Z &a, Z b){\n,\n}\n", 0, 26},
-    
+
     // for 4coder development
     {"4command", "CUSTOM_COMMAND_SIG()\nCUSTOM_DOC()\n{\n\n}\n", 19, 32},
     {"4app", "Application_Links *app", 22, 22},
-    
+
 #if defined(SNIPPET_EXPANSION)
 #include SNIPPET_EXPANSION
 #endif
@@ -214,7 +214,7 @@ get_snippet_from_user(Application_Links *app, Snippet *snippets, i32 snippet_cou
     Lister_Block lister(app, scratch);
     lister_set_query(lister, query);
     lister_set_default_handlers(lister);
-    
+
     Snippet *snippet = snippets;
     for (i32 i = 0; i < snippet_count; i += 1, snippet += 1){
         lister_add_item(lister, SCu8(snippet->name), SCu8(snippet->text), snippet, 0);
@@ -242,7 +242,7 @@ CUSTOM_DOC("Opens a snippet lister for inserting whole pre-written snippets of t
         Snippet *snippet = get_snippet_from_user(app, default_snippets,
                                                  ArrayCount(default_snippets),
                                                  "Snippet:");
-        
+
         Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
         i64 pos = view_get_cursor_pos(app, view);
         write_snippet(app, view, buffer, pos, snippet);

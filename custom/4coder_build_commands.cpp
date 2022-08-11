@@ -66,7 +66,7 @@ standard_build_exec_command(Application_Links *app, View_ID view, String_Const_u
 function b32
 standard_search_and_build_from_dir(Application_Links *app, View_ID view, String_Const_u8 start_dir){
     Scratch_Block scratch(app);
-    
+
     // NOTE(allen): Search
     String_Const_u8 full_file_path = {};
     String_Const_u8 cmd_string  = {};
@@ -77,7 +77,7 @@ standard_search_and_build_from_dir(Application_Links *app, View_ID view, String_
             break;
         }
     }
-    
+
     b32 result = (full_file_path.size > 0);
     if (result){
         // NOTE(allen): Build
@@ -85,7 +85,7 @@ standard_search_and_build_from_dir(Application_Links *app, View_ID view, String_
         String_Const_u8 command = push_u8_stringf(scratch, "\"%.*s/%.*s\"",
                                                   string_expand(path),
                                                   string_expand(cmd_string));
-        b32 auto_save = def_get_config_b32(vars_save_string_lit("automatically_save_changes_on_build"));
+        b32 auto_save = debug_config_automatically_save_changes_on_build;
         if (auto_save){
             save_all_dirty_buffers(app);
         }
@@ -93,7 +93,7 @@ standard_search_and_build_from_dir(Application_Links *app, View_ID view, String_
         print_message(app, push_u8_stringf(scratch, "Building with: %.*s\n",
                                            string_expand(full_file_path)));
     }
-    
+
     return(result);
 }
 
@@ -162,12 +162,12 @@ CUSTOM_DOC("Looks for a build.bat, build.sh, or makefile in the current and pare
 {
     View_ID view = get_active_view(app, Access_Always);
     Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
-    
+
     View_ID build_view = get_or_open_build_panel(app);
-    
+
     standard_search_and_build(app, build_view, buffer);
     set_fancy_compilation_buffer_font(app);
-    
+
     block_zero_struct(&prev_location);
     lock_jump_buffer(app, string_u8_litexpr("*compilation*"));
 }

@@ -11,13 +11,14 @@ CUSTOM_DOC("Default command for responding to a startup event")
     User_Input input = get_current_input(app);
     if (match_core_code(&input, CoreCode_Startup)){
         String_Const_u8_Array file_names = input.event.core.file_names;
-        load_themes_default_folder(app);
+        // CLEANUP(Krzosa)
+        // load_themes_default_folder(app);
         default_4coder_initialize(app, file_names);
         default_4coder_side_by_side_panels(app, file_names);
     }
 
     {
-        def_enable_virtual_whitespace = def_get_config_b32(vars_save_string_lit("enable_virtual_whitespace"));
+        def_enable_virtual_whitespace = debug_config_enable_virtual_whitespace;
         clear_all_layouts(app);
     }
 }
@@ -163,7 +164,7 @@ default_tick(Application_Links *app, Frame_Info frame_info){
     // NOTE(allen): Clear layouts if virtual whitespace setting changed.
 
     {
-        b32 enable_virtual_whitespace = def_get_config_b32(vars_save_string_lit("enable_virtual_whitespace"));
+        b32 enable_virtual_whitespace = debug_config_enable_virtual_whitespace;
         if (enable_virtual_whitespace != def_enable_virtual_whitespace){
             def_enable_virtual_whitespace = enable_virtual_whitespace;
             clear_all_layouts(app);
@@ -208,7 +209,7 @@ default_buffer_region(Application_Links *app, View_ID view_id, Rect_f32 region){
     }
 
     // NOTE(allen): line numbers
-    b32 show_line_number_margins = def_get_config_b32(vars_save_string_lit("show_line_number_margins"));
+    b32 show_line_number_margins = debug_config_show_line_number_margins;
     if (show_line_number_margins){
         Rect_f32_Pair pair = layout_line_number_margin(app, buffer, region, digit_advance);
         region = pair.max;
@@ -269,9 +270,9 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
 
     // NOTE(allen): Cursor shape
     Face_Metrics metrics = get_face_metrics(app, face_id);
-    u64 cursor_roundness_100 = def_get_config_u64(app, vars_save_string_lit("cursor_roundness"));
+    u64 cursor_roundness_100 = debug_config_cursor_roundness;
     f32 cursor_roundness = metrics.normal_advance*cursor_roundness_100*0.01f;
-    f32 mark_thickness = (f32)def_get_config_u64(app, vars_save_string_lit("mark_thickness"));
+    f32 mark_thickness = (f32)debug_config_mark_thickness;
 
     // NOTE(allen): Token colorizing
     Token_Array token_array = get_token_array_from_buffer(app, buffer);
@@ -279,7 +280,7 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
         draw_cpp_token_colors(app, text_layout_id, &token_array);
 
         // NOTE(allen): Scan for TODOs and NOTEs
-        b32 use_comment_keyword = def_get_config_b32(vars_save_string_lit("use_comment_keyword"));
+        b32 use_comment_keyword = debug_config_use_comment_keywords;
         if (use_comment_keyword){
             Comment_Highlight_Pair pairs[] = {
                 {string_u8_litexpr("NOTE"), finalize_color(defcolor_comment_pop, 0)},
@@ -317,14 +318,14 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
     view_correct_mark(app, view_id);
 
     // NOTE(allen): Scope highlight
-    b32 use_scope_highlight = def_get_config_b32(vars_save_string_lit("use_scope_highlight"));
+    b32 use_scope_highlight = debug_config_use_scope_highlight;
     if (use_scope_highlight){
         Color_Array colors = finalize_color_array(defcolor_back_cycle);
         draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors.vals, colors.count);
     }
 
-    b32 use_error_highlight = def_get_config_b32(vars_save_string_lit("use_error_highlight"));
-    b32 use_jump_highlight = def_get_config_b32(vars_save_string_lit("use_jump_highlight"));
+    b32 use_error_highlight = debug_config_use_error_highlight;
+    b32 use_jump_highlight = debug_config_use_jump_highlight;
     if (use_error_highlight || use_jump_highlight){
         // NOTE(allen): Error highlight
         String_Const_u8 name = string_u8_litexpr("*compilation*");
@@ -345,14 +346,14 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
     }
 
     // NOTE(allen): Color parens
-    b32 use_paren_helper = def_get_config_b32(vars_save_string_lit("use_paren_helper"));
+    b32 use_paren_helper = debug_config_use_paren_helper;
     if (use_paren_helper){
         Color_Array colors = finalize_color_array(defcolor_text_cycle);
         draw_paren_highlight(app, buffer, text_layout_id, cursor_pos, colors.vals, colors.count);
     }
 
     // NOTE(allen): Line highlight
-    b32 highlight_line_at_cursor = def_get_config_b32(vars_save_string_lit("highlight_line_at_cursor"));
+    b32 highlight_line_at_cursor = debug_config_highlight_line_at_cursor;
     if (highlight_line_at_cursor && is_active_view){
         i64 line_number = get_line_number_from_pos(app, buffer, cursor_pos);
         draw_line_highlight(app, text_layout_id, line_number, fcolor_id(defcolor_highlight_cursor_line));
@@ -456,7 +457,7 @@ default_render_caller(Application_Links *app, Frame_Info frame_info, View_ID vie
     }
 
     // NOTE(allen): layout line numbers
-    b32 show_line_number_margins = def_get_config_b32(vars_save_string_lit("show_line_number_margins"));
+    b32 show_line_number_margins = debug_config_show_line_number_margins;
     Rect_f32 line_number_rect = {};
     if (show_line_number_margins){
         Rect_f32_Pair pair = layout_line_number_margin(app, buffer, region, digit_advance);
@@ -721,6 +722,33 @@ do_full_lex_async(Async_Context *actx, String_Const_u8 data){
     }
 }
 
+function String_Const_u8_Array
+parse_extension_line_to_extension_list(Application_Links *app, Arena *arena, String_Const_u8 str){
+    ProfileScope(app, "parse extension line to extension list");
+    i32 count = 0;
+    for (u64 i = 0; i < str.size; i += 1){
+        if (str.str[i] == '.'){
+            count += 1;
+        }
+    }
+
+    String_Const_u8_Array array = {};
+    array.count = count;
+    array.strings = push_array(arena, String_Const_u8, count);
+
+    push_align(arena, 1);
+    str = string_skip(str, string_find_first(str, '.') + 1);
+    for (i32 i = 0; i < count; i += 1){
+        u64 next_period = string_find_first(str, '.');
+        String_Const_u8 extension = string_prefix(str, next_period);
+        str = string_skip(str, next_period + 1);
+        array.strings[i] = push_string_copy(arena, extension);
+    }
+    push_align(arena, 8);
+
+    return(array);
+}
+
 BUFFER_HOOK_SIG(default_begin_buffer){
     ProfileScope(app, "begin buffer");
 
@@ -729,7 +757,7 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     b32 treat_as_code = false;
     String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer_id);
     if (file_name.size > 0){
-        String_Const_u8 treat_as_code_string = def_get_config_string(scratch, vars_save_string_lit("treat_as_code"));
+        String_Const_u8 treat_as_code_string = debug_config_treat_as_code;
         String_Const_u8_Array extensions = parse_extension_line_to_extension_list(app, scratch, treat_as_code_string);
         String_Const_u8 ext = string_file_extension(file_name);
         for (i32 i = 0; i < extensions.count; ++i){
@@ -816,13 +844,13 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     b32 wrap_lines = true;
     b32 use_lexer = false;
     if (treat_as_code){
-        wrap_lines = def_get_config_b32(vars_save_string_lit("enable_code_wrapping"));
+        wrap_lines = debug_config_enable_code_wrapping;
         use_lexer = true;
     }
 
     String_Const_u8 buffer_name = push_buffer_base_name(app, scratch, buffer_id);
     if (buffer_name.size > 0 && buffer_name.str[0] == '*' && buffer_name.str[buffer_name.size - 1] == '*'){
-        wrap_lines = def_get_config_b32(vars_save_string_lit("enable_output_wrapping"));
+        wrap_lines = debug_config_enable_output_wrapping;
     }
 
     if (use_lexer){
@@ -909,8 +937,8 @@ BUFFER_HOOK_SIG(default_file_save){
     // buffer_id
     ProfileScope(app, "default file save");
 
-    b32 auto_indent = def_get_config_b32(vars_save_string_lit("automatically_indent_text_on_save"));
-    b32 is_virtual = def_get_config_b32(vars_save_string_lit("enable_virtual_whitespace"));
+    b32 auto_indent = debug_config_automatically_indent_text_on_save;
+    b32 is_virtual = debug_config_enable_virtual_whitespace;
     if (auto_indent && is_virtual){
         auto_indent_buffer(app, buffer_id, buffer_range(app, buffer_id));
     }

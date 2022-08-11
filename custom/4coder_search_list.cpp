@@ -30,11 +30,11 @@ def_search_list_add_system_path(Arena *arena, List_String_Const_u8 *list, System
 function String_Const_u8
 def_search_get_full_path(Arena *arena, List_String_Const_u8 *list, String_Const_u8 relative){
     String_Const_u8 result = {};
-    
+
     Temp_Memory temp = begin_temp(arena);
-    
+
     u8 slash = '/';
-    
+
     for (Node_String_Const_u8 *node = list->first;
          node != 0;
          node = node->next){
@@ -45,16 +45,16 @@ def_search_get_full_path(Arena *arena, List_String_Const_u8 *list, String_Const_
         full_name.str[node->string.size] = slash;
         block_copy(full_name.str + node->string.size + 1, relative.str, relative.size);
         full_name.str[full_name.size] = 0;
-        
+
         File_Attributes attribs = system_quick_file_attributes(arena, full_name);
         if (attribs.last_write_time > 0){
             result = full_name;
             break;
         }
-        
+
         end_temp(temp);
     }
-    
+
     return(result);
 }
 
@@ -66,6 +66,33 @@ def_search_fopen(Arena *arena, List_String_Const_u8 *list, char *file_name, char
     if (full_path.size > 0){
         file = fopen((char*)full_path.str, opt);
     }
+    return(file);
+}
+
+
+////////////////////////////////
+// NOTE(allen): Config Search List
+
+function void
+def_search_normal_load_list(Arena *arena, String8List *list){
+    def_search_list_add_system_path(arena, list, SystemPath_UserDirectory);
+    def_search_list_add_system_path(arena, list, SystemPath_Binary);
+}
+
+function String8
+def_search_normal_full_path(Arena *arena, String8 relative){
+    String8List list = {};
+    def_search_normal_load_list(arena, &list);
+    String8 result = def_search_get_full_path(arena, &list, relative);
+    return(result);
+}
+
+function FILE*
+def_search_normal_fopen(Arena *arena, char *file_name, char *opt){
+    Temp_Memory_Block block(arena);
+    String8List list = {};
+    def_search_normal_load_list(arena, &list);
+    FILE *file = def_search_fopen(arena, &list, file_name, opt);
     return(file);
 }
 

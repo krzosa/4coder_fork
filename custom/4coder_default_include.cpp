@@ -19,6 +19,7 @@
 #endif
 
 
+#include "4coder_config.h"
 #include "4coder_variables.h"
 #include "4coder_async_tasks.h"
 #include "4coder_string_match.h"
@@ -32,7 +33,6 @@
 #include "4coder_lister_base.h"
 #include "4coder_clipboard.h"
 #include "4coder_default_framework.h"
-#include "4coder_config.h"
 #include "4coder_auto_indent.h"
 #include "4coder_search.h"
 #include "4coder_build_commands.h"
@@ -63,7 +63,6 @@
 #include "4coder_fancy.cpp"
 #include "4coder_draw.cpp"
 #include "4coder_font_helper.cpp"
-#include "4coder_config.cpp"
 #include "4coder_dynamic_bindings.cpp"
 #include "4coder_default_framework.cpp"
 #include "4coder_clipboard.cpp"
@@ -80,6 +79,7 @@
 #include "4coder_code_index_listers.cpp"
 #include "4coder_log_parser.cpp"
 #include "4coder_keyboard_macro.cpp"
+#include "4coder_search_list.cpp"
 #include "4coder_cli_command.cpp"
 #include "4coder_build_commands.cpp"
 #include "4coder_function_list.cpp"
@@ -87,7 +87,6 @@
 #include "4coder_combined_write_commands.cpp"
 #include "4coder_profile_inspect.cpp"
 #include "4coder_variables.cpp"
-#include "4coder_search_list.cpp"
 
 #include "4coder_examples.cpp"
 
