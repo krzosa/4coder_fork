@@ -52,7 +52,6 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
 
                                 case 'f': action = CLAct_FontSize; break;
                                 case 'h': action = CLAct_FontUseHinting; --i; break;
-                                case 'U': action = CLAct_UserDirectory; break;
 
                                 case 'L': action = CLAct_Nothing; break;
                                 //case 'L': enables log, parsed before this is called (because I'm a dumbass)
@@ -142,13 +141,6 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
                         action = CLAct_Nothing;
                     }break;
 
-                    case CLAct_UserDirectory:
-                    {
-                        if (i < argc){
-                            plat_settings->user_directory = argv[i];
-                        }
-                        action = CLAct_Nothing;
-                    }break;
                     InvalidDefaultCase;
                 }
             }break;
@@ -287,7 +279,7 @@ App_Init_Sig(app_init){
     Application_Links app = {};
     app.tctx = tctx;
     app.cmd_context = models;
-
+    
     void custom_layer_init(Application_Links *app);
     custom_layer_init(&app);
 
