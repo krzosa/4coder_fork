@@ -526,51 +526,6 @@ CUSTOM_DOC("Toggle fullscreen mode on or off.  The change(s) do not take effect 
     system_set_fullscreen(!system_is_fullscreen());
 }
 
-// CLEANUP(Krzosa)
-// CUSTOM_COMMAND_SIG(load_themes_default_folder)
-// CUSTOM_DOC("Loads all the theme files in the default theme folder.")
-// {
-//     String_Const_u8 fcoder_extension = string_u8_litexpr(".4coder");
-//     save_all_dirty_buffers_with_postfix(app, fcoder_extension);
-
-//     Scratch_Block scratch(app);
-//     String8List list = {};
-//     def_search_normal_load_list(scratch, &list);
-
-//     for (String8Node *node = list.first;
-//          node != 0;
-//          node = node->next){
-//         String8 folder_path = node->string;
-//         String8 themes_path = push_u8_stringf(scratch, "%.*sthemes", string_expand(folder_path));
-//         load_folder_of_themes_into_live_set(app, themes_path);
-//     }
-// }
-
-// CUSTOM_COMMAND_SIG(load_themes_hot_directory)
-// CUSTOM_DOC("Loads all the theme files in the current hot directory.")
-// {
-//     String_Const_u8 fcoder_extension = string_u8_litexpr(".4coder");
-//     save_all_dirty_buffers_with_postfix(app, fcoder_extension);
-
-//     Scratch_Block scratch(app);
-//     String_Const_u8 path = push_hot_directory(app, scratch);
-//     load_folder_of_themes_into_live_set(app, path);
-// }
-
-// CUSTOM_COMMAND_SIG(clear_all_themes)
-// CUSTOM_DOC("Clear the theme list")
-// {
-//     if (global_theme_arena.base_allocator == 0){
-//         global_theme_arena = make_arena_system();
-//     }
-//     else{
-//         linalloc_clear(&global_theme_arena);
-//     }
-
-//     block_zero_struct(&global_theme_list);
-//     set_default_color_scheme(app);
-// }
-
 ////////////////////////////////
 
 function void
@@ -623,6 +578,20 @@ setup_built_in_mapping(Application_Links *app, String_Const_u8 name, Mapping *ma
 }
 
 function void
+change_mode(Application_Links *app, String_Const_u8 mode){
+    fcoder_mode = FCoderMode_Original;
+    if (string_match(mode, string_u8_litexpr("4coder"))){
+        fcoder_mode = FCoderMode_Original;
+    }
+    else if (string_match(mode, string_u8_litexpr("notepad-like"))){
+        begin_notepad_mode(app);
+    }
+    else{
+        print_message(app, string_u8_litexpr("Unknown mode.\n"));
+    }
+}
+
+function void
 default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_names, i32 override_font_size, b32 override_hinting){
 #define M \
 "Welcome to " VERSION "\n" \
@@ -641,28 +610,48 @@ default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_nam
 
     Scratch_Block scratch(app);
 
+    //
+    // Apply config
+    //
+    String_Const_u8 mode = debug_config_mode;
+    change_mode(app, mode);
+
+    b32 lalt_lctrl_is_altgr = debug_config_lalt_lctrl_is_altgr;
+    global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
+
+    // Themes
+    // String_Const_u8 default_theme_name = def_get_config_string(scratch, vars_save_string_lit("default_theme_name"));
+    // Color_Table *colors = get_color_table_by_name(default_theme_name);
+    // set_active_color(colors);
+
+    Face_Description description = {};
+    description.parameters.pt_size = (i32)debug_config_default_font_size;
+    description.parameters.hinting = debug_config_default_font_hinting;
+    description.parameters.aa_mode = FaceAntialiasingMode_8BitMono;
+    description.font.file_name = debug_config_default_font_name;
+
+    if (!modify_global_face_by_description(app, description)){
+        String8 name_in_fonts_folder = push_u8_stringf(scratch, "fonts/%.*s", string_expand(description.font.file_name));
+        description.font.file_name = def_search_normal_full_path(scratch, name_in_fonts_folder);
+        modify_global_face_by_description(app, description);
+    }
+
+    b32 bind_by_physical_key = debug_config_bind_by_physical_key;
+    if (bind_by_physical_key){
+        system_set_key_mode(KeyMode_Physical);
+    }
+    else{
+        system_set_key_mode(KeyMode_LanguageArranged);
+    }
+
+
     // CLEANUP(Krzosa)
-    // String_Const_u8 bindings_file_name = string_u8_litexpr("bindings.4coder");
-    String_Const_u8 mapping = debug_config_mapping;
-
-    // if (string_match(mapping, string_u8_litexpr("mac-default"))){
-    //     bindings_file_name = string_u8_litexpr("mac-bindings.4coder");
-    // }
-    // else if (OS_MAC && string_match(mapping, string_u8_litexpr("choose"))){
-    //     bindings_file_name = string_u8_litexpr("mac-bindings.4coder");
-    // }
-
-    // TODO(allen): cleanup
-    String_ID global_map_id = vars_save_string_lit("keys_global");
-    String_ID file_map_id = vars_save_string_lit("keys_file");
-    String_ID code_map_id = vars_save_string_lit("keys_code");
-
-    // if (dynamic_binding_load_from_file(app, &framework_mapping, bindings_file_name)){
-    //     setup_essential_mapping(&framework_mapping, global_map_id, file_map_id, code_map_id);
-    // }
-    // else{
-    setup_built_in_mapping(app, mapping, &framework_mapping, global_map_id, file_map_id, code_map_id);
-    // }
+    // TODO(Krzosa) Load config, load theme, load keybindings they overwrite so can load here
+    // Example:
+    // String_ID global_map_id = vars_save_string_lit("keys_global");
+    // String_ID file_map_id = vars_save_string_lit("keys_file");
+    // String_ID code_map_id = vars_save_string_lit("keys_code");
+    // setup_built_in_mapping(app, mapping, &framework_mapping, global_map_id, file_map_id, code_map_id);
 
     // open command line files
     String_Const_u8 hot_directory = push_hot_directory(app, scratch);
@@ -1029,23 +1018,6 @@ push_clipboard_index(Arena *arena, i32 clipboard_id, i32 item_index){
 
 function void
 initialize_managed_id_metadata(Application_Links *app);
-
-function void
-default_framework_init(Application_Links *app){
-    Thread_Context *tctx = get_thread_context(app);
-    async_task_handler_init(app, &global_async_system);
-    clipboard_init(get_base_allocator_system(), /*history_depth*/ 64, &clipboard0);
-    code_index_init();
-    buffer_modified_set_init();
-    Profile_Global_List *list = get_core_profile_list(app);
-    ProfileThreadName(tctx, list, string_u8_litexpr("main"));
-    initialize_managed_id_metadata(app);
-    set_default_color_scheme(app);
-    heap_init(&global_heap, tctx->allocator);
-	global_permanent_arena = make_arena_system();
-    global_config_arena = make_arena_system();
-    fade_range_arena = make_arena_system(KB(8));
-}
 
 ////////////////////////////////
 

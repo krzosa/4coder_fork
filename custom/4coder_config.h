@@ -79,7 +79,7 @@ b32 debug_config_default_font_hinting = false;
 // aa modes:
 //  8bit - mono-chrome 0-255 opacity channel per pixel
 //  1bit - mono-chrome 0/1 opacity channel per pixel
-String8 debug_config_default_font_aa_mode = string_u8_litexpr("8bit");
+Face_Antialiasing_Mode debug_config_default_font_aa_mode = FaceAntialiasingMode_8BitMono;
 
 // User
 String8 debug_config_user_name = string_u8_litexpr("not-set");

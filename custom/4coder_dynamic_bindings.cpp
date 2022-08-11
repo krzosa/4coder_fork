@@ -1,5 +1,4 @@
 
-#if 0
 /*
 4coder_dynamic_bindings.cpp - Dynamic Bindings
 */
@@ -143,4 +142,3 @@ dynamic_binding_load_from_file(Application_Links *app, Mapping *mapping, String_
 
 // BOTTOM
 
-#endif
