@@ -22,29 +22,6 @@ In this readme you will find:
  3. Notes on Major Issues
 
 
-# License
-
-Copyright (c) 2022 Allen Webster
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-
 # Build Instructions
 
 1. Create an empty folder named "4ed" to contain the codebase.
@@ -75,15 +52,48 @@ SOFTWARE.
 6. The codebase has a very weak base layer with key features that were added very late, so lots of code was written in the absence of useful features to bind things together. To make matters worse the base layer is split by the distinction of custom layer & core layer, leading to some double definitions and some incosistencies.
 
 
+# TODO New config, project files, themes design
+
+* Easy syntax - something like "ini"
+* Readable messages (no error messages notifying you about lvalues)
+* Should notify you with a visible messages when identifier is not registered, syntax is invalid, type is invalid
+* Editor should work without config files and should have default values that adhere to what people expect
+* I have an idea for API, we have a file with global variables, those variables are then replaced by stuff from the config file. This way we don't have to call any strange functions, should be easy to modify the metadata generator to do something like this(it should make a function that loads variables from config file). Something like the themes stuff.
 
 # Todo
 
-
+* Delete what can be deleted simplify what can be simplified
 * Replace project files
 * See if we can replace config format and combine it with replacement of project files
-* Combine api stuff with metadata stuff
-* Combine all code generators
+* Combine api stuff with metadata stuff, Combine all code generators, or delete them
 
+* Fkeys more functionality (binding macros maybe or some other stuff)
+* Optional python interpreter comment evaluator
 * Add project managment system (easy creating, presets, loading projects)
 * RemedyBG integration
 * Multiple cursors
+
+
+# License
+
+```
+Copyright (c) 2022 Allen Webster
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
