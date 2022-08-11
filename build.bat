@@ -5,7 +5,7 @@ set W=-Wno-writable-strings -Wno-deprecated-declarations
 set L=-luser32.lib -lwinmm.lib -lgdi32.lib -lopengl32.lib -lcomdlg32.lib -luserenv.lib -l..\dependencies/x64/freetype.lib
 set I=-I".." -I"..\custom" -I"..\dependencies/freetype2"
 set N=-o 4ed
-set F=-g -DOS_WINDOWS=1 -DOS_LINUX=0 -DOS_MAC=0
+set F=-g -fno-exceptions -DOS_WINDOWS=1 -DOS_LINUX=0 -DOS_MAC=0
 
 pushd %~dp0\custom
 clang ..\4ed_app_target.cpp %W% %I% %F% -DMETA_PASS -E -o 4coder_command_metadata.i

@@ -10,3 +10,4 @@ vc120.pdb
 *.lib
 *.obj
 *.i
+/custom/generated/command_metadata.h

@@ -76,3 +76,14 @@ SOFTWARE.
 
 
 
+# Todo
+
+
+* Replace project files
+* See if we can replace config format and combine it with replacement of project files
+* Combine api stuff with metadata stuff
+* Combine all code generators
+
+* Add project managment system (easy creating, presets, loading projects)
+* RemedyBG integration
+* Multiple cursors

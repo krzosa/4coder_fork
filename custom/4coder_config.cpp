@@ -10,10 +10,6 @@
 function void
 def_search_normal_load_list(Arena *arena, String8List *list){
     Variable_Handle prj_var = vars_read_key(vars_get_root(), vars_save_string_lit("prj_config"));
-    String_Const_u8 prj_dir = prj_path_from_project(arena, prj_var);
-    if (prj_dir.size > 0){
-        string_list_push(arena, list, prj_dir);
-    }
     def_search_list_add_system_path(arena, list, SystemPath_UserDirectory);
     def_search_list_add_system_path(arena, list, SystemPath_Binary);
 }
@@ -787,7 +783,7 @@ _def_config_table_init(void){
 function Variable_Handle
 def_get_config_var(String_ID key){
     _def_config_table_init();
-    
+
     Variable_Handle result = vars_get_nil();
     Variable_Handle root = vars_get_root();
     for (u64 i = 0; i < def_config_lookup_count; i += 1){
@@ -799,7 +795,7 @@ def_get_config_var(String_ID key){
             break;
         }
     }
-    
+
     return(result);
 }
 
@@ -892,17 +888,17 @@ config_evaluate_rvalue(Config *config, Config_Assignment *assignment, Config_RVa
                 {
                     result.boolean = r->boolean;
                 }break;
-                
+
                 case ConfigRValueType_Integer:
                 {
                     result.integer = r->integer;
                 }break;
-                
+
                 case ConfigRValueType_String:
                 {
                     result.string = r->string;
                 }break;
-                
+
                 case ConfigRValueType_Compound:
                 {
                     result.compound = r->compound;
@@ -943,7 +939,7 @@ config_compound_member(Config *config, Config_Compound *compound, String_Const_u
                     element_matches_query = true;
                 }
             }break;
-            
+
             case ConfigLayoutType_Identifier:
             {
                 implicit_index_is_valid = false;
@@ -951,7 +947,7 @@ config_compound_member(Config *config, Config_Compound *compound, String_Const_u
                     element_matches_query = true;
                 }
             }break;
-            
+
             case ConfigLayoutType_Integer:
             {
                 implicit_index_is_valid = false;
@@ -1412,19 +1408,19 @@ theme_parse__data(Application_Links *app, Arena *arena, String_Const_u8 file_nam
                             else if (result.step == Iteration_Quit){
                                 break;
                             }
-                            
+
                             color_array[counter] = result.get.uinteger;
                             counter += 1;
                             if (counter == 256){
                                 break;
                             }
                         }
-                        
+
                         color_table->arrays[id%color_table->count] = make_colors(color_arena, color_array, counter);
                     }
                 }
             }
-            
+
         }
     }
     return(parsed);
@@ -1467,9 +1463,9 @@ theme_parse__file_name(Application_Links *app, Arena *arena, char *file_name, Ar
 function void
 load_config_and_apply(Application_Links *app, Arena *out_arena, i32 override_font_size, b32 override_hinting){
     Scratch_Block scratch(app, out_arena);
-    
+
     linalloc_clear(out_arena);
-    
+
     Config *parsed = 0;
     FILE *file = def_search_normal_fopen(scratch, "config.4coder", "rb");
     if (file != 0){
@@ -1478,8 +1474,8 @@ load_config_and_apply(Application_Links *app, Arena *out_arena, i32 override_fon
         if (data.str != 0){
             parsed = def_config_from_text(app, scratch, str8_lit("config.4coder"), data);
         }
-    } 
-    
+    }
+
     if (parsed != 0){
         // Errors
         String_Const_u8 error_text = config_stringize_errors(app, scratch, parsed);
@@ -1487,7 +1483,7 @@ load_config_and_apply(Application_Links *app, Arena *out_arena, i32 override_fon
             print_message(app, string_u8_litexpr("trying to load config file:\n"));
             print_message(app, error_text);
         }
-        
+
         // NOTE(allen): Save As Variables
         if (error_text.str == 0){
             // TODO(allen): this always applies to "def_config" need to get "usr_config" working too
@@ -1505,27 +1501,27 @@ load_config_and_apply(Application_Links *app, Arena *out_arena, i32 override_fon
             def_set_config_string(vars_save_string_lit("default_font_name"), description.font.file_name);
         }
     }
-    
+
     String_Const_u8 default_font_name = def_get_config_string(scratch, vars_save_string_lit("default_font_name"));
     if (default_font_name.size == 0){
         default_font_name = string_u8_litexpr("liberation-mono.ttf");
     }
-    
+
     // TODO(allen): this part seems especially weird now.
     // We want these to be effected by evals of the config system,
     // not by a state that gets evaled and saved *now*!!
-    
+
     // Apply config
     String_Const_u8 mode = def_get_config_string(scratch, vars_save_string_lit("mode"));
     change_mode(app, mode);
-    
+
     b32 lalt_lctrl_is_altgr = def_get_config_b32(vars_save_string_lit("lalt_lctrl_is_altgr"));
     global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
-    
+
     String_Const_u8 default_theme_name = def_get_config_string(scratch, vars_save_string_lit("default_theme_name"));
     Color_Table *colors = get_color_table_by_name(default_theme_name);
     set_active_color(colors);
-    
+
     Face_Description description = {};
     if (override_font_size != 0){
         description.parameters.pt_size = override_font_size;
@@ -1536,10 +1532,10 @@ load_config_and_apply(Application_Links *app, Arena *out_arena, i32 override_fon
     if (description.parameters.pt_size == 0){
         description.parameters.pt_size = 12;
     }
-    
+
     b32 default_font_hinting = def_get_config_b32(vars_save_string_lit("default_font_hinting"));
     description.parameters.hinting = default_font_hinting || override_hinting;
-    
+
     Face_Antialiasing_Mode aa_mode = FaceAntialiasingMode_8BitMono;
     String8 aa_mode_string = def_get_config_string(scratch, vars_save_string_lit("default_font_aa_mode"));
     if (string_match(aa_mode_string, str8_lit("8bit"))){
@@ -1549,14 +1545,14 @@ load_config_and_apply(Application_Links *app, Arena *out_arena, i32 override_fon
         aa_mode = FaceAntialiasingMode_1BitMono;
     }
     description.parameters.aa_mode = aa_mode;
-    
+
     description.font.file_name = default_font_name;
     if (!modify_global_face_by_description(app, description)){
         String8 name_in_fonts_folder = push_u8_stringf(scratch, "fonts/%.*s", string_expand(default_font_name));
         description.font.file_name = def_search_normal_full_path(scratch, name_in_fonts_folder);
         modify_global_face_by_description(app, description);
     }
-    
+
     b32 bind_by_physical_key = def_get_config_b32(vars_save_string_lit("bind_by_physical_key"));
     if (bind_by_physical_key){
         system_set_key_mode(KeyMode_Physical);
@@ -1574,7 +1570,7 @@ load_theme_file_into_live_set(Application_Links *app, char *file_name){
     Config *config = theme_parse__file_name(app, scratch, file_name, arena, &color_table);
     String_Const_u8 error_text = config_stringize_errors(app, scratch, config);
     print_message(app, error_text);
-    
+
     String_Const_u8 name = SCu8(file_name);
     name = string_front_of_path(name);
     if (string_match(string_postfix(name, 7), string_u8_litexpr(".4coder"))){
@@ -1586,7 +1582,7 @@ load_theme_file_into_live_set(Application_Links *app, char *file_name){
 function void
 load_folder_of_themes_into_live_set(Application_Links *app, String_Const_u8 path){
     Scratch_Block scratch(app);
-    
+
     File_List list = system_get_file_list(scratch, path);
     for (File_Info **ptr = list.infos, **end = list.infos + list.count;
          ptr < end;
@@ -1613,7 +1609,7 @@ CUSTOM_DOC("Parse the current buffer as a theme file and add the theme to the th
 {
     View_ID view = get_active_view(app, Access_ReadVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
-    
+
     Scratch_Block scratch(app);
     String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer);
     if (file_name.size > 0){
@@ -1622,7 +1618,7 @@ CUSTOM_DOC("Parse the current buffer as a theme file and add the theme to the th
         Config *config = theme_parse__buffer(app, scratch, buffer, arena, &color_table);
         String_Const_u8 error_text = config_stringize_errors(app, scratch, config);
         print_message(app, error_text);
-        
+
         u64 problem_score = 0;
         if (color_table.count < defcolor_line_numbers_text){
             problem_score = defcolor_line_numbers_text - color_table.count;
@@ -1632,7 +1628,7 @@ CUSTOM_DOC("Parse the current buffer as a theme file and add the theme to the th
                 problem_score += 1;
             }
         }
-        
+
         if (error_text.size > 0 || problem_score >= 10){
             String_Const_u8 string = push_u8_stringf(scratch, "There appears to be a problem parsing %.*s; no theme change applied\n", string_expand(file_name));
             print_message(app, string);
@@ -1643,7 +1639,7 @@ CUSTOM_DOC("Parse the current buffer as a theme file and add the theme to the th
                 name = string_chop(name, 7);
             }
             save_theme(color_table, name);
-            
+
             Color_Table_Node *node = global_theme_list.last;
             if (node != 0 && string_match(node->name, name)){
                 active_color_table = node->table;

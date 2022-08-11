@@ -8,7 +8,7 @@ function void
 setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     MappingScope();
     SelectMapping(mapping);
-    
+
     SelectMap(global_id);
     Bind(keyboard_macro_start_recording , KeyCode_U, KeyCode_Control);
     Bind(keyboard_macro_finish_recording, KeyCode_U, KeyCode_Control, KeyCode_Shift);
@@ -20,7 +20,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(open_in_other,                 KeyCode_O, KeyCode_Alt);
     Bind(interactive_kill_buffer,       KeyCode_K, KeyCode_Control);
     Bind(interactive_switch_buffer,     KeyCode_I, KeyCode_Control);
-    Bind(project_go_to_root_directory,  KeyCode_H, KeyCode_Control);
     Bind(save_all_dirty_buffers,        KeyCode_S, KeyCode_Control, KeyCode_Shift);
     Bind(change_to_build_panel,         KeyCode_Period, KeyCode_Alt);
     Bind(close_build_panel,             KeyCode_Comma, KeyCode_Alt);
@@ -32,28 +31,11 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(execute_any_cli,               KeyCode_Z, KeyCode_Alt);
     Bind(execute_previous_cli,          KeyCode_Z, KeyCode_Alt, KeyCode_Shift);
     Bind(command_lister,                KeyCode_X, KeyCode_Alt);
-    Bind(project_command_lister,        KeyCode_X, KeyCode_Alt, KeyCode_Shift);
     Bind(quick_swap_buffer,             KeyCode_BackwardSlash, KeyCode_Alt);
     Bind(jump_to_last_point,            KeyCode_P, KeyCode_Control);
     Bind(list_all_functions_current_buffer_lister, KeyCode_I, KeyCode_Control, KeyCode_Shift);
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
-    Bind(project_fkey_command, KeyCode_F1);
-    Bind(project_fkey_command, KeyCode_F2);
-    Bind(project_fkey_command, KeyCode_F3);
-    Bind(project_fkey_command, KeyCode_F4);
-    Bind(project_fkey_command, KeyCode_F5);
-    Bind(project_fkey_command, KeyCode_F6);
-    Bind(project_fkey_command, KeyCode_F7);
-    Bind(project_fkey_command, KeyCode_F8);
-    Bind(project_fkey_command, KeyCode_F9);
-    Bind(project_fkey_command, KeyCode_F10);
-    Bind(project_fkey_command, KeyCode_F11);
-    Bind(project_fkey_command, KeyCode_F12);
-    Bind(project_fkey_command, KeyCode_F13);
-    Bind(project_fkey_command, KeyCode_F14);
-    Bind(project_fkey_command, KeyCode_F15);
-    Bind(project_fkey_command, KeyCode_F16);
-    
+
     SelectMap(file_id);
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);
@@ -112,7 +94,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(if_read_only_goto_position,  KeyCode_Return);
     Bind(if_read_only_goto_position_same_panel, KeyCode_Return, KeyCode_Shift);
     Bind(view_jump_list_with_lister,  KeyCode_Period, KeyCode_Control, KeyCode_Shift);
-    
+
     SelectMap(code_id);
     ParentMap(file_id);
     Bind(move_left_alpha_numeric_boundary,           KeyCode_Left, KeyCode_Control);
