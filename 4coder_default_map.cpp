@@ -129,6 +129,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(jump_to_hiperlink_at_cursor, KeyCode_Q, KeyCode_Control);
     Bind(jump_to_hiperlink_at_cursor_other_panel, KeyCode_Q, KeyCode_Control, KeyCode_Shift);
     BindMouse(jump_to_hiperlink_at_cursor, MouseCode_Left, KeyCode_Control);
+    BindMouse(jump_to_hiperlink_at_cursor_other_panel, MouseCode_Left, KeyCode_Control, KeyCode_Shift);
 }
 
 // BOTTOM

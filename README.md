@@ -54,7 +54,10 @@ In this readme you will find:
 
 # Todo
 
-* Improve hiperlink functionality as much as possible, stuff you can click should be highlighted underlined and satisfying to click, all clickable stuff in source files should be emphesized, as much stuff should be clickable
+* Improve hiperlink functionality as much as possible, stuff you can click should be highlighted underlined and satisfying to click, all clickable stuff in source files should be emphesized, as much stuff should be clickable.
+   * Control Shift other panel
+   * Color includes
+   * Color file links
 * Figure out how virtual whitespace, code indexer work
 * Fix raw strings, comments(not being able to indent)
 * Fix indentation problems outside of the editor(Convert tabs to spaces), fix indentation pass on save

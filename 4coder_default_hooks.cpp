@@ -326,7 +326,7 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
 
                 // Outline when token is clickable, avoid a case where we outline a definition
                 bool is_definition_of_note = (note->file->buffer == buffer && range_contains(range, note->pos.min));
-                if(!is_definition_of_note){
+                if(!is_definition_of_note && is_active_view){
                     // Draw outline below clickable char
                     Rect_f32 range_start_rect = text_layout_character_on_screen(app, text_layout_id, range.min);
                     Rect_f32 range_end_rect = text_layout_character_on_screen(app, text_layout_id, range.max-1);
