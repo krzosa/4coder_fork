@@ -55,6 +55,8 @@ In this readme you will find:
 # Todo
 
 * Figure out how virtual whitespace, code indexer work
+* Fix raw strings, comments(not being able to indent)
+* Fix indentation problems outside of the editor(Convert tabs to spaces), fix indentation pass on save
 * Delete what can be deleted simplify what can be simplified
 * See if we can replace config format and combine it with replacement of project files
 * Combine api stuff with metadata stuff, Combine all code generators, or delete them
