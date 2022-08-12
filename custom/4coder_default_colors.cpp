@@ -118,11 +118,12 @@ set_default_color_scheme(Application_Links *app){
     u32 caret=0xffDCDCDC;
     u32 foreground=0xffDCDCDC;
     u32 invisibles=0xFFFFFF40;
-    u32 lineHighlight=0xFF0F0F0F;
+    u32 line_highlight=0xFF0F0F0F;
     u32 selection=0xFF264F78;
     u32 comment=0xFF608B4E;
     u32 variable=0xFFDCDCDC;
     u32 keyword=0xFF569CD6;
+    u32 test=0xFFd6c556;
 
     u32 vs_bar=0xFF0E70C0;
     u32 border=0xFF333337;
@@ -149,7 +150,7 @@ set_default_color_scheme(Application_Links *app){
     default_color_table.arrays[defcolor_list_item_active] = make_colors(arena, 0x33ffffff, 0x33ffffff);
     default_color_table.arrays[defcolor_cursor] = make_colors(arena, caret, caret);
     default_color_table.arrays[defcolor_at_cursor] = make_colors(arena, 0xff000000);
-    default_color_table.arrays[defcolor_highlight_cursor_line] = make_colors(arena, lineHighlight);
+    default_color_table.arrays[defcolor_highlight_cursor_line] = make_colors(arena, line_highlight);
     default_color_table.arrays[defcolor_highlight] = make_colors(arena, 0x11264F78);
     default_color_table.arrays[defcolor_at_highlight] = make_colors(arena, selection);
     default_color_table.arrays[defcolor_mark] = make_colors(arena, caret);
@@ -157,6 +158,9 @@ set_default_color_scheme(Application_Links *app){
     default_color_table.arrays[defcolor_comment] = make_colors(arena, comment);
     default_color_table.arrays[defcolor_comment_pop] = make_colors(arena, keyword, keyword);
     default_color_table.arrays[defcolor_keyword] = make_colors(arena, keyword);
+    default_color_table.arrays[defcolor_function] = make_colors(arena, type);
+    default_color_table.arrays[defcolor_macro] = make_colors(arena, type);
+    default_color_table.arrays[defcolor_type] = make_colors(arena, type);
     default_color_table.arrays[defcolor_str_constant] = make_colors(arena, string);
     default_color_table.arrays[defcolor_char_constant] = make_colors(arena, string);
     default_color_table.arrays[defcolor_int_constant] = make_colors(arena, number);

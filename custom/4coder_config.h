@@ -54,7 +54,7 @@ i64 debug_config_lister_roundness = 20;
 String8 debug_config_treat_as_code = string_u8_litexpr(".cpp.c.hpp.h.cc.cs.java.rs.glsl.m.mm");
 b32 debug_config_enable_virtual_whitespace = true;
 i64 debug_config_virtual_whitespace_regular_indent = 4;
-b32 debug_config_enable_code_wrapping = true;
+b32 debug_config_enable_code_wrapping = false;
 
 // This only applies to code files in code-wrapping mode.
 // Plain text and code files without virtual-whitespace will not be effected.

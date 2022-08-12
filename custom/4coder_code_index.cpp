@@ -1011,6 +1011,15 @@ layout_index__inner(Application_Links *app, Arena *arena, Buffer_ID buffer, Rang
                     lr_tb_advance_x_without_item(&pos_vars, shift);
                     goto consuming_normal_whitespace;
                 }
+                // else if(*ptr == ' '){
+                //     i64 index = layout_index_from_ptr(ptr, text.str, range.first);
+                //     Token_Pair pair = layout_token_pair(tokens_ptr, index);
+                //     if(pair.a.kind == TokenBaseKind_LiteralString || pair.b.kind == TokenBaseKind_LiteralString){
+                //         i64 index = layout_index_from_ptr(ptr, text.str, range.first);
+                //         f32 shift = layout_index_x_shift(app, &reflex, file, index, regular_indent);
+                //         lr_tb_advance_x_without_item(&pos_vars, shift);
+                //     }
+                // }
             }
 
             if (ptr == end_ptr){

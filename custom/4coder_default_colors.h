@@ -1,4 +1,4 @@
-/* 
+/*
 * Default color slots
 */
 
@@ -45,6 +45,10 @@ CUSTOM_ID(colors, defcolor_back_cycle);
 CUSTOM_ID(colors, defcolor_text_cycle);
 CUSTOM_ID(colors, defcolor_line_numbers_back);
 CUSTOM_ID(colors, defcolor_line_numbers_text);
+
+CUSTOM_ID(colors, defcolor_function);
+CUSTOM_ID(colors, defcolor_macro);
+CUSTOM_ID(colors, defcolor_type);
 
 struct Color_Table_Node{
     Color_Table_Node *next;

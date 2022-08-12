@@ -64,18 +64,6 @@ CUSTOM_DOC("Inserts whatever text was used to trigger this command.")
     write_text(app, insert);
 }
 
-CUSTOM_COMMAND_SIG(write_space)
-CUSTOM_DOC("Inserts a space.")
-{
-    write_text(app, string_u8_litexpr(" "));
-}
-
-CUSTOM_COMMAND_SIG(write_underscore)
-CUSTOM_DOC("Inserts an underscore.")
-{
-    write_text(app, string_u8_litexpr("_"));
-}
-
 CUSTOM_COMMAND_SIG(delete_char)
 CUSTOM_DOC("Deletes the character to the right of the cursor.")
 {
