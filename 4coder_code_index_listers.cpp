@@ -66,13 +66,13 @@ CUSTOM_DOC("List all definitions in the code index and jump to one chosen by the
 }
 
 function b32
-jump_to_definition_at_cursor(Application_Links *app, b32 same_panel) {
-  View_ID view = get_active_view(app, Access_Visible);
+jump_to_definition_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel) {
   b32 result = false;
 
-  if (view != 0){
+  if (active_view != 0){
     Scratch_Block scratch(app);
-    String_Const_u8 query = push_token_or_word_under_active_cursor(app, scratch);
+    Buffer_ID buffer = view_get_buffer(app, active_view, Access_Always);
+    String_Const_u8 query = push_token_or_word_under_pos(app, scratch, buffer, pos);
 
     code_index_lock();
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always);
@@ -86,9 +86,9 @@ jump_to_definition_at_cursor(Application_Links *app, b32 same_panel) {
             // @Todo: Is this ok? This way other panel inherits the jump stack
             // so alt q works, not sure if thats intuitive
             if(same_panel) {
-              point_stack_push_view_cursor(app, view);
+              point_stack_push_view_cursor(app, active_view);
             }
-            View_ID target_view = view;
+            View_ID target_view = active_view;
             if(!same_panel) {
               change_active_panel(app);
               target_view = get_active_view(app, Access_Always);
@@ -110,14 +110,11 @@ jump_to_definition_at_cursor(Application_Links *app, b32 same_panel) {
 }
 
 function b32
-jump_to_file_in_quotes_at_cursor(Application_Links *app, b32 same_panel) {
+jump_to_file_in_quotes_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel) {
   b32 result = false;
-  View_ID view = get_active_view(app, Access_ReadVisible);
-  Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
+  Buffer_ID buffer = view_get_buffer(app, active_view, Access_ReadVisible);
   if (buffer_exists(app, buffer)){
     Scratch_Block scratch(app);
-
-    i64 pos = view_get_cursor_pos(app, view);
 
     Range_i64 range = enclose_pos_inside_quotes(app, buffer, pos);
 
@@ -132,16 +129,16 @@ jump_to_file_in_quotes_at_cursor(Application_Links *app, b32 same_panel) {
 
     String_Const_u8 new_file_name = push_u8_stringf(scratch, "%.*s/%.*s", string_expand(path), string_expand(quoted_name));
     if(same_panel) {
-      point_stack_push_view_cursor(app, view);
+      point_stack_push_view_cursor(app, active_view);
     }
     else {
-      view = get_next_view_looped_primary_panels(app, view, Access_Always);
-      point_stack_push_view_cursor(app, view);
+      active_view = get_next_view_looped_primary_panels(app, active_view, Access_Always);
+      point_stack_push_view_cursor(app, active_view);
     }
-    if (view != 0){
-      if (view_open_file(app, view, new_file_name, true)){
+    if (active_view != 0){
+      if (view_open_file(app, active_view, new_file_name, true)){
         result = true;
-        view_set_active(app, view);
+        view_set_active(app, active_view);
       }
     }
   }
@@ -151,8 +148,10 @@ jump_to_file_in_quotes_at_cursor(Application_Links *app, b32 same_panel) {
 CUSTOM_UI_COMMAND_SIG(jump_to_hiperlink_at_cursor_other_panel)
 CUSTOM_DOC("Jump to the first definition in the code index matching an identifier at the cursor")
 {
-  if(!jump_to_definition_at_cursor(app, false)) {
-    if(!jump_to_file_in_quotes_at_cursor(app, false)) {
+  View_ID view = get_active_view(app, Access_ReadVisible);
+  i64 pos = view_get_cursor_pos(app, view);
+  if(!jump_to_definition_at_cursor(app, view, pos, false)) {
+    if(!jump_to_file_in_quotes_at_cursor(app, view, pos, false)) {
       goto_jump_at_cursor(app);
     }
   }
@@ -164,11 +163,14 @@ CUSTOM_DOC("Jump to the first definition in the code index matching an identifie
   User_Input in = get_current_input(app);
 
   // TODO(Krzosa): On mouse click go
+  View_ID view = get_active_view(app, Access_ReadVisible);
+  i64 pos = view_get_cursor_pos(app, view);
   if(in.event.kind == InputEventKind_MouseButton) {
+    pos = view_pos_from_xy(app, view, {(f32)in.event.mouse.p.x, (f32)in.event.mouse.p.y});
     print_message(app, string_u8_litexpr("Test"));
   }
-  if(!jump_to_definition_at_cursor(app, true)) {
-    if(!jump_to_file_in_quotes_at_cursor(app, true)) {
+  if(!jump_to_definition_at_cursor(app, view, pos, true)) {
+    if(!jump_to_file_in_quotes_at_cursor(app, view, pos, true)) {
       goto_jump_at_cursor_same_panel(app);
     }
   }
