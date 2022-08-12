@@ -299,7 +299,6 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
             draw_comment_highlights(app, buffer, text_layout_id, &token_array, pairs, ArrayCount(pairs));
         }
 
-#if 1
         // TODO(allen): Put in 4coder_draw.cpp
         // NOTE(allen): Color functions
         Scratch_Block scratch(app);
@@ -334,8 +333,14 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
 
             if(token->kind == TokenBaseKind_LiteralString){
                 if(token->sub_kind == 41){
-                    underline_token = true;
                     argb = finalize_color(defcolor_str_constant, 0);
+                    String_Const_u8 quoted_name = push_buffer_range(app, scratch, buffer, Ii64_size(token->pos+1, token->size-2));
+                    if(quoted_name.size){
+                        String_Const_u8 new_file_name = construct_relative_path_in_the_same_folder_as_buffer(app, scratch, buffer, quoted_name);
+                        if(file_exists(app, new_file_name)){
+                            underline_token = true;
+                        }
+                    }
                 }
             }
 
@@ -372,7 +377,6 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
                 draw_rectangle(app, total_range_rect, 4.f, argb);
             }
         }
-#endif
     }
     else{
         paint_text_color_fcolor(app, text_layout_id, visible_range, fcolor_id(defcolor_text_default));

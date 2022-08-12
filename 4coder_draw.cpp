@@ -482,7 +482,6 @@ function FColor
 get_token_color_cpp(Token token){
     Managed_ID color = defcolor_text_default;
     switch (token.kind){
-        default:{}
         case TokenBaseKind_Preprocessor:
         {
             color = defcolor_preproc;
@@ -507,6 +506,7 @@ get_token_color_cpp(Token token){
         {
             color = defcolor_float_constant;
         }break;
+        default:{}break;
     }
     // specifics override generals
     switch (token.sub_kind){

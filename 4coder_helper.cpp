@@ -2348,7 +2348,7 @@ get_nest_delimiter_kind(Token_Base_Kind kind, Find_Nest_Flag flags){
                 result = NestDelim_Close;
             }
         }break;
-        default:{}
+        default:{}break;
     }
     return(result);
 }
