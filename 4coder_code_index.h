@@ -24,7 +24,6 @@ enum{
     CodeIndexNest_Paren,
     CodeIndexNest_Preprocessor,
     CodeIndexNest_Statement,
-    CodeIndexNest_NamespaceScope,
 };
 
 struct Code_Index_Nest{

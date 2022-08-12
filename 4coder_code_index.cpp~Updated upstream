@@ -331,48 +331,25 @@ index_new_note(Code_Index_File *index, Generic_Parse_State *state, Range_i64 ran
 }
 
 function void
-cpp_parse_type_structure(Code_Index_File *index, Generic_Parse_State *state, Code_Index_Nest *parent, b32 parse_enum_body = false) {
+cpp_parse_type_structure(Code_Index_File *index, Generic_Parse_State *state, Code_Index_Nest *parent){
     generic_parse_inc(state);
     generic_parse_skip_soft_tokens(index, state);
-    if (state->finished) {
+    if (state->finished){
         return;
     }
     Token *token = token_it_read(&state->it);
-    if (token != 0 && token->kind == TokenBaseKind_Identifier) {
+    if (token != 0 && token->kind == TokenBaseKind_Identifier){
         generic_parse_inc(state);
         generic_parse_skip_soft_tokens(index, state);
         Token *peek = token_it_read(&state->it);
-        if (peek != 0 && peek->kind == TokenBaseKind_StatementClose || peek->kind == TokenBaseKind_ScopeOpen) {
+        if (peek != 0 && peek->kind == TokenBaseKind_StatementClose ||
+            peek->kind == TokenBaseKind_ScopeOpen){
             index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
-        }
-    }
-
-    // TODO(Krzosa): Parse enum
-    if(parse_enum_body){
-
-        Token *peek = token_it_read(&state->it);
-        for (; peek != 0;) {
-            generic_parse_inc(state);
-            generic_parse_skip_soft_tokens(index, state);
-            peek = token_it_read(&state->it);
-            if(peek->kind == TokenBaseKind_Identifier){
-                index_new_note(index, state, Ii64(peek), CodeIndexNote_Type, parent);
-                generic_parse_inc(state);
-                generic_parse_skip_soft_tokens(index, state);
-                peek = token_it_read(&state->it);
-                if(peek->sub_kind != TokenCppKind_Comma){
-                    break;
-                }
-            }
-            else {
-                break;
-            }
-        }
     }
 }
+}
 
-function void
-cpp_parse_type_def(Code_Index_File *index, Generic_Parse_State *state, Code_Index_Nest *parent) {
+function void cpp_parse_type_def(Code_Index_File *index, Generic_Parse_State *state, Code_Index_Nest *parent) {
     generic_parse_inc(state);
     generic_parse_skip_soft_tokens(index, state);
     for (;;) {
@@ -451,7 +428,7 @@ function void cpp_parse_function(Code_Index_File *index, Generic_Parse_State *st
 
 function Code_Index_Nest *generic_parse_statement(Code_Index_File *index, Generic_Parse_State *state);
 function Code_Index_Nest *generic_parse_preprocessor(Code_Index_File *index, Generic_Parse_State *state);
-function Code_Index_Nest *generic_parse_scope(Code_Index_File *index, Generic_Parse_State *state);
+function Code_Index_Nest *generic_parse_scope(Code_Index_File *index, Generic_Parse_State *state, bool is_namespace = false);
 function Code_Index_Nest *generic_parse_paren(Code_Index_File *index, Generic_Parse_State *state);
 
 function Code_Index_Nest *generic_parse_statement(Code_Index_File *index, Generic_Parse_State *state) {
@@ -569,15 +546,15 @@ function Code_Index_Nest *generic_parse_preprocessor(Code_Index_File *index, Gen
 }
 
 function Code_Index_Nest*
-generic_parse_scope(Code_Index_File *index, Generic_Parse_State *state){
+generic_parse_scope(Code_Index_File *index, Generic_Parse_State *state, bool is_namespace){
     Token *token = token_it_read(&state->it);
     Code_Index_Nest *result = push_array_zero(state->arena, Code_Index_Nest, 1);
-    result->kind = CodeIndexNest_Scope;
+    result->kind = is_namespace ? CodeIndexNest_NamespaceScope : CodeIndexNest_Scope;
     result->open = Ii64(token);
     result->close = Ii64(max_i64);
     result->file = index;
 
-    state->scope_counter += 1;
+    if(!is_namespace) state->scope_counter += 1;
 
     generic_parse_inc(state);
     for (;;){
@@ -643,7 +620,7 @@ generic_parse_scope(Code_Index_File *index, Generic_Parse_State *state){
 
     result->nest_array = code_index_nest_ptr_array_from_list(state->arena, &result->nest_list);
 
-    state->scope_counter -= 1;
+    if(!is_namespace) state->scope_counter -= 1;
 
     return(result);
 }
@@ -741,6 +718,10 @@ function b32 generic_parse_full_input_breaks(Code_Index_File *index, Generic_Par
             break;
         }
 
+        // if(token->sub_kind == TokenCppKind_PPIf){
+        //     Code_Index_Nest *nest = generic_parse_preprocessor_if(index, state);
+        //     code_index_push_nest(&index->nest_list, nest);
+        // }
         if (token->kind == TokenBaseKind_Preprocessor) {
             Code_Index_Nest *nest = generic_parse_preprocessor(index, state);
             code_index_push_nest(&index->nest_list, nest);
@@ -752,14 +733,11 @@ function b32 generic_parse_full_input_breaks(Code_Index_File *index, Generic_Par
             code_index_push_nest(&index->nest_list, nest);
         } else if (state->do_cpp_parse) {
             if (token->sub_kind == TokenCppKind_Struct || token->sub_kind == TokenCppKind_Union || token->sub_kind == TokenCppKind_Enum) {
-                cpp_parse_type_structure(index, state, 0, token->sub_kind == TokenCppKind_Enum);
+                cpp_parse_type_structure(index, state, 0);
             } else if (token->sub_kind == TokenCppKind_Namespace) {
                 // HACK(Krzosa): This sort of somehow works.
                 // We use the property that the parser skips what it doesn't
                 // understand so closing scope is just skipped.
-
-                // TODO(Krzosa): Need to decide what indentation is better
-                // TODO(Krzosa): If keep no indentation then need to fix auto_indent
                 generic_parse_inc(state);
                 generic_parse_skip_soft_tokens(index, state);
                 Token *token = token_it_read(&state->it);
@@ -1007,6 +985,15 @@ layout_index__inner(Application_Links *app, Arena *arena, Buffer_ID buffer, Rang
                     //         lr_tb_advance_x_without_item(&pos_vars, shift);
                     //     }
                 }
+                // else if(*ptr == ' '){
+                //     i64 index = layout_index_from_ptr(ptr, text.str, range.first);
+                //     Token_Pair pair = layout_token_pair(tokens_ptr, index);
+                //     if(pair.a.kind == TokenBaseKind_LiteralString || pair.b.kind == TokenBaseKind_LiteralString){
+                //         i64 index = layout_index_from_ptr(ptr, text.str, range.first);
+                //         f32 shift = layout_index_x_shift(app, &reflex, file, index, regular_indent);
+                //         lr_tb_advance_x_without_item(&pos_vars, shift);
+                //     }
+                // }
             }
 
             if (ptr == end_ptr) {
