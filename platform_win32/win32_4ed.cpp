@@ -1832,8 +1832,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
         window_rect.bottom = plat_settings.window_h;
     }
     else{
-        window_rect.right = 800;
-        window_rect.bottom = 600;
+        window_rect.right = GetSystemMetrics(SM_CXSCREEN);
+        window_rect.bottom = GetSystemMetrics(SM_CYSCREEN);
     }
     AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, false);
     i32 window_style = WS_OVERLAPPEDWINDOW;

@@ -80,9 +80,9 @@ CUSTOM_COMMAND_SIG(interactive_open);
 CUSTOM_COMMAND_SIG(interactive_open_or_new);
 CUSTOM_COMMAND_SIG(interactive_switch_buffer);
 CUSTOM_COMMAND_SIG(jump_to_definition);
+CUSTOM_COMMAND_SIG(jump_to_hiperlink_at_cursor);
+CUSTOM_COMMAND_SIG(jump_to_hiperlink_at_cursor_other_panel);
 CUSTOM_COMMAND_SIG(jump_to_last_point);
-CUSTOM_COMMAND_SIG(jump_to_thing_at_cursor);
-CUSTOM_COMMAND_SIG(jump_to_thing_at_cursor_other_panel);
 CUSTOM_COMMAND_SIG(keyboard_macro_finish_recording);
 CUSTOM_COMMAND_SIG(keyboard_macro_replay);
 CUSTOM_COMMAND_SIG(keyboard_macro_start_recording);
@@ -311,9 +311,9 @@ static Command_Metadata fcoder_metacmd_table[218] = {
 { PROC_LINKS(interactive_open_or_new, 0), true, "interactive_open_or_new", 23, "Interactively open a file out of the file system.", 49, "./4coder_lists.cpp", 18, 612 },
 { PROC_LINKS(interactive_switch_buffer, 0), true, "interactive_switch_buffer", 25, "Interactively switch to an open buffer.", 39, "./4coder_lists.cpp", 18, 511 },
 { PROC_LINKS(jump_to_definition, 0), true, "jump_to_definition", 18, "List all definitions in the code index and jump to one chosen by the user.", 74, "./4coder_code_index_listers.cpp", 31, 12 },
+{ PROC_LINKS(jump_to_hiperlink_at_cursor, 0), true, "jump_to_hiperlink_at_cursor", 27, "Jump to the first definition in the code index matching an identifier at the cursor", 83, "./4coder_code_index_listers.cpp", 31, 195 },
+{ PROC_LINKS(jump_to_hiperlink_at_cursor_other_panel, 0), true, "jump_to_hiperlink_at_cursor_other_panel", 39, "Jump to the first definition in the code index matching an identifier at the cursor", 83, "./4coder_code_index_listers.cpp", 31, 185 },
 { PROC_LINKS(jump_to_last_point, 0), false, "jump_to_last_point", 18, "Read from the top of the point stack and jump there; if already there pop the top and go to the next option", 107, "./4coder_base_commands.cpp", 26, 1340 },
-{ PROC_LINKS(jump_to_thing_at_cursor, 0), true, "jump_to_thing_at_cursor", 23, "Jump to the first definition in the code index matching an identifier at the cursor", 83, "./4coder_code_index_listers.cpp", 31, 195 },
-{ PROC_LINKS(jump_to_thing_at_cursor_other_panel, 0), true, "jump_to_thing_at_cursor_other_panel", 35, "Jump to the first definition in the code index matching an identifier at the cursor", 83, "./4coder_code_index_listers.cpp", 31, 185 },
 { PROC_LINKS(keyboard_macro_finish_recording, 0), false, "keyboard_macro_finish_recording", 31, "Stop macro recording, do nothing if macro recording is not already started", 74, "./4coder_keyboard_macro.cpp", 27, 54 },
 { PROC_LINKS(keyboard_macro_replay, 0), false, "keyboard_macro_replay", 21, "Replay the most recently recorded keyboard macro", 48, "./4coder_keyboard_macro.cpp", 27, 77 },
 { PROC_LINKS(keyboard_macro_start_recording, 0), false, "keyboard_macro_start_recording", 30, "Start macro recording, do nothing if macro recording is already started", 71, "./4coder_keyboard_macro.cpp", 27, 41 },
@@ -530,9 +530,9 @@ static i32 fcoder_metacmd_ID_interactive_open = 67;
 static i32 fcoder_metacmd_ID_interactive_open_or_new = 68;
 static i32 fcoder_metacmd_ID_interactive_switch_buffer = 69;
 static i32 fcoder_metacmd_ID_jump_to_definition = 70;
-static i32 fcoder_metacmd_ID_jump_to_last_point = 71;
-static i32 fcoder_metacmd_ID_jump_to_thing_at_cursor = 72;
-static i32 fcoder_metacmd_ID_jump_to_thing_at_cursor_other_panel = 73;
+static i32 fcoder_metacmd_ID_jump_to_hiperlink_at_cursor = 71;
+static i32 fcoder_metacmd_ID_jump_to_hiperlink_at_cursor_other_panel = 72;
+static i32 fcoder_metacmd_ID_jump_to_last_point = 73;
 static i32 fcoder_metacmd_ID_keyboard_macro_finish_recording = 74;
 static i32 fcoder_metacmd_ID_keyboard_macro_replay = 75;
 static i32 fcoder_metacmd_ID_keyboard_macro_start_recording = 76;

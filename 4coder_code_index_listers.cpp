@@ -182,7 +182,7 @@ CUSTOM_DOC("Jump to the first definition in the code index matching an identifie
 }
 #endif
 
-CUSTOM_UI_COMMAND_SIG(jump_to_thing_at_cursor_other_panel)
+CUSTOM_UI_COMMAND_SIG(jump_to_hiperlink_at_cursor_other_panel)
 CUSTOM_DOC("Jump to the first definition in the code index matching an identifier at the cursor")
 {
   if(!jump_to_definition_at_cursor(app, false)) {
@@ -192,7 +192,7 @@ CUSTOM_DOC("Jump to the first definition in the code index matching an identifie
   }
 }
 
-CUSTOM_UI_COMMAND_SIG(jump_to_thing_at_cursor)
+CUSTOM_UI_COMMAND_SIG(jump_to_hiperlink_at_cursor)
 CUSTOM_DOC("Jump to the first definition in the code index matching an identifier at the cursor")
 {
   if(!jump_to_definition_at_cursor(app, true)) {
