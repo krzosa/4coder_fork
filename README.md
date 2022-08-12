@@ -54,6 +54,7 @@ In this readme you will find:
 
 # Todo
 
+* Improve hiperlink functionality as much as possible, stuff you can click should be highlighted underlined and satisfying to click, all clickable stuff in source files should be emphesized, as much stuff should be clickable
 * Figure out how virtual whitespace, code indexer work
 * Fix raw strings, comments(not being able to indent)
 * Fix indentation problems outside of the editor(Convert tabs to spaces), fix indentation pass on save
@@ -79,7 +80,6 @@ In this readme you will find:
 * Should notify you with a visible messages when identifier is not registered, syntax is invalid, type is invalid
 * Editor should work without config files and should have default values that adhere to what people expect
 * I have an idea for API, we have a file with global variables, those variables are then replaced by stuff from the config file. This way we don't have to call any strange functions, should be easy to modify the metadata generator to do something like this(it should make a function that loads variables from config file). Something like the themes stuff.
-
 
 # License
 

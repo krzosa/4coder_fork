@@ -337,9 +337,12 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
                     total_range_rect.x1 = Max(range_start_rect.x1, range_end_rect.x1);
                     total_range_rect.y1 = Max(range_start_rect.y1, range_end_rect.y1);
 
+                    Mouse_State mouse_state = get_mouse_state(app);
+                    i64 mouse_pos = view_pos_from_xy(app, active_view, {(f32)mouse_state.x, (f32)mouse_state.y});
 
                     f32 scale = 0.5f;
-                    if(range_contains(range, cursor_pos)) scale = 3.f;
+                    if(range_contains(range, cursor_pos) || range_contains(range, mouse_pos))
+                        scale = 3.f;
                     total_range_rect.y0 = total_range_rect.y1 - scale;
                     total_range_rect.y1 += scale;
 

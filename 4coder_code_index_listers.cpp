@@ -148,40 +148,6 @@ jump_to_file_in_quotes_at_cursor(Application_Links *app, b32 same_panel) {
   return result;
 }
 
-#if 0
-// Bind(jump_to_definition_at_cursor, KeyCode_W, KeyCode_Control);
-// Bind(jump_to_definition_at_cursor, KeyCode_W, KeyCode_Command);
-CUSTOM_UI_COMMAND_SIG(jump_to_definition_at_cursor)
-CUSTOM_DOC("Jump to the first definition in the code index matching an identifier at the cursor")
-{
-    View_ID view = get_active_view(app, Access_Visible);
-
-    if (view != 0){
-        Scratch_Block scratch(app);
-        String_Const_u8 query = push_token_or_word_under_active_cursor(app, scratch);
-
-        code_index_lock();
-        for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always);
-             buffer != 0;
-             buffer = get_buffer_next(app, buffer, Access_Always)){
-            Code_Index_File *file = code_index_get_file(buffer);
-            if (file != 0){
-                for (i32 i = 0; i < file->note_array.count; i += 1){
-                    Code_Index_Note *note = file->note_array.ptrs[i];
-                    if (string_match(note->text, query)){
-                        point_stack_push_view_cursor(app, view);
-                        jump_to_location(app, view, buffer, note->pos.first);
-                        goto done;
-                    }
-                }
-            }
-        }
-        done:;
-        code_index_unlock();
-    }
-}
-#endif
-
 CUSTOM_UI_COMMAND_SIG(jump_to_hiperlink_at_cursor_other_panel)
 CUSTOM_DOC("Jump to the first definition in the code index matching an identifier at the cursor")
 {
@@ -195,6 +161,12 @@ CUSTOM_DOC("Jump to the first definition in the code index matching an identifie
 CUSTOM_UI_COMMAND_SIG(jump_to_hiperlink_at_cursor)
 CUSTOM_DOC("Jump to the first definition in the code index matching an identifier at the cursor")
 {
+  User_Input in = get_current_input(app);
+
+  // TODO(Krzosa): On mouse click go
+  if(in.event.kind == InputEventKind_MouseButton) {
+    print_message(app, string_u8_litexpr("Test"));
+  }
   if(!jump_to_definition_at_cursor(app, true)) {
     if(!jump_to_file_in_quotes_at_cursor(app, true)) {
       goto_jump_at_cursor_same_panel(app);
