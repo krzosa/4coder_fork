@@ -90,9 +90,21 @@ CUSTOM_DOC("Deletes the character to the left of the cursor.")
         i64 end = view_get_cursor_pos(app, view);
         i64 buffer_size = buffer_get_size(app, buffer);
         if (0 < end && end <= buffer_size){
-            Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(end));
-            i64 character = view_relative_character_from_pos(app, view, cursor.line, cursor.pos);
-            i64 start = view_pos_from_relative_character(app, view, cursor.line, character - 1);
+
+            Token_Array tokens = get_token_array_from_buffer(app, buffer);
+            i64 index = token_index_from_pos(&tokens, end);
+            Assert(index < tokens.max);
+            Assert(index >= 0);
+            Token *token = tokens.tokens + index;
+            i64 start = 0;
+            if(token->kind == TokenBaseKind_LiteralString || token->kind == TokenBaseKind_Comment){
+                start = end - 1;
+            } else{
+                Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(end));
+                i64 character = view_relative_character_from_pos(app, view, cursor.line, cursor.pos);
+                start = view_pos_from_relative_character(app, view, cursor.line, character - 1);
+            }
+
             if (buffer_replace_range(app, buffer, Ii64(start, end), string_u8_empty)){
                 view_set_cursor_and_preferred_x(app, view, seek_pos(start));
             }
