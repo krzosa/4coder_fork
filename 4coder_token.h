@@ -25,7 +25,7 @@ enum{
     TokenBaseKind_ParentheticalOpen = 13,
     TokenBaseKind_ParentheticalClose = 14,
     TokenBaseKind_StatementClose = 15,
-    
+
     TokenBaseKind_COUNT = 16,
 };
 
