@@ -482,6 +482,7 @@ function FColor
 get_token_color_cpp(Token token){
     Managed_ID color = defcolor_text_default;
     switch (token.kind){
+        default:{}
         case TokenBaseKind_Preprocessor:
         {
             color = defcolor_preproc;

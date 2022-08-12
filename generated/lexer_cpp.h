@@ -1,4 +1,3 @@
-#pragma once
 #if !defined(FCODER_LEX_GEN_HAND_WRITTEN_TYPES)
 #define FCODER_LEX_GEN_HAND_WRITTEN_TYPES
 

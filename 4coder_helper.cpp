@@ -645,7 +645,7 @@ boundary_token(Application_Links *app, Buffer_ID buffer, Side side, Scan_Directi
                     }
                 }
             }break;
-            
+
             case Scan_Backward:
             {
                 result = 0;
@@ -772,17 +772,17 @@ seek_string(Application_Links *app, Buffer_ID buffer_id, i64 pos, i64 end, i64 m
         {
             seek_string_forward(app, buffer_id, pos, end, str, result);
         }break;
-        
+
         case BufferSeekString_Backward:
         {
             seek_string_backward(app, buffer_id, pos, min, str, result);
         }break;
-        
+
         case BufferSeekString_CaseInsensitive:
         {
             seek_string_insensitive_forward(app, buffer_id, pos, end, str, result);
         }break;
-        
+
         case BufferSeekString_Backward|BufferSeekString_CaseInsensitive:
         {
             seek_string_insensitive_backward(app, buffer_id, pos, min, str, result);
@@ -1248,12 +1248,12 @@ function Indent_Info
 get_indent_info_range(Application_Links *app, Buffer_ID buffer, Range_i64 range, i32 tab_width){
     Scratch_Block scratch(app);
     String_Const_u8 s = push_buffer_range(app, scratch, buffer, range);
-    
+
     Indent_Info info = {};
     info.first_char_pos = range.end;
     info.is_blank = true;
     info.all_space = true;
-    
+
     for (u64 i = 0; i < s.size; i += 1){
         u8 c = s.str[i];
         if (!character_is_whitespace(c)){
@@ -1272,7 +1272,7 @@ get_indent_info_range(Application_Links *app, Buffer_ID buffer, Range_i64 range,
             info.indent_pos += tab_width;
         }
     }
-    
+
     return(info);
 }
 
@@ -1329,17 +1329,17 @@ swap_lines(Application_Links *app, Buffer_ID buffer, i64 line_1, i64 line_2){
     if (1 <= line_1 && line_2 <= line_count){
         Range_i64 range_1 = get_line_pos_range(app, buffer, line_1);
         Range_i64 range_2 = get_line_pos_range(app, buffer, line_2);
-        
+
         Scratch_Block scratch(app);
-        
+
         String_Const_u8 text_1 = push_buffer_range(app, scratch, buffer, range_1);
         String_Const_u8 text_2 = push_buffer_range(app, scratch, buffer, range_2);
-        
+
         History_Group group = history_group_begin(app, buffer);
         buffer_replace_range(app, buffer, range_2, text_1);
         buffer_replace_range(app, buffer, range_1, text_2);
         history_group_end(group);
-        
+
         i64 shift = replace_range_shift(range_1, text_2.size);
         result.min = range_1.min;
         result.max = range_2.min + shift;
@@ -1505,13 +1505,13 @@ query_user_general(Application_Links *app, Query_Bar *bar, b32 force_number, Str
     if (start_query_bar(app, bar, 0) == 0){
         return(false);
     }
-    
+
     if (init_string.size > 0){
         String_u8 string = Su8(bar->string.str, bar->string.size, bar->string_capacity);
         string_append(&string, init_string);
         bar->string.size = string.string.size;
     }
-    
+
     b32 success = true;
     for (;;){
         User_Input in = get_next_input(app, EventPropertyGroup_Any,
@@ -1520,7 +1520,7 @@ query_user_general(Application_Links *app, Query_Bar *bar, b32 force_number, Str
             success = false;
             break;
         }
-        
+
         Scratch_Block scratch(app);
         b32 good_insert = false;
         String_Const_u8 insert_string = to_writable(&in);
@@ -1540,7 +1540,7 @@ query_user_general(Application_Links *app, Query_Bar *bar, b32 force_number, Str
                 good_insert = true;
             }
         }
-        
+
         if (in.event.kind == InputEventKind_KeyStroke &&
             (in.event.key.code == KeyCode_Return || in.event.key.code == KeyCode_Tab)){
             break;
@@ -1576,7 +1576,7 @@ query_user_general(Application_Links *app, Query_Bar *bar, b32 force_number, Str
             }
         }
     }
-    
+
     return(success);
 }
 
@@ -1668,23 +1668,23 @@ function void
 place_begin_and_end_on_own_lines(Application_Links *app, char *begin, char *end){
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    
+
     Range_i64 range = get_view_range(app, view);
     Range_i64 lines = get_line_range_from_pos_range(app, buffer, range);
     range = get_pos_range_from_line_range(app, buffer, lines);
-    
+
     Scratch_Block scratch(app);
-    
+
     b32 min_line_blank = line_is_valid_and_blank(app, buffer, lines.min);
     b32 max_line_blank = line_is_valid_and_blank(app, buffer, lines.max);
-    
+
     if ((lines.min < lines.max) || (!min_line_blank)){
         String_Const_u8 begin_str = {};
         String_Const_u8 end_str = {};
-        
+
         i64 min_adjustment = 0;
         i64 max_adjustment = 0;
-        
+
         if (min_line_blank){
             begin_str = push_u8_stringf(scratch, "\n%s", begin);
             min_adjustment += 1;
@@ -1699,15 +1699,15 @@ place_begin_and_end_on_own_lines(Application_Links *app, char *begin, char *end)
             end_str = push_u8_stringf(scratch, "\n%s", end);
             max_adjustment += 1;
         }
-        
+
         max_adjustment += begin_str.size;
         Range_i64 new_pos = Ii64(range.min + min_adjustment, range.max + max_adjustment);
-        
+
         History_Group group = history_group_begin(app, buffer);
         buffer_replace_range(app, buffer, Ii64(range.min), begin_str);
         buffer_replace_range(app, buffer, Ii64(range.max + begin_str.size), end_str);
         history_group_end(group);
-        
+
         set_view_range(app, view, new_pos);
     }
     else{
@@ -1833,7 +1833,7 @@ view_disable_highlight_range(Application_Links *app, View_ID view){
 function void
 view_set_highlight_range(Application_Links *app, View_ID view, Range_i64 range){
     view_disable_highlight_range(app, view);
-    
+
     Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
     Managed_Scope scope = view_get_managed_scope(app, view);
     Managed_Object *highlight = scope_attachment(app, scope, view_highlight_range, Managed_Object);
@@ -1853,7 +1853,7 @@ view_look_at_region(Application_Links *app, View_ID view, i64 major_pos, i64 min
     if (major_pos == range.max){
         bottom_major = true;
     }
-    
+
     Buffer_Cursor top = view_compute_cursor(app, view, seek_pos(range.min));
     if (top.line > 0){
         Buffer_Cursor bottom = view_compute_cursor(app, view, seek_pos(range.max));
@@ -1862,16 +1862,16 @@ view_look_at_region(Application_Links *app, View_ID view, i64 major_pos, i64 min
             f32 view_height = rect_height(region);
             f32 skirt_height = view_height*.1f;
             Range_f32 acceptable_y = If32(skirt_height, view_height*.9f);
-            
+
             f32 target_height = view_line_y_difference(app, view, bottom.line + 1, top.line);
-            
+
             f32 line_height = get_view_line_height(app, view);
             if (target_height + 2*line_height > view_height){
                 i64 major_line = bottom.line;
                 if (range.min == major_pos){
                     major_line = top.line;
                 }
-                
+
                 Buffer_Scroll scroll = view_get_buffer_scroll(app, view);
                 scroll.target.line_number = major_line;
                 scroll.target.pixel_shift.y = -skirt_height;
@@ -2348,6 +2348,7 @@ get_nest_delimiter_kind(Token_Base_Kind kind, Find_Nest_Flag flags){
                 result = NestDelim_Close;
             }
         }break;
+        default:{}
     }
     return(result);
 }
@@ -2357,7 +2358,7 @@ find_nest_side(Application_Links *app, Buffer_ID buffer, i64 pos,
                Find_Nest_Flag flags, Scan_Direction scan, Nest_Delimiter_Kind delim,
                Range_i64 *out){
     b32 result = false;
-    
+
     b32 balanced = HasFlag(flags, FindNest_Balanced);
     if (balanced){
         if ((delim == NestDelim_Open && scan == Scan_Forward) ||
@@ -2365,7 +2366,7 @@ find_nest_side(Application_Links *app, Buffer_ID buffer, i64 pos,
             balanced = false;
         }
     }
-    
+
     Managed_Scope scope = buffer_get_managed_scope(app, buffer);
     Token_Array *tokens = scope_attachment(app, scope, attachment_tokens, Token_Array);
     if (tokens != 0 && tokens->count > 0){
@@ -2374,17 +2375,17 @@ find_nest_side(Application_Links *app, Buffer_ID buffer, i64 pos,
         for (;;){
             Token *token = token_it_read(&it);
             Nest_Delimiter_Kind token_delim = get_nest_delimiter_kind(token->kind, flags);
-            
+
             if (level == 0 && token_delim == delim){
                 *out = Ii64_size(token->pos, token->size);
                 result = true;
                 break;
             }
-            
+
             if (balanced && token_delim != NestDelim_None){
                 level += (token_delim == delim)?-1:1;
             }
-            
+
             b32 good = false;
             if (scan == Scan_Forward){
                 good = token_it_inc(&it);
@@ -2397,7 +2398,7 @@ find_nest_side(Application_Links *app, Buffer_ID buffer, i64 pos,
             }
         }
     }
-    
+
     return(result);
 }
 
@@ -2476,7 +2477,7 @@ set_buffer_system_command(Application_Links *app, Child_Process_ID process, Buff
         clear_buffer(app, buffer);
         if (HasFlag(flags, CLI_SendEndSignal)){
             buffer_send_end_signal(app, buffer);
-            
+
             Buffer_Hook_Function *begin_buffer = (Buffer_Hook_Function*)get_custom_hook(app, HookID_BeginBuffer);
             if (begin_buffer != 0){
                 begin_buffer(app, buffer);

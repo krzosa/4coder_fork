@@ -81,6 +81,7 @@ find_anchor_token(Application_Links *app, Buffer_ID buffer, Token_Array *tokens,
                     result = token;
                 }
                 switch (token->kind){
+                    default:{}
                     case TokenBaseKind_ScopeOpen:
                     {
                         scope_counter += 1;
@@ -133,6 +134,7 @@ indent__unfinished_statement(Token *token, Nest *current_nest){
     if (current_nest != 0 && current_nest->kind == TokenBaseKind_ScopeOpen){
         result = true;
         switch (token->kind){
+            default:{}
             case TokenBaseKind_ScopeOpen:
             case TokenBaseKind_ScopeClose:
             case TokenBaseKind_StatementClose:
@@ -219,6 +221,7 @@ get_indentation_array(Application_Links *app, Arena *arena, Buffer_ID buffer, Ra
             }
             else{
                 switch (token->kind){
+                    default:{}
                     case TokenBaseKind_ScopeOpen:
                     {
                         Nest *new_nest = indent__new_nest(arena, &nest_alloc);

@@ -416,6 +416,18 @@ jump_to_definition_at_cursor(Application_Links *app, View_ID active_view, i64 po
   return result;
 }
 
+function String_Const_u8
+construct_relative_path_in_the_same_folder_as_buffer(Application_Links *app, Arena *scratch, Buffer_ID buffer, String_Const_u8 relative_path){
+    String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer);
+    String_Const_u8 path = string_remove_last_folder(file_name);
+    if (character_is_slash(string_get_character(path, path.size - 1))){
+      path = string_chop(path, 1);
+    }
+    String_Const_u8 new_file_name = push_u8_stringf(scratch, "%.*s/%.*s", string_expand(path), string_expand(relative_path));
+    return new_file_name;
+}
+
+
 function b32
 jump_to_file_in_quotes_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel) {
   b32 result = false;
@@ -426,15 +438,9 @@ jump_to_file_in_quotes_at_cursor(Application_Links *app, View_ID active_view, i6
     Range_i64 range = enclose_pos_inside_quotes(app, buffer, pos);
 
     String_Const_u8 quoted_name = push_buffer_range(app, scratch, buffer, range);
+    String_Const_u8 new_file_name = construct_relative_path_in_the_same_folder_as_buffer(app, scratch, buffer, quoted_name);
 
-    String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer);
-    String_Const_u8 path = string_remove_last_folder(file_name);
-
-    if (character_is_slash(string_get_character(path, path.size - 1))){
-      path = string_chop(path, 1);
-    }
-
-    String_Const_u8 new_file_name = push_u8_stringf(scratch, "%.*s/%.*s", string_expand(path), string_expand(quoted_name));
+    // Save to history so we can go back
     if(same_panel) {
       point_stack_push_view_cursor(app, active_view);
     }
@@ -442,6 +448,8 @@ jump_to_file_in_quotes_at_cursor(Application_Links *app, View_ID active_view, i6
       active_view = get_next_view_looped_primary_panels(app, active_view, Access_Always);
       point_stack_push_view_cursor(app, active_view);
     }
+
+    // Jump to the file
     if (active_view != 0){
       if (view_open_file(app, active_view, new_file_name, true)){
         result = true;

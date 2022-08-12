@@ -7,8 +7,7 @@
 #if !defined(FCODER_TOKEN_H)
 #define FCODER_TOKEN_H
 
-typedef i16 Token_Base_Kind;
-enum{
+enum Token_Base_Kind{
     TokenBaseKind_EOF = 0,
     TokenBaseKind_Whitespace = 1,
     TokenBaseKind_LexError = 2,
