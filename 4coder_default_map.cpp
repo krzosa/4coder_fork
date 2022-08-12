@@ -91,9 +91,11 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(undo,                        KeyCode_Z, KeyCode_Control);
     Bind(view_buffer_other_panel,     KeyCode_1, KeyCode_Control);
     Bind(swap_panels,                 KeyCode_2, KeyCode_Control);
-    Bind(if_read_only_goto_position,  KeyCode_Return);
-    Bind(if_read_only_goto_position_same_panel, KeyCode_Return, KeyCode_Shift);
     Bind(view_jump_list_with_lister,  KeyCode_Period, KeyCode_Control, KeyCode_Shift);
+    Bind(jump_to_hiperlink_at_cursor, KeyCode_Q, KeyCode_Control);
+    Bind(jump_to_hiperlink_at_cursor_other_panel, KeyCode_Q, KeyCode_Control, KeyCode_Shift);
+    BindMouse(jump_to_hiperlink_at_cursor, MouseCode_Left, KeyCode_Control);
+    BindMouse(jump_to_hiperlink_at_cursor_other_panel, MouseCode_Left, KeyCode_Control, KeyCode_Shift);
 
     SelectMap(code_id);
     ParentMap(file_id);
@@ -123,13 +125,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(place_in_scope,             KeyCode_ForwardSlash, KeyCode_Alt);
     Bind(delete_current_scope,       KeyCode_Minus, KeyCode_Alt);
     Bind(if0_off,                    KeyCode_I, KeyCode_Alt);
-    Bind(open_file_in_quotes,        KeyCode_1, KeyCode_Alt);
     Bind(open_matching_file_cpp,     KeyCode_2, KeyCode_Alt);
     Bind(write_zero_struct,          KeyCode_0, KeyCode_Control);
-    Bind(jump_to_hiperlink_at_cursor, KeyCode_Q, KeyCode_Control);
-    Bind(jump_to_hiperlink_at_cursor_other_panel, KeyCode_Q, KeyCode_Control, KeyCode_Shift);
-    BindMouse(jump_to_hiperlink_at_cursor, MouseCode_Left, KeyCode_Control);
-    BindMouse(jump_to_hiperlink_at_cursor_other_panel, MouseCode_Left, KeyCode_Control, KeyCode_Shift);
 }
 
 // BOTTOM

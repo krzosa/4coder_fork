@@ -92,8 +92,9 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Bind(undo,                        KeyCode_Z, KeyCode_Command);
     Bind(view_buffer_other_panel,     KeyCode_1, KeyCode_Command);
     Bind(swap_panels,                 KeyCode_2, KeyCode_Command);
-    Bind(if_read_only_goto_position,  KeyCode_Return);
-    Bind(if_read_only_goto_position_same_panel, KeyCode_Return, KeyCode_Shift);
+    // TODO(Krzosa): Remove?
+    // Bind(if_read_only_goto_position,  KeyCode_Return);
+    // Bind(if_read_only_goto_position_same_panel, KeyCode_Return, KeyCode_Shift);
     Bind(view_jump_list_with_lister,  KeyCode_Period, KeyCode_Command, KeyCode_Shift);
 
     SelectMap(code_id);
@@ -123,7 +124,6 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Bind(place_in_scope,             KeyCode_ForwardSlash, KeyCode_Control);
     Bind(delete_current_scope,       KeyCode_Minus, KeyCode_Control);
     Bind(if0_off,                    KeyCode_I, KeyCode_Control);
-    Bind(open_file_in_quotes,        KeyCode_1, KeyCode_Control);
     Bind(open_matching_file_cpp,     KeyCode_2, KeyCode_Control);
     Bind(write_zero_struct,          KeyCode_0, KeyCode_Command);
 }

@@ -345,16 +345,13 @@ get_index_exact_from_list(Application_Links *app, Marker_List *list, i64 line){
     return(result);
 }
 
-CUSTOM_COMMAND_SIG(goto_jump_at_cursor)
-CUSTOM_DOC("If the cursor is found to be on a jump location, parses the jump location and brings up the file and position in another view and changes the active panel to the view containing the jump.")
-{
+// CUSTOM_COMMAND_SIG(goto_jump_at_cursor)
+// CUSTOM_DOC("If the cursor is found to be on a jump location, parses the jump location and brings up the file and position in another view and changes the active panel to the view containing the jump.")
+function void
+jump_to_jump_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel){
     Heap *heap = &global_heap;
-
-    View_ID view = get_active_view(app, Access_ReadVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
+    Buffer_ID buffer = view_get_buffer(app, active_view, Access_ReadVisible);
     Marker_List *list = get_or_make_list_for_buffer(app, heap, buffer);
-
-    i64 pos = view_get_cursor_pos(app, view);
     Buffer_Cursor cursor = buffer_compute_cursor(app, buffer, seek_pos(pos));
 
     i32 list_index = get_index_exact_from_list(app, list, cursor.line);
@@ -363,40 +360,17 @@ CUSTOM_DOC("If the cursor is found to be on a jump location, parses the jump loc
         ID_Pos_Jump_Location location = {};
         if (get_jump_from_list(app, list, list_index, &location)){
             if (get_jump_buffer(app, &buffer, &location)){
-                change_active_panel(app);
-                View_ID target_view = get_active_view(app, Access_Always);
-                switch_to_existing_view(app, target_view, buffer);
+                View_ID target_view = active_view;
+                if(!same_panel){
+                    change_active_panel(app);
+                    target_view = get_active_view(app, Access_Always);
+                    switch_to_existing_view(app, target_view, buffer);
+                }
                 jump_to_location(app, target_view, buffer, location);
             }
         }
     }
 }
-
-CUSTOM_COMMAND_SIG(goto_jump_at_cursor_same_panel)
-CUSTOM_DOC("If the cursor is found to be on a jump location, parses the jump location and brings up the file and position in this view, losing the compilation output or jump list.")
-{
-    Heap *heap = &global_heap;
-
-    View_ID view = get_active_view(app, Access_ReadVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
-
-    Marker_List *list = get_or_make_list_for_buffer(app, heap, buffer);
-
-    i64 pos = view_get_cursor_pos(app, view);
-    Buffer_Cursor cursor = buffer_compute_cursor(app, buffer, seek_pos(pos));
-
-    i32 list_index = get_index_exact_from_list(app, list, cursor.line);
-
-    if (list_index >= 0){
-        ID_Pos_Jump_Location location = {};
-        if (get_jump_from_list(app, list, list_index, &location)){
-            if (get_jump_buffer(app, &buffer, &location)){
-                jump_to_location(app, view, buffer, location);
-            }
-        }
-    }
-}
-
 
 function b32
 jump_to_definition_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel) {
@@ -495,7 +469,7 @@ CUSTOM_DOC("Jump to the first definition in the code index matching an identifie
   get_active_view_and_cursor_pos_or_mouse_pos_for_command(app, &view, &pos);
   if(!jump_to_definition_at_cursor(app, view, pos, false)) {
     if(!jump_to_file_in_quotes_at_cursor(app, view, pos, false)) {
-      goto_jump_at_cursor(app);
+      jump_to_jump_at_cursor(app, view, pos, true);
     }
   }
 }
@@ -507,7 +481,7 @@ CUSTOM_DOC("Jump to the first definition in the code index matching an identifie
   get_active_view_and_cursor_pos_or_mouse_pos_for_command(app, &view, &pos);
   if(!jump_to_definition_at_cursor(app, view, pos, true)) {
     if(!jump_to_file_in_quotes_at_cursor(app, view, pos, true)) {
-      goto_jump_at_cursor_same_panel(app);
+      jump_to_jump_at_cursor(app, view, pos, true);
     }
   }
 }
@@ -669,44 +643,6 @@ CUSTOM_DOC("If a buffer containing jump locations has been locked in, goes to th
                 jump_to_location(app, jump_state.view, buffer, location);
             }
         }
-    }
-}
-
-//
-// Insert Newline or Tigger Jump on Read Only Buffer
-//
-
-CUSTOM_COMMAND_SIG(if_read_only_goto_position)
-CUSTOM_DOC("If the buffer in the active view is writable, inserts a character, otherwise performs goto_jump_at_cursor.")
-{
-    View_ID view = get_active_view(app, Access_ReadVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    if (buffer == 0){
-        buffer = view_get_buffer(app, view, Access_ReadVisible);
-        if (buffer != 0){
-            goto_jump_at_cursor(app);
-            lock_jump_buffer(app, buffer);
-        }
-    }
-    else{
-        leave_current_input_unhandled(app);
-    }
-}
-
-CUSTOM_COMMAND_SIG(if_read_only_goto_position_same_panel)
-CUSTOM_DOC("If the buffer in the active view is writable, inserts a character, otherwise performs goto_jump_at_cursor_same_panel.")
-{
-    View_ID view = get_active_view(app, Access_ReadVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    if (buffer == 0){
-        buffer = view_get_buffer(app, view, Access_ReadVisible);
-        if (buffer != 0){
-            goto_jump_at_cursor_same_panel(app);
-            lock_jump_buffer(app, buffer);
-        }
-    }
-    else{
-        leave_current_input_unhandled(app);
     }
 }
 

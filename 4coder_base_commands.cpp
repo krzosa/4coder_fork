@@ -1577,38 +1577,6 @@ CUSTOM_DOC("Delete the line the on which the cursor sits.")
 
 ////////////////////////////////
 
-CUSTOM_COMMAND_SIG(open_file_in_quotes)
-CUSTOM_DOC("Reads a filename from surrounding '\"' characters and attempts to open the corresponding file.")
-{
-    View_ID view = get_active_view(app, Access_ReadVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
-    if (buffer_exists(app, buffer)){
-        Scratch_Block scratch(app);
-
-        i64 pos = view_get_cursor_pos(app, view);
-
-        Range_i64 range = enclose_pos_inside_quotes(app, buffer, pos);
-
-        String_Const_u8 quoted_name = push_buffer_range(app, scratch, buffer, range);
-
-        String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer);
-        String_Const_u8 path = string_remove_last_folder(file_name);
-
-        if (character_is_slash(string_get_character(path, path.size - 1))){
-            path = string_chop(path, 1);
-        }
-
-        String_Const_u8 new_file_name = push_u8_stringf(scratch, "%.*s/%.*s", string_expand(path), string_expand(quoted_name));
-
-        view = get_next_view_looped_primary_panels(app, view, Access_Always);
-        if (view != 0){
-            if (view_open_file(app, view, new_file_name, true)){
-                view_set_active(app, view);
-            }
-        }
-    }
-}
-
 function b32
 get_cpp_matching_file(Application_Links *app, Buffer_ID buffer, Buffer_ID *buffer_out){
     b32 result = false;
