@@ -36,6 +36,9 @@ b32 debug_config_enable_output_wrapping = false;
 b32 debug_config_highlight_line_at_cursor = true;
 b32 debug_config_enable_undo_fade_out = true;
 
+
+f32 debug_config_background_margin_width = 0.f;
+
 // cursor_roundess is a value [0,50] setting the radius of
 // the cursor and mark's roundness as a percentage of their width
 // (At 50 the left and right corners will be so round they form a semi-circle,

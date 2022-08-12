@@ -181,7 +181,7 @@ default_buffer_region(Application_Links *app, View_ID view_id, Rect_f32 region){
     f32 digit_advance = metrics.decimal_digit_advance;
 
     // NOTE(allen): margins
-    region = rect_inner(region, 3.f);
+    region = rect_inner(region, debug_config_background_margin_width);
 
     // NOTE(allen): file bar
     b64 showing_file_bar = false;
@@ -442,10 +442,7 @@ default_draw_query_bars(Application_Links *app, Rect_f32 region, View_ID view_id
 function void
 default_render_caller(Application_Links *app, Frame_Info frame_info, View_ID view_id){
     ProfileScope(app, "default render caller");
-    View_ID active_view = get_active_view(app, Access_Always);
-    b32 is_active_view = (active_view == view_id);
-
-    Rect_f32 region = draw_background_and_margin(app, view_id, is_active_view);
+    Rect_f32 region = draw_background_and_margin(app, view_id);
     Rect_f32 prev_clip = draw_set_clip(app, region);
 
     Buffer_ID buffer = view_get_buffer(app, view_id, Access_Always);

@@ -818,7 +818,8 @@ layout_token_pair(Token_Array *tokens, i64 pos){
     return(result);
 }
 
-function f32 layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_Nest *nest, i64 pos, f32 regular_indent, b32 *unresolved_dependence) {
+function f32
+layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_Nest *nest, i64 pos, f32 regular_indent, b32 *unresolved_dependence) {
     f32 result = 0.f;
     if (nest != 0) {
         switch (nest->kind) {
