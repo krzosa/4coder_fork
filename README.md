@@ -52,26 +52,31 @@ In this readme you will find:
 6. The codebase has a very weak base layer with key features that were added very late, so lots of code was written in the absence of useful features to bind things together. To make matters worse the base layer is split by the distinction of custom layer & core layer, leading to some double definitions and some incosistencies.
 
 
+# Todo
+
+* Figure out how virtual whitespace, code indexer work
+* Delete what can be deleted simplify what can be simplified
+* See if we can replace config format and combine it with replacement of project files
+* Combine api stuff with metadata stuff, Combine all code generators, or delete them
+
+* Replace project files
+* Fkeys more functionality (binding macros maybe or some other stuff)
+* Add project managment system (easy creating, presets, loading projects)
+* Multiple cursors
+
+# Ideas
+
+* RemedyBG integration
+* Optional python interpreter comment evaluator
+
 # TODO New config, project files, themes design
 
+* Should use the builtin lexer, not sure if we want to replace it
 * Easy syntax - something like "ini"
 * Readable messages (no error messages notifying you about lvalues)
 * Should notify you with a visible messages when identifier is not registered, syntax is invalid, type is invalid
 * Editor should work without config files and should have default values that adhere to what people expect
 * I have an idea for API, we have a file with global variables, those variables are then replaced by stuff from the config file. This way we don't have to call any strange functions, should be easy to modify the metadata generator to do something like this(it should make a function that loads variables from config file). Something like the themes stuff.
-
-# Todo
-
-* Delete what can be deleted simplify what can be simplified
-* Replace project files
-* See if we can replace config format and combine it with replacement of project files
-* Combine api stuff with metadata stuff, Combine all code generators, or delete them
-
-* Fkeys more functionality (binding macros maybe or some other stuff)
-* Optional python interpreter comment evaluator
-* Add project managment system (easy creating, presets, loading projects)
-* RemedyBG integration
-* Multiple cursors
 
 
 # License
