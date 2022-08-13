@@ -362,11 +362,12 @@ cpp_parse_type_structure(Code_Index_File *index, Generic_Parse_State *state, Cod
         if (peek != 0 && peek->kind == TokenBaseKind_StatementClose || peek->kind == TokenBaseKind_ScopeOpen) {
             index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
         }
+        token = peek;
     }
 
     // Parse enum fields
     // TODO(Krzosa): Parse enum
-    if(parse_enum_body){
+    if(token->kind == TokenBaseKind_ScopeOpen && parse_enum_body){
         result = push_array_zero(state->arena, Code_Index_Nest, 1);
         result->kind = CodeIndexNest_Scope;
         result->open = Ii64(token);
@@ -380,8 +381,12 @@ cpp_parse_type_structure(Code_Index_File *index, Generic_Parse_State *state, Cod
                 index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
                 token = next_token(index, state);
                 if(token->sub_kind == TokenCppKind_Eq){
-                    token = next_token(index, state);
-                    token = next_token(index, state);
+                    for(;;){
+                        token = next_token(index, state);
+                        if(token->sub_kind == TokenCppKind_Comma || token->kind == TokenBaseKind_ScopeClose || token->kind == TokenBaseKind_EOF){
+                            break;
+                        }
+                    }
                 }
                 if(token->sub_kind != TokenCppKind_Comma){
                     next_token(index, state);
