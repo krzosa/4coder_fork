@@ -2047,5 +2047,25 @@ CUSTOM_DOC("Notes the external modification of attached files by printing a mess
     }
 }
 
+CUSTOM_COMMAND_SIG(open_code_files_in_current_directory)
+CUSTOM_DOC("Open all cpp/h/c files in current directory.")
+{
+    Scratch_Block scratch(app);
+    String8 hot = push_hot_directory(app, scratch);
+    File_List file_list = system_get_file_list(scratch, hot);
+    for(int i = 0; i < file_list.count; i++){
+        File_Info *it = file_list.infos[i];
+        if(it->attributes.flags != FileAttribute_IsDirectory){
+            String8 ext = string_file_extension(it->file_name);
+            if(string_match(ext, string_u8_litexpr("cpp")) || string_match(ext, string_u8_litexpr("c")) || string_match(ext, string_u8_litexpr("h"))){
+                String8 full_path = push_u8_stringf(scratch, "%.*s%.*s", string_expand(hot), string_expand(it->file_name));
+                create_buffer(app, full_path, 0);
+            }
+        }
+    }
+}
+
+
+
 // BOTTOM
 

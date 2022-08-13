@@ -8,7 +8,7 @@ function void
 setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     MappingScope();
     SelectMapping(mapping);
-
+    
     SelectMap(global_id);
     Bind(keyboard_macro_start_recording , KeyCode_U, KeyCode_Control);
     Bind(keyboard_macro_finish_recording, KeyCode_U, KeyCode_Control, KeyCode_Shift);
@@ -35,7 +35,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(jump_to_last_point,            KeyCode_P, KeyCode_Control);
     Bind(list_all_functions_current_buffer_lister, KeyCode_I, KeyCode_Control, KeyCode_Shift);
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
-
+    
     SelectMap(file_id);
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);
@@ -96,7 +96,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(jump_to_hiperlink_at_cursor_other_panel, KeyCode_Q, KeyCode_Control, KeyCode_Shift);
     BindMouse(jump_to_hiperlink_at_cursor, MouseCode_Left, KeyCode_Control);
     BindMouse(jump_to_hiperlink_at_cursor_other_panel, MouseCode_Left, KeyCode_Control, KeyCode_Shift);
-
+    
     SelectMap(code_id);
     ParentMap(file_id);
     Bind(move_left_alpha_numeric_boundary,           KeyCode_Left, KeyCode_Control);

@@ -14,9 +14,9 @@ rem clang lexer_generator/4coder_cpp_lexer_gen.cpp %W% %I% %F% -o cpp_lexer.exe
 rem cpp_lexer.exe
 
 rem METAPROGRAM
-rem clang 4ed_app_target.cpp %W% %I% %F% -DMETA_PASS -E -o 4coder_command_metadata.i
-rem clang 4coder_metadata_generator.cpp %W% %I% %F% -o metadata_generator.exe
-rem metadata_generator.exe -R "." ".\\4coder_command_metadata.i"
+clang 4ed_app_target.cpp %W% %I% %F% -DMETA_PASS -E -o 4coder_command_metadata.i
+clang 4coder_metadata_generator.cpp %W% %I% %F% -o metadata_generator.exe
+metadata_generator.exe -R "." ".\\4coder_command_metadata.i"
 
 rem DLL AND EXE
 clang 4ed_app_target.cpp %W% %I% %F% -shared %L% %N%_app.dll
