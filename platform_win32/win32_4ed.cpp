@@ -1594,9 +1594,8 @@ win32_gl_create_window(HWND *wnd_out, HGLRC *context_out, DWORD style, RECT rect
         log_os(" creating graphics window...\n");
 
         HWND wnd = CreateWindowExW(0, L"GRAPHICS-WINDOW-NAME", L"GRAPHICS", style,
-                                   CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top,
+                                   rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,
                                    0, 0, this_instance, 0);
-
         *wnd_out = 0;
         *context_out = 0;
         if (wnd != 0){
@@ -1832,8 +1831,12 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
         window_rect.bottom = plat_settings.window_h;
     }
     else{
-        window_rect.right = GetSystemMetrics(SM_CXSCREEN);
-        window_rect.bottom = GetSystemMetrics(SM_CYSCREEN);
+        RECT workingArea;
+        SystemParametersInfo(SPI_GETWORKAREA, NULL, &workingArea, NULL);
+        window_rect.left = 0;
+        window_rect.top = 60;
+        window_rect.bottom = workingArea.bottom*0.8;
+        window_rect.right = workingArea.right*0.8;
     }
     AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, false);
     i32 window_style = WS_OVERLAPPEDWINDOW;
@@ -1935,7 +1938,11 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
 
     SetForegroundWindow(win32vars.window_handle);
     SetActiveWindow(win32vars.window_handle);
-    ShowWindow(win32vars.window_handle, SW_SHOW);
+    if(!plat_settings.set_window_size){
+        ShowWindow(win32vars.window_handle, SW_MAXIMIZE);
+    } else{
+        ShowWindow(win32vars.window_handle, SW_SHOW);
+    }
 
     //- @Added by jack
     u64 frame_rate = win32_get_frame_rate();

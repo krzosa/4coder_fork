@@ -277,6 +277,11 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     i64 cursor_pos = view_correct_cursor(app, view_id);
     view_correct_mark(app, view_id);
 
+    Mouse_State mouse_state = get_mouse_state(app);
+    Vec2_f32 mouse_screen_pos = {(f32)mouse_state.x, (f32)mouse_state.y};
+
+
+
     // NOTE(allen): Line highlight
     b32 highlight_line_at_cursor = debug_config_highlight_line_at_cursor;
     if (highlight_line_at_cursor && is_active_view){
@@ -313,6 +318,8 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
             Token *token = token_it_read(&it);
             Range_i64 range = Ii64_size(token->pos, token->size);
+            b32 cursor_is_over_token = range_contains(range, cursor_pos);
+            Rect_f32 view_rect = view_get_screen_rect(app, active_view);
 
             String_Const_u8 lexeme = push_token_lexeme(app, scratch, buffer, token);
             Code_Index_Note *note = code_index_note_from_string(lexeme);
@@ -356,18 +363,14 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                 total_range_rect.y1 = Max(range_start_rect.y1, range_end_rect.y1);
 
                 f32 scale = 0.5f;
-                if(range_contains(range, cursor_pos)){
+                if(cursor_is_over_token){
                     scale += 3.f;
                 }
 
                 // Emphesise hiperlink over clickable link
-                Mouse_State mouse_state = get_mouse_state(app);
-                Vec2_f32 mouse_point = {(f32)mouse_state.x, (f32)mouse_state.y};
-                i64 mouse_pos = view_pos_from_xy(app, active_view, mouse_point);
-                Rect_f32 view_rect = view_get_screen_rect(app, active_view);
-
-                b32 mouse_is_on_active_view = rect_contains_point(view_rect, mouse_point);
-                if(mouse_is_on_active_view && range_contains(range, mouse_pos)){
+                i64 mouse_view_pos = view_pos_from_xy(app, active_view, mouse_screen_pos);
+                b32 mouse_is_on_active_view = rect_contains_point(view_rect, mouse_screen_pos);
+                if(mouse_is_on_active_view && range_contains(range, mouse_view_pos)){
                     scale += 3.f;
                 }
 
@@ -376,6 +379,18 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
                 draw_rectangle(app, total_range_rect, 4.f, argb);
             }
+
+#if 0
+            if(note){
+                if(cursor_is_over_token){
+                    Range_i64 line_range = get_line_pos_range_from_pos(app, note->file->buffer, note->pos.max);
+                    String_Const_u8 yanked_text = push_buffer_range(app, scratch, note->file->buffer, line_range);
+                    Vec2_f32 pos = {view_rect.x0, view_rect.y1};
+                    pos.y -= metrics.line_height;
+                    draw_tooltip(app, pos, mouse_screen_pos, face_id, yanked_text);
+                }
+            }
+#endif
         }
     }
     else{

@@ -431,6 +431,11 @@ function i64
 get_line_end_pos_from_pos(App *app, Buffer_ID buffer, i64 pos){
     return(get_line_side_pos_from_pos(app, buffer, pos, Side_Max));
 }
+function Range_i64
+get_line_pos_range_from_pos(App *app, Buffer_ID buffer, i64 pos){
+    Range_i64 result = {get_line_start_pos_from_pos(app, buffer, pos),get_line_end_pos_from_pos(app, buffer, pos)};
+    return result;
+}
 
 function Token*
 get_first_token_from_line(App *app, Buffer_ID buffer, Token_Array tokens, i64 line){
