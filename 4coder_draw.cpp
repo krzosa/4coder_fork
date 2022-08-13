@@ -925,29 +925,5 @@ draw_drop_down(App *app, Face_ID face, Fancy_Block *block,
     return(box);
 }
 
-function b32
-draw_tooltip(App *app, Vec2_f32 pos, Vec2_f32 mouse_p, Face_ID face, String_Const_u8 text){
-    Scratch_Block scratch(app);
-    Fancy_String *fancy = push_fancy_string(scratch, 0, face, fcolor_id(defcolor_text_default), text);
-
-    Face_Metrics metrics = get_face_metrics(app, face);
-    Vec2_f32 padding = {metrics.space_advance*0.5f, metrics.space_advance*0.5f};
-    Vec2_f32 dim = get_fancy_string_dim(app, 0, fancy);
-    Rect_f32 button_rect = {pos.x-padding.x, pos.y-padding.y, pos.x+dim.x+padding.x, pos.y+dim.y+padding.y};
-
-    b32 hovered = false;
-    if (rect_contains_point(button_rect, mouse_p)){
-        hovered = true;
-    }
-
-    f32 roundness = 3.f;
-    draw_rectangle(app, button_rect, roundness, finalize_color(defcolor_keyword, 0));
-
-    Vec2_f32 p = (button_rect.p0 + button_rect.p1 - dim)*0.5f;
-    draw_fancy_string(app, fancy, p);
-
-    return(hovered);
-}
-
 // BOTTOM
 

@@ -262,6 +262,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                       Rect_f32 rect){
     ProfileScope(app, "render buffer");
 
+    Scratch_Block scratch(app);
     View_ID active_view = get_active_view(app, Access_Always);
     b32 is_active_view = (active_view == view_id);
     Rect_f32 prev_clip = draw_set_clip(app, rect);
@@ -279,7 +280,12 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
     Mouse_State mouse_state = get_mouse_state(app);
     Vec2_f32 mouse_screen_pos = {(f32)mouse_state.x, (f32)mouse_state.y};
+    i64 mouse_view_pos = view_pos_from_xy(app, active_view, mouse_screen_pos);
+    Rect_f32 view_rect = view_get_screen_rect(app, active_view);
+    b32 mouse_is_on_active_view = rect_contains_point(view_rect, mouse_screen_pos);
 
+
+    String_Const_u8 deffered_button_render = {};
 
 
     // NOTE(allen): Line highlight
@@ -306,9 +312,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
         // TODO(allen): Put in 4coder_draw.cpp
         // NOTE(allen): Color functions
-        Scratch_Block scratch(app);
         ARGB_Color argb = 0xFFFF00FF;
-
         Token_Iterator_Array it = token_iterator_pos(0, &token_array, visible_range.first);
         for (;;){
             b32 underline_token = false;
@@ -319,7 +323,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
             Token *token = token_it_read(&it);
             Range_i64 range = Ii64_size(token->pos, token->size);
             b32 cursor_is_over_token = range_contains(range, cursor_pos);
-            Rect_f32 view_rect = view_get_screen_rect(app, active_view);
+            b32 mouse_is_over_token = mouse_is_on_active_view && range_contains(range, mouse_view_pos);
 
             String_Const_u8 lexeme = push_token_lexeme(app, scratch, buffer, token);
             Code_Index_Note *note = code_index_note_from_string(lexeme);
@@ -332,9 +336,15 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                     argb = finalize_color(defcolor_macro, 0);
                 }
                 paint_text_color(app, text_layout_id, range, argb);
+                b32 is_definition_of_note = (note->file->buffer == buffer && range_contains(range, note->pos.min));
+
+                if(!is_definition_of_note && (mouse_is_over_token || cursor_is_over_token)){
+                    Range_i64 line_range = get_line_pos_range_from_pos(app, note->file->buffer, note->pos.max);
+                    deffered_button_render = push_buffer_range(app, scratch, note->file->buffer, line_range);
+                    deffered_button_render = string_skip_whitespace(deffered_button_render);
+                }
 
                 // Outline when token is clickable, avoid a case where we outline a definition
-                b32 is_definition_of_note = (note->file->buffer == buffer && range_contains(range, note->pos.min));
                 underline_token = !is_definition_of_note;
             }
 
@@ -368,9 +378,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                 }
 
                 // Emphesise hiperlink over clickable link
-                i64 mouse_view_pos = view_pos_from_xy(app, active_view, mouse_screen_pos);
-                b32 mouse_is_on_active_view = rect_contains_point(view_rect, mouse_screen_pos);
-                if(mouse_is_on_active_view && range_contains(range, mouse_view_pos)){
+                if(mouse_is_over_token){
                     scale += 3.f;
                 }
 
@@ -379,18 +387,6 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
                 draw_rectangle(app, total_range_rect, 4.f, argb);
             }
-
-#if 0
-            if(note){
-                if(cursor_is_over_token){
-                    Range_i64 line_range = get_line_pos_range_from_pos(app, note->file->buffer, note->pos.max);
-                    String_Const_u8 yanked_text = push_buffer_range(app, scratch, note->file->buffer, line_range);
-                    Vec2_f32 pos = {view_rect.x0, view_rect.y1};
-                    pos.y -= metrics.line_height;
-                    draw_tooltip(app, pos, mouse_screen_pos, face_id, yanked_text);
-                }
-            }
-#endif
         }
     }
     else{
@@ -463,6 +459,21 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     draw_text_layout_default(app, text_layout_id);
 
     draw_set_clip(app, prev_clip);
+
+    if(deffered_button_render.size){
+        String_Const_u8 text = deffered_button_render;
+        Fancy_String *fancy = push_fancy_string(scratch, 0, face_id, fcolor_id(defcolor_text_default), text);
+
+        Face_Metrics metrics = get_face_metrics(app, face_id);
+        Vec2_f32 dim = get_fancy_string_dim(app, 0, fancy);
+        Rect_f32 button_rect = Rf32_xy_wh({view_rect.x1 - dim.x, metrics.line_height}, dim + V2f32(2,2));
+
+        f32 roundness = 3.f;
+        draw_rectangle(app, button_rect, roundness, finalize_color(defcolor_bar, 0));
+
+        Vec2_f32 p = (button_rect.p0 + button_rect.p1 - dim)*0.5f;
+        draw_fancy_string(app, fancy, p);
+    }
 }
 
 function Rect_f32
