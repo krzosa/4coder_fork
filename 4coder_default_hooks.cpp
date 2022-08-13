@@ -13,8 +13,103 @@ CUSTOM_DOC("Default command for responding to a startup event")
         String_Const_u8_Array file_names = input.event.core.file_names;
         // CLEANUP(Krzosa)
         // load_themes_default_folder(app);
-        default_4coder_initialize(app, file_names);
-        default_4coder_side_by_side_panels(app, file_names);
+
+
+         Scratch_Block scratch(app);
+
+        //
+        // Apply config
+        //
+        String_Const_u8 mode = debug_config_mode;
+        change_mode(app, mode);
+
+        b32 lalt_lctrl_is_altgr = debug_config_lalt_lctrl_is_altgr;
+        global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
+
+        // Themes
+        // String_Const_u8 default_theme_name = def_get_config_string(scratch, vars_save_string_lit("default_theme_name"));
+        // Color_Table *colors = get_color_table_by_name(default_theme_name);
+        // set_active_color(colors);
+
+        Face_Description description = {};
+        description.parameters.pt_size = (i32)debug_config_default_font_size;
+        description.parameters.hinting = debug_config_default_font_hinting;
+        description.parameters.aa_mode = FaceAntialiasingMode_8BitMono;
+        description.font.file_name = debug_config_default_font_name;
+
+        if (!modify_global_face_by_description(app, description)){
+            String8 name_in_fonts_folder = push_u8_stringf(scratch, "fonts/%.*s", string_expand(description.font.file_name));
+            description.font.file_name = def_search_normal_full_path(scratch, name_in_fonts_folder);
+            modify_global_face_by_description(app, description);
+        }
+
+        b32 bind_by_physical_key = debug_config_bind_by_physical_key;
+        if (bind_by_physical_key){
+            system_set_key_mode(KeyMode_Physical);
+        }
+        else{
+            system_set_key_mode(KeyMode_LanguageArranged);
+        }
+
+
+        // CLEANUP(Krzosa)
+        // TODO(Krzosa) Load config, load theme, load keybindings they overwrite so can load here
+        // Example:
+        // String_ID global_map_id = vars_save_string_lit("keys_global");
+        // String_ID file_map_id = vars_save_string_lit("keys_file");
+        // String_ID code_map_id = vars_save_string_lit("keys_code");
+        // setup_built_in_mapping(app, mapping, &framework_mapping, global_map_id, file_map_id, code_map_id);
+
+        // open command line files
+        String_Const_u8 hot_directory = push_hot_directory(app, scratch);
+        for (i32 i = 0; i < file_names.count; i += 1){
+            Temp_Memory_Block temp(scratch);
+            String_Const_u8 input_name = file_names.vals[i];
+            String_Const_u8 full_name = push_u8_stringf(scratch, "%.*s/%.*s",
+                                                        string_expand(hot_directory),
+                                                        string_expand(input_name));
+            Buffer_ID new_buffer = create_buffer(app, full_name, BufferCreate_NeverNew|BufferCreate_MustAttachToFile);
+            if (new_buffer == 0){
+                create_buffer(app, input_name, 0);
+            }
+        }
+
+        if(app->cmd_context->settings.open_code_in_current_dir){
+            open_code_files_in_current_directory(app);
+        }
+
+
+        print_message(app, string_u8_litexpr(R"==(Available command line options:
+--open_code :: opens all code in current directory
+-w 1280 720 :: sets window size
+-p 100  100 :: sets window position
+-f 12       :: sets font size
+-F          :: start in fullscreen
+        )=="));
+
+        //
+        // Set layout
+        //
+        {
+            Buffer_Identifier left = buffer_identifier(string_u8_litexpr("*scratch*"));
+            Buffer_Identifier right = buffer_identifier(string_u8_litexpr("*messages*"));
+
+            Buffer_ID left_id = buffer_identifier_to_id(app, left);
+            Buffer_ID right_id = buffer_identifier_to_id(app, right);
+
+            // Left Panel
+            View_ID view = get_active_view(app, Access_Always);
+            new_view_settings(app, view);
+            view_set_buffer(app, view, left_id, 0);
+
+            // Right Panel
+            open_panel_vsplit(app);
+            View_ID right_view = get_active_view(app, Access_Always);
+            view_set_buffer(app, right_view, right_id, 0);
+
+            // Restore Active to Left
+            view_set_active(app, view);
+        }
     }
 
     {
@@ -235,6 +330,7 @@ recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range,
     }
 
     ARGB_Color argb = finalize_color(defcolor_text_cycle, counter);
+    argb &= ~0x33000000;
 
     for (;ptr < ptr_end; ptr += 1){
         Code_Index_Nest *nest = *ptr;
@@ -251,8 +347,7 @@ recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range,
 }
 
 function void
-recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range,
-                         Code_Index_File *file){
+recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range, Code_Index_File *file){
     recursive_nest_highlight(app, layout_id, range, &file->nest_array, 0);
 }
 
@@ -396,6 +491,11 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     else{
         paint_text_color_fcolor(app, text_layout_id, visible_range, fcolor_id(defcolor_text_default));
     }
+
+
+    // NOTE(Krzosa): Color tokens based on the scope
+    Code_Index_File *code_index_file = code_index_get_file(buffer);
+    if(code_index_file) recursive_nest_highlight(app, text_layout_id, visible_range, code_index_file);
 
     // NOTE(allen): Scope highlight
     b32 use_scope_highlight = debug_config_use_scope_highlight;
@@ -714,44 +814,6 @@ BUFFER_NAME_RESOLVER_SIG(default_buffer_name_resolution){
                 break;
             }
         }
-    }
-}
-
-function void
-parse_async__inner(Async_Context *actx, Buffer_ID buffer_id,
-                   String_Const_u8 contents, Token_Array *tokens, i32 limit_factor){
-    App *app = actx->app;
-    ProfileBlock(app, "async parse");
-
-    Arena arena = make_arena_system(KB(16));
-    Code_Index_File *index = push_array_zero(&arena, Code_Index_File, 1);
-    index->buffer = buffer_id;
-
-    Generic_Parse_State state = {};
-    generic_parse_init(app, &arena, contents, tokens, &state);
-
-    b32 canceled = false;
-
-    for (;;){
-        if (generic_parse_full_input_breaks(index, &state, limit_factor)){
-            break;
-        }
-        if (async_check_canceled(actx)){
-            canceled = true;
-            break;
-        }
-    }
-
-    if (!canceled){
-        acquire_global_frame_mutex(app);
-        code_index_lock();
-        code_index_set_file(buffer_id, arena, index);
-        code_index_unlock();
-        buffer_clear_layout_cache(app, buffer_id);
-        release_global_frame_mutex(app);
-    }
-    else{
-        linalloc_clear(&arena);
     }
 }
 

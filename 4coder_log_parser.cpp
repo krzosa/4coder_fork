@@ -937,13 +937,6 @@ log_graph__get_box_at_point(Log_Graph *graph, Vec2_f32 p){
     return(result);
 }
 
-internal Log_Graph_Box*
-log_graph__get_box_at_mouse_point(App *app, Log_Graph *graph){
-    Mouse_State mouse = get_mouse_state(app);
-    Vec2_f32 m_p = V2f32(mouse.p) - graph->layout_region.p0;
-    return(log_graph__get_box_at_point(graph, m_p));
-}
-
 function void
 log_graph__click_select_event(App *app, Vec2_f32 m_p)
 {

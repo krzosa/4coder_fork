@@ -246,6 +246,7 @@ enum{
 #define global_const static const
 #define external extern "C"
 
+#define Unused(x) ((void)(x))
 #define ArrayCount(a) ((sizeof(a))/(sizeof(*a)))
 #define ArraySafe(a,i) ((a)[(i)%ArrayCount(a)])
 #define ExpandArray(a) (a), (ArrayCount(a))

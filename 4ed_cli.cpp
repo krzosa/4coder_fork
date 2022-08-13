@@ -39,14 +39,14 @@ child_process_alloc_new(Models *models, Child_Process_Container *container){
     else{
         new_process = push_array(&container->arena, Child_Process, 1);
     }
-    
+
     u32 new_id = ++container->child_process_id_counter;
     block_zero_struct(new_process);
     dll_insert_back(&container->child_process_active_list, &new_process->node);
     new_process->id = new_id;
     table_insert(&container->id_to_ptr_table, new_id, (u64)PtrAsInt(new_process));
     container->active_child_process_count += 1;
-    
+
     result.process = new_process;
     result.id = new_id;
     return(result);
@@ -142,7 +142,7 @@ child_process_set_target_buffer(Models *models, Child_Process *child_process, Ed
 
 internal Process_State
 child_process_get_state(Child_Process_Container *child_processes, Child_Process_ID child_process_id){
-    Child_Process *child_process = child_process_from_id(child_processes, child_process_id);
+    /*Child_Process *child_process = */child_process_from_id(child_processes, child_process_id);
     Process_State result = {};
     if (child_processes != 0){
         result.valid = true;

@@ -1938,11 +1938,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
 
     SetForegroundWindow(win32vars.window_handle);
     SetActiveWindow(win32vars.window_handle);
-    if(!plat_settings.set_window_size){
-        ShowWindow(win32vars.window_handle, SW_MAXIMIZE);
-    } else{
-        ShowWindow(win32vars.window_handle, SW_SHOW);
-    }
+    ShowWindow(win32vars.window_handle, SW_SHOW);
 
     //- @Added by jack
     u64 frame_rate = win32_get_frame_rate();

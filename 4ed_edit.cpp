@@ -170,7 +170,7 @@ edit_fix_markers(Thread_Context *tctx, Models *models, Editing_File *file, Batch
         buffer_unsort_cursors(  cursors,   cursor_count);
         buffer_unsort_cursors(r_cursors, r_cursor_count);
 
-        Face *face = file_get_face(models, file);
+        // Face *face = file_get_face(models, file);
 
         cursor_count = 0;
         r_cursor_count = 0;

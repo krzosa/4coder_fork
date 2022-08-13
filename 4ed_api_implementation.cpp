@@ -1388,7 +1388,6 @@ panel_get_child(App *app, Panel_ID panel_id, Side which_child){
 view_close(App *app, View_ID view_id)
 {
     Models *models = (Models*)app->cmd_context;
-    Layout *layout = &models->layout;
     View *view = imp_get_view(models, view_id);
     b32 result = false;
     if (api_check_view(view)){
@@ -2165,10 +2164,9 @@ managed_object_load_data(App *app, Managed_Object object, u32 first_index, u32 c
     return(result);
 }
 
- function User_Input
+function User_Input
 get_next_input_raw(App *app)
 {
-    Models *models = (Models*)app->cmd_context;
     Thread_Context *tctx = app->tctx;
     Thread_Context_Extra_Info *tctx_info = (Thread_Context_Extra_Info*)tctx->user_data;
     User_Input result = {};
@@ -3061,7 +3059,6 @@ text_layout_character_on_screen(App *app, Text_Layout_ID layout_id, i64 pos){
                 // TODO(allen): optimization: This is some fairly heavy computation.  We really
                 // need to accelerate the (pos -> item) lookup within a single
                 // Buffer_Layout_Item_List.
-                b32 is_first_item = true;
                 result = Rf32_negative_infinity;
                 for (Layout_Item_Block *block = line.first;
                      block != 0;
@@ -3091,10 +3088,9 @@ text_layout_character_on_screen(App *app, Text_Layout_ID layout_id, i64 pos){
     return(result);
 }
 
- function void
+function void
 paint_text_color(App *app, Text_Layout_ID layout_id, Range_i64 range, ARGB_Color color){
     Models *models = (Models*)app->cmd_context;
-    Rect_f32 result = {};
     Text_Layout *layout = text_layout_get(&models->text_layouts, layout_id);
     if (layout != 0){
         range.min = clamp_bot(layout->visible_range.min, range.min);
@@ -3111,7 +3107,6 @@ paint_text_color(App *app, Text_Layout_ID layout_id, Range_i64 range, ARGB_Color
  function void
 paint_text_color_blend(App *app, Text_Layout_ID layout_id, Range_i64 range, ARGB_Color color, f32 blend){
     Models *models = (Models*)app->cmd_context;
-    Rect_f32 result = {};
     Text_Layout *layout = text_layout_get(&models->text_layouts, layout_id);
     if (layout != 0){
         range.min = clamp_bot(layout->visible_range.min, range.min);
@@ -3148,7 +3143,6 @@ draw_text_layout(App *app, Text_Layout_ID layout_id, ARGB_Color special_color, A
  function void
 open_color_picker(App *app, Color_Picker *picker)
 {
-    Models *models = (Models*)app->cmd_context;
     if (picker->finished != 0){
         *picker->finished = false;
     }

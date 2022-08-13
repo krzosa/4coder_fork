@@ -679,8 +679,8 @@ function b32
 co_send_event(Thread_Context *tctx, Models *models, View *view, Input_Event *event){
     b32 event_was_handled = false;
 
-    Coroutine *co = view->co;
-    Co_Out *co_out = &view->co_out;
+    // Coroutine *co = view->co;
+    // Co_Out *co_out = &view->co_out;
 
     {
         models->current_input_unhandled = false;

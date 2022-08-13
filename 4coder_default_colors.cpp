@@ -112,29 +112,28 @@ set_default_color_scheme(App *app){
     default_color_table = make_color_table(app, arena);
 
     u32 background=0xff1E1E1E;
-    u32 background_darker=0xff0E0E0E;
+    // u32 background_darker=0xff0E0E0E;
     u32 background_ligher=0xff9E9E9E;
 
     u32 caret=0xffDCDCDC;
     u32 foreground=0xffDCDCDC;
-    u32 invisibles=0xFFFFFF40;
+    // u32 invisibles=0xFFFFFF40;
     u32 line_highlight=0xFF0F0F0F;
     u32 selection=0xFF264F78;
     u32 comment=0xFF608B4E;
-    u32 variable=0xFFDCDCDC;
+    // u32 variable=0xFFDCDCDC;
     u32 keyword=0xFF569CD6;
-    u32 test=0xFFd6c556;
 
-    u32 vs_bar=0xFF0E70C0;
+    // u32 vs_bar=0xFF0E70C0;
     u32 border=0xFF333337;
     u32 number=0xFFB5CEA8;
     u32 string=0xFFD69D85;
     u32 preproc=0xFF9B9B9B;
-    u32 macro=0xFFc586c0;
+    // u32 macro=0xFFc586c0;
     u32 type=0xFF4EC9B0;
     u32 green=0xFFA6E22E;
     u32 purple=0xFF967EFB;
-    u32 red=0xFFA72822;
+    // u32 red=0xFFA72822;
 
     default_color_table.arrays[0] = make_colors(arena, 0xFF90B080);
     default_color_table.arrays[defcolor_bar] = make_colors(arena, border);

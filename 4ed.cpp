@@ -16,6 +16,8 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
     Command_Line_Action action = CLAct_Nothing;
     b32 strict = false;
 
+    plat_settings->maximize_window = true;
+
     settings->init_files_max = ArrayCount(settings->init_files);
     for (i32 i = 1; i <= argc; ++i){
         if (i == argc){
@@ -81,6 +83,7 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
                     {
                         if (i + 1 < argc){
                             plat_settings->set_window_size = true;
+                            plat_settings->maximize_window = false;
 
                             i32 w = (i32)string_to_integer(SCu8(argv[i]), 10);
                             i32 h = (i32)string_to_integer(SCu8(argv[i + 1]), 10);
@@ -144,7 +147,7 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
                         action = CLAct_Nothing;
                     }break;
 
-                    InvalidDefaultCase;
+                    default: {}
                 }
             }break;
 
@@ -297,7 +300,6 @@ App_Init_Sig(app_init){
     Buffer_Hook_Function *begin_buffer_func = models->begin_buffer;
     models->begin_buffer = 0;
 
-    Heap *heap = &models->heap;
     for (i32 i = 0; i < ArrayCount(init_files); ++i){
         Editing_File *file = working_set_allocate_file(&models->working_set, &models->lifetime_allocator);
         buffer_bind_name(tctx, models, arena, &models->working_set, file, init_files[i].name);

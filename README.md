@@ -62,6 +62,8 @@ In this readme you will find:
 * Fix raw strings, comments(not being able to indent)
 * Fix indentation problems outside of the editor(Convert tabs to spaces), fix indentation pass on save
 * Delete what can be deleted simplify what can be simplified
+   * String Any and all the different alternatives can be deleted
+   *
 * See if we can replace config format and combine it with replacement of project files
 * Combine api stuff with metadata stuff, Combine all code generators, or delete them
 

@@ -592,125 +592,9 @@ change_mode(App *app, String_Const_u8 mode){
 }
 
 function void
-default_4coder_initialize(App *app, String_Const_u8_Array file_names, i32 override_font_size, b32 override_hinting){
-#define M \
-"Welcome to " VERSION "\n" \
-"If you're new to 4coder there is a built in tutorial\n" \
-"Use the key combination [ X Alt ] (on mac [ X Control ])\n" \
-"Type in 'hms_demo_tutorial' and press enter\n" \
-"\n" \
-"Direct bug reports and feature requests to https://github.com/4coder-editor/4coder/issues\n" \
-"\n" \
-"Other questions and discussion can be directed to editor@4coder.net or 4coder.handmade.network\n" \
-"\n" \
-"The change log can be found in CHANGES.txt\n" \
-"\n"
-    print_message(app, string_u8_litexpr(M));
-#undef M
-
-    Scratch_Block scratch(app);
-
-    //
-    // Apply config
-    //
-    String_Const_u8 mode = debug_config_mode;
-    change_mode(app, mode);
-
-    b32 lalt_lctrl_is_altgr = debug_config_lalt_lctrl_is_altgr;
-    global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
-
-    // Themes
-    // String_Const_u8 default_theme_name = def_get_config_string(scratch, vars_save_string_lit("default_theme_name"));
-    // Color_Table *colors = get_color_table_by_name(default_theme_name);
-    // set_active_color(colors);
-
-    Face_Description description = {};
-    description.parameters.pt_size = (i32)debug_config_default_font_size;
-    description.parameters.hinting = debug_config_default_font_hinting;
-    description.parameters.aa_mode = FaceAntialiasingMode_8BitMono;
-    description.font.file_name = debug_config_default_font_name;
-
-    if (!modify_global_face_by_description(app, description)){
-        String8 name_in_fonts_folder = push_u8_stringf(scratch, "fonts/%.*s", string_expand(description.font.file_name));
-        description.font.file_name = def_search_normal_full_path(scratch, name_in_fonts_folder);
-        modify_global_face_by_description(app, description);
-    }
-
-    b32 bind_by_physical_key = debug_config_bind_by_physical_key;
-    if (bind_by_physical_key){
-        system_set_key_mode(KeyMode_Physical);
-    }
-    else{
-        system_set_key_mode(KeyMode_LanguageArranged);
-    }
-
-
-    // CLEANUP(Krzosa)
-    // TODO(Krzosa) Load config, load theme, load keybindings they overwrite so can load here
-    // Example:
-    // String_ID global_map_id = vars_save_string_lit("keys_global");
-    // String_ID file_map_id = vars_save_string_lit("keys_file");
-    // String_ID code_map_id = vars_save_string_lit("keys_code");
-    // setup_built_in_mapping(app, mapping, &framework_mapping, global_map_id, file_map_id, code_map_id);
-
-    // open command line files
-    String_Const_u8 hot_directory = push_hot_directory(app, scratch);
-    for (i32 i = 0; i < file_names.count; i += 1){
-        Temp_Memory_Block temp(scratch);
-        String_Const_u8 input_name = file_names.vals[i];
-        String_Const_u8 full_name = push_u8_stringf(scratch, "%.*s/%.*s",
-                                                    string_expand(hot_directory),
-                                                    string_expand(input_name));
-        Buffer_ID new_buffer = create_buffer(app, full_name, BufferCreate_NeverNew|BufferCreate_MustAttachToFile);
-        if (new_buffer == 0){
-            create_buffer(app, input_name, 0);
-        }
-    }
-
-    if(app->cmd_context->settings.open_code_in_current_dir){
-        open_code_files_in_current_directory(app);
-    }
-}
-
-function void
-default_4coder_initialize(App *app, i32 override_font_size, b32 override_hinting){
-    String_Const_u8_Array file_names = {};
-    default_4coder_initialize(app, file_names, override_font_size, override_hinting);
-}
-
-function void
-default_4coder_initialize(App *app, String_Const_u8_Array file_names){
-    Face_Description description = get_face_description(app, 0);
-    default_4coder_initialize(app, file_names,
-                              description.parameters.pt_size,
-                              description.parameters.hinting);
-}
-
-function void
-default_4coder_initialize(App *app){
-    Face_Description command_line_description = get_face_description(app, 0);
-    String_Const_u8_Array file_names = {};
-    default_4coder_initialize(app, file_names, command_line_description.parameters.pt_size, command_line_description.parameters.hinting);
-}
-
-function void
 default_4coder_side_by_side_panels(App *app,
                                    Buffer_Identifier left, Buffer_Identifier right){
-    Buffer_ID left_id = buffer_identifier_to_id(app, left);
-    Buffer_ID right_id = buffer_identifier_to_id(app, right);
 
-    // Left Panel
-    View_ID view = get_active_view(app, Access_Always);
-    new_view_settings(app, view);
-    view_set_buffer(app, view, left_id, 0);
-
-    // Right Panel
-    open_panel_vsplit(app);
-    View_ID right_view = get_active_view(app, Access_Always);
-    view_set_buffer(app, right_view, right_id, 0);
-
-    // Restore Active to Left
-    view_set_active(app, view);
 }
 
 function void
@@ -724,42 +608,6 @@ default_4coder_side_by_side_panels(App *app,
         }
     }
     default_4coder_side_by_side_panels(app, left, right);
-}
-
-function void
-default_4coder_side_by_side_panels(App *app, String_Const_u8_Array file_names){
-    Buffer_Identifier left = buffer_identifier(string_u8_litexpr("*scratch*"));
-    Buffer_Identifier right = buffer_identifier(string_u8_litexpr("*messages*"));
-    default_4coder_side_by_side_panels(app, left, right, file_names);
-}
-
-function void
-default_4coder_side_by_side_panels(App *app){
-    String_Const_u8_Array file_names = {};
-    default_4coder_side_by_side_panels(app, file_names);
-}
-
-function void
-default_4coder_one_panel(App *app, Buffer_Identifier buffer){
-    Buffer_ID id = buffer_identifier_to_id(app, buffer);
-    View_ID view = get_active_view(app, Access_Always);
-    new_view_settings(app, view);
-    view_set_buffer(app, view, id, 0);
-}
-
-function void
-default_4coder_one_panel(App *app, String_Const_u8_Array file_names){
-    Buffer_Identifier buffer = buffer_identifier(string_u8_litexpr("*messages*"));
-    if (file_names.count > 0){
-        buffer = buffer_identifier(file_names.vals[0]);
-    }
-    default_4coder_one_panel(app, buffer);
-}
-
-function void
-default_4coder_one_panel(App *app){
-    String_Const_u8_Array file_names = {};
-    default_4coder_one_panel(app, file_names);
 }
 
 ////////////////////////////////

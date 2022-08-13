@@ -190,9 +190,9 @@ buffer_line_count(Gap_Buffer *buffer){
 internal void
 buffer_init(Gap_Buffer *buffer, u8 *data, u64 size, Base_Allocator *allocator){
     block_zero_struct(buffer);
-    
+
     buffer->allocator = allocator;
-    
+
     u64 capacity = round_up_u64(size*2, KB(4));
     String_Const_u8 memory = base_allocate(allocator, capacity);
     buffer->data = (u8*)memory.str;
@@ -200,7 +200,7 @@ buffer_init(Gap_Buffer *buffer, u8 *data, u64 size, Base_Allocator *allocator){
     buffer->gap_size = capacity - size;
     buffer->size2 = size - buffer->size1;
     buffer->max = capacity;
-    
+
     block_copy(buffer->data, data, buffer->size1);
     block_copy(buffer->data + buffer->size1 + buffer->gap_size, data + buffer->size1, buffer->size2);
 }
@@ -211,7 +211,7 @@ buffer_replace_range(Gap_Buffer *buffer, Range_i64 range, String_Const_u8 text, 
     Assert(0 <= range.start);
     Assert(range.start <= range.end);
     Assert(range.end <= size);
-    
+
     if (shift_amount + size > buffer->max){
         i64 new_max = round_up_i64(2*(shift_amount + size), KB(4));
         i64 new_gap_size = new_max - size;
@@ -225,11 +225,11 @@ buffer_replace_range(Gap_Buffer *buffer, Range_i64 range, String_Const_u8 text, 
         buffer->gap_size = new_gap_size;
         buffer->max = new_max;
     }
-    
+
     Assert(shift_amount + size <= buffer->max);
-    
+
     b32 result = false;
-    
+
     if (range.end < buffer->size1){
         i64 move_size = buffer->size1 - range.end;
         block_copy(buffer->data + buffer->size1 + buffer->gap_size - move_size,
@@ -246,15 +246,15 @@ buffer_replace_range(Gap_Buffer *buffer, Range_i64 range, String_Const_u8 text, 
         buffer->size1 += move_size;
         buffer->size2 -= move_size;
     }
-    
+
     block_copy(buffer->data + range.start, text.str, text.size);
     buffer->size2 = size - range.end;
     buffer->size1 = range.start + text.size;
     buffer->gap_size -= shift_amount;
-    
+
     Assert(buffer->size1 + buffer->size2 == size + shift_amount);
     Assert(buffer->size1 + buffer->gap_size + buffer->size2 == buffer->max);
-    
+
     return(result);
 }
 
@@ -340,7 +340,7 @@ buffer_count_newlines(Arena *scratch, Gap_Buffer *buffer, i64 start, i64 end){
     Temp_Memory temp = begin_temp(scratch);
     List_String_Const_u8 list = buffer_get_chunks(scratch, buffer);
     buffer_chunks_clamp(&list, Ii64(start, end));
-    
+
     i64 count = 0;
     for (Node_String_Const_u8 *node = list.first;
          node != 0;
@@ -353,9 +353,9 @@ buffer_count_newlines(Arena *scratch, Gap_Buffer *buffer, i64 start, i64 end){
             }
         }
     }
-    
+
     end_temp(temp);
-    
+
     return(count);
 }
 #endif
@@ -481,9 +481,9 @@ fill_line_starts(i64 *lines_starts, String_Const_u8 string, i64 text_base){
 function void
 buffer_remeasure_starts(Thread_Context *tctx, Gap_Buffer *buffer, Batch_Edit *batch){
     Scratch_Block scratch(tctx);
-    
+
     i64 line_start_count = buffer_line_count(buffer) + 1;
-    
+
     Line_Move *moves = 0;
     i64 current_line = 0;
     i64 text_shift = 0;
@@ -495,35 +495,35 @@ buffer_remeasure_starts(Thread_Context *tctx, Gap_Buffer *buffer, Batch_Edit *ba
         i64 opl_line = buffer_get_line_index(buffer, node->edit.range.one_past_last);
         i64 new_line_count = count_lines(node->edit.text);
         i64 deleted_line_count = opl_line - first_line;
-        
+
         Assert(first_line <= opl_line);
         Assert(opl_line <= line_start_count);
-        
+
         if (current_line <= first_line &&
             (text_shift != 0 || line_shift != 0)){
             moves = push_line_move(scratch, moves, current_line + line_shift,
                                    current_line, first_line + 1, text_shift);
         }
-        
+
         if (new_line_count != 0){
             moves = push_line_move(scratch, moves, first_line + 1 + line_shift,
                                    node->edit.text, node->edit.range.first + text_shift);
         }
-        
+
         text_shift += node->edit.text.size - range_size(node->edit.range);
         line_shift += new_line_count - deleted_line_count;
         current_line = opl_line + 1;
     }
-    
+
     moves = push_line_move(scratch, moves, current_line + line_shift,
                            current_line, line_start_count, text_shift);
     line_start_count = line_start_count + line_shift;
-    
+
     buffer_starts__ensure_max_size(buffer, line_start_count + 1);
     buffer->line_start_count = line_start_count;
-    
+
     i64 *array = buffer->line_starts;
-    
+
     for (Line_Move *node = moves;
          node != 0;
          node = node->next){
@@ -546,7 +546,7 @@ buffer_remeasure_starts(Thread_Context *tctx, Gap_Buffer *buffer, Batch_Edit *ba
             }
         }
     }
-    
+
     for (Line_Move *node = moves;
          node != 0;
          node = node->next){
@@ -601,7 +601,7 @@ buffer_cursor_from_pos(Gap_Buffer *buffer, i64 pos){
     i64 size = buffer_size(buffer);
     pos = clamp(0, pos, size);
     i64 line_index = buffer_get_line_index(buffer, pos);
-    
+
     Buffer_Cursor result = {};
     result.pos = pos;
     result.line = line_index + 1;
@@ -611,18 +611,17 @@ buffer_cursor_from_pos(Gap_Buffer *buffer, i64 pos){
 
 internal Buffer_Cursor
 buffer_cursor_from_line_col(Gap_Buffer *buffer, i64 line, i64 col){
-    i64 size = buffer_size(buffer);
     i64 line_index = line - 1;
     i64 line_count = buffer_line_count(buffer);
     line_index = clamp(0, line_index, line_count - 1);
-    
+
     i64 this_start = buffer->line_starts[line_index];
     i64 max_col = (buffer->line_starts[line_index + 1] - this_start);
     if (line_index + 1 == line_count){
         max_col += 1;
     }
     max_col = clamp_bot(1, max_col);
-    
+
     if (col < 0){
         if (-col > max_col){
             col = 1;
@@ -639,9 +638,9 @@ buffer_cursor_from_line_col(Gap_Buffer *buffer, i64 line, i64 col){
     }
     Assert(col > 0);
     i64 adjusted_pos = col - 1;
-    
+
     i64 pos = this_start + adjusted_pos;
-    
+
     Buffer_Cursor result = {};
     result.pos = pos;
     result.line = line_index + 1;

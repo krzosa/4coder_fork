@@ -140,7 +140,6 @@ save_file_to_name(Thread_Context *tctx, Models *models, Editing_File *file, u8 *
         }
 
         Gap_Buffer *buffer = &file->state.buffer;
-        b32 dos_write_mode = file->settings.dos_write_mode;
 
         Scratch_Block scratch(tctx);
 
@@ -242,7 +241,7 @@ file_create_from_string(Thread_Context *tctx, Models *models, Editing_File *file
 internal void
 file_free(Thread_Context *tctx, Models *models, Editing_File *file){
     Lifetime_Allocator *lifetime_allocator = &models->lifetime_allocator;
-    Working_Set *working_set = &models->working_set;
+    // Working_Set *working_set = &models->working_set;
 
     lifetime_free_object(lifetime_allocator, file->lifetime_object);
 
