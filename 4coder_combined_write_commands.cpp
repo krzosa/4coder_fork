@@ -122,6 +122,50 @@ c_line_comment_starts_at_position(App *app, Buffer_ID buffer, i64 pos){
     return(alread_has_comment);
 }
 
+struct Selected_Lines {
+    Buffer_ID buffer;
+    View_ID view;
+
+    i64 cursor_pos;
+    i64 mark_pos;
+
+    i64 min_pos;
+    i64 max_pos;
+
+    i64 min_line;
+    i64 max_line;
+
+    // WHOLE selected lines
+    Range_i64 entire_selected_lines_pos;
+};
+
+function Selected_Lines
+get_selected_lines_for_active_view(App *app) {
+    Selected_Lines result = {};
+
+    View_ID   view   = get_active_view(app, Access_ReadWriteVisible);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    result.view = view;
+    result.buffer = buffer;
+
+    result.cursor_pos = view_get_cursor_pos(app, view);
+    result.mark_pos   = view_get_mark_pos(app, view);
+
+    result.min_pos = Min(result.cursor_pos, result.mark_pos);
+    result.max_pos = Max(result.cursor_pos, result.mark_pos);
+
+    result.min_line = get_line_number_from_pos(app, buffer, result.min_pos);
+    result.max_line = get_line_number_from_pos(app, buffer, result.max_pos);
+
+    i64 min_line = get_line_side_pos(app, buffer, result.min_line, Side_Min);
+    i64 max_line = get_line_side_pos(app, buffer, result.max_line, Side_Max);
+
+    result.entire_selected_lines_pos.min = min_line;
+    result.entire_selected_lines_pos.max = max_line;
+
+    return result;
+}
+
 CUSTOM_COMMAND_SIG(comment_line)
 CUSTOM_DOC("Insert '//' at the beginning of the line after leading whitespace.")
 {
@@ -134,31 +178,27 @@ CUSTOM_DOC("Insert '//' at the beginning of the line after leading whitespace.")
     }
 }
 
-CUSTOM_COMMAND_SIG(uncomment_line)
-CUSTOM_DOC("If present, delete '//' at the beginning of the line after leading whitespace.")
-{
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = get_start_of_line_at_cursor(app, view, buffer);
-    b32 alread_has_comment = c_line_comment_starts_at_position(app, buffer, pos);
-    if (alread_has_comment){
-        buffer_replace_range(app, buffer, Ii64(pos, pos + 2), string_u8_empty);
-    }
-}
+CUSTOM_COMMAND_SIG(comment_lines)
+CUSTOM_DOC("Comment out multiple lines"){
+    Selected_Lines lines = get_selected_lines_for_active_view(app);
+    if(lines.min_line == lines.max_line) lines.max_line += 1;
 
-CUSTOM_COMMAND_SIG(comment_line_toggle)
-CUSTOM_DOC("Turns uncommented lines into commented lines and vice versa for comments starting with '//'.")
-{
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = get_start_of_line_at_cursor(app, view, buffer);
-    b32 alread_has_comment = c_line_comment_starts_at_position(app, buffer, pos);
-    if (alread_has_comment){
-        buffer_replace_range(app, buffer, Ii64(pos, pos + 2), string_u8_empty);
+    History_Group history_group = history_group_begin(app, lines.buffer);
+    i64 first_line = get_pos_past_lead_whitespace_from_line_number(app, lines.buffer, lines.min_line);
+    b32 comment_is_first_so_we_should_decomment = c_line_comment_starts_at_position(app, lines.buffer, first_line);
+
+    for(i64 line = lines.min_line; line < lines.max_line; line++){
+        i64 line_start = get_pos_past_lead_whitespace_from_line_number(app, lines.buffer, line);
+        b32 there_is_a_comment = c_line_comment_starts_at_position(app, lines.buffer, line_start);
+        if(!comment_is_first_so_we_should_decomment && !there_is_a_comment){
+            buffer_replace_range(app, lines.buffer, Ii64(line_start), string_u8_litexpr("// "));
+            buffer_post_fade(app, lines.buffer, 0.667f, Ii64_size(line_start,3), finalize_color(defcolor_paste, 0));
+        }
+        if(comment_is_first_so_we_should_decomment && there_is_a_comment){
+            buffer_replace_range(app, lines.buffer, Ii64_size(line_start,2), string_u8_empty);
+        }
     }
-    else{
-        buffer_replace_range(app, buffer, Ii64(pos), string_u8_litexpr("//"));
-    }
+    history_group_end(history_group);
 }
 
 ////////////////////////////////

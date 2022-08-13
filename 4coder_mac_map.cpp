@@ -101,7 +101,6 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Bind(move_right_alpha_numeric_boundary,          KeyCode_Right, KeyCode_Command);
     Bind(move_left_alpha_numeric_or_camel_boundary,  KeyCode_Left, KeyCode_Control);
     Bind(move_right_alpha_numeric_or_camel_boundary, KeyCode_Right, KeyCode_Control);
-    Bind(comment_line_toggle,        KeyCode_Semicolon, KeyCode_Command);
     Bind(word_complete,              KeyCode_Tab);
     Bind(auto_indent_range,          KeyCode_Tab, KeyCode_Command);
     Bind(auto_indent_line_at_cursor, KeyCode_Tab, KeyCode_Shift);
