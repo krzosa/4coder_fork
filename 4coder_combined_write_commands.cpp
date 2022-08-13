@@ -196,14 +196,14 @@ CUSTOM_DOC("Pust a new line bellow cursor line")
     Scratch_Block scratch(app);
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    
+
     i64 pos = view_get_cursor_pos(app, view);
-    i64 line = get_line_number_from_pos(app, buffer, pos) + 1;
+    i64 line = get_line_number_from_pos(app, buffer, pos);
     String_Const_u8 s = push_buffer_line(app, scratch, buffer, line);
-    s = push_u8_stringf(scratch, "\n");
+    s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
     pos = get_line_side_pos(app, buffer, line, Side_Min);
-    buffer_replace_range(app, buffer, Ii64(pos), s);
-    view_set_cursor_and_preferred_x(app, view, seek_line_col(line, 0));
+    buffer_replace_range(app, buffer, get_line_pos_range(app, buffer, line), s);
+    view_set_cursor_and_preferred_x(app, view, seek_line_col(line+1, 0));
 }
 ////////////////////////////////
 

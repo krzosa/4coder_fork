@@ -36,6 +36,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
 
     SelectMap(file_id);
+    Bind(put_new_line_below,  KeyCode_Return, KeyCode_Control);
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);
     Bind(move_up,                KeyCode_Up);
@@ -75,6 +76,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(duplicate_line,              KeyCode_L, KeyCode_Control);
     Bind(cursor_mark_swap,            KeyCode_M, KeyCode_Control);
     Bind(reopen,                      KeyCode_O, KeyCode_Control, KeyCode_Shift);
+
     // Bind(query_replace,               KeyCode_Q, KeyCode_Control);
     Bind(query_replace_identifier,    KeyCode_Q, KeyCode_Control, KeyCode_Shift);
     // Bind(query_replace_selection,     KeyCode_Q, KeyCode_Alt);
