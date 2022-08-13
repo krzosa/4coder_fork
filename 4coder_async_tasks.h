@@ -30,7 +30,7 @@ struct Async_Node{
 };
 
 struct Async_System{
-    void *cmd_context;
+    Models *cmd_context;
 
     Heap node_heap;
     Arena node_arena;

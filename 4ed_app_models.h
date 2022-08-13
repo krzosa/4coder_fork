@@ -16,6 +16,7 @@ struct App_Settings{
     char *init_files[8];
     i32 init_files_count;
     i32 init_files_max;
+    b32 open_code_in_current_dir;
 
     char **custom_flags;
     i32 custom_flags_count;

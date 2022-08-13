@@ -7,9 +7,10 @@ struct Thread_Context_Extra_Info{
     void *async_thread;
 };
 
+struct Models;
 struct App{
     Thread_Context *tctx;
-    void *cmd_context;
+    Models *cmd_context;
 };
 
 ////////////////////////////////

@@ -666,6 +666,10 @@ default_4coder_initialize(App *app, String_Const_u8_Array file_names, i32 overri
             create_buffer(app, input_name, 0);
         }
     }
+
+    if(app->cmd_context->settings.open_code_in_current_dir){
+        open_code_files_in_current_directory(app);
+    }
 }
 
 function void

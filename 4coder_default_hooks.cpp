@@ -367,12 +367,12 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                 Rect_f32 range_end_rect = text_layout_character_on_screen(app, text_layout_id, range.max-1);
 
                 Rect_f32 total_range_rect = {0};
-                total_range_rect.x0 = Min(range_start_rect.x0, range_end_rect.x0);
                 total_range_rect.y0 = Min(range_start_rect.y0, range_end_rect.y0);
+                total_range_rect.x0 = Min(range_start_rect.x0, range_end_rect.x0);
                 total_range_rect.x1 = Max(range_start_rect.x1, range_end_rect.x1);
                 total_range_rect.y1 = Max(range_start_rect.y1, range_end_rect.y1);
 
-                f32 scale = 0.5f;
+                f32 scale = 0.8f;
                 if(cursor_is_over_token){
                     scale += 3.f;
                 }
@@ -380,6 +380,10 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                 // Emphesise hiperlink over clickable link
                 if(mouse_is_over_token){
                     scale += 3.f;
+                }
+
+                if(scale < 1.f){
+                    total_range_rect.x1 = total_range_rect.x0 + metrics.space_advance;
                 }
 
                 total_range_rect.y0 = total_range_rect.y1 - scale;

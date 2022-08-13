@@ -39,7 +39,10 @@ init_command_line_settings(App_Settings *settings, Plat_Settings *plat_settings,
                 switch (action){
                     case CLAct_Nothing:
                     {
-                        if (arg[0] == '-'){
+                        if (string_match(SCu8(arg), string_u8_litexpr("--open_code"))){
+                            settings->open_code_in_current_dir = true;
+                        }
+                        else if (arg[0] == '-'){
                             action = CLAct_Ignore;
                             switch (arg[1]){
                                 case 'd': action = CLAct_CustomDLL; strict = false; break;
