@@ -21,7 +21,7 @@ delta_ctx_get_user_data(String_Const_u8 delta_ctx){
 }
 
 function Buffer_Point_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             Delta_Rule_Function *func, String_Const_u8 delta_ctx,
             f32 dt, Buffer_Point position, Buffer_Point target){
     Buffer_Point_Delta_Result result = {};
@@ -35,14 +35,14 @@ delta_apply(Application_Links *app, View_ID view,
         }
         void *rule_data = delta_ctx_get_user_data(delta_ctx);
         Vec2_f32 partial = func(pending, is_new_target, dt, rule_data);
-        
+
         // NOTE(allen): clamp partial into the box from the origin
         // to the pending delta.
         Range_f32 x = If32(pending.x, 0.f);
         Range_f32 y = If32(pending.y, 0.f);
         partial.x = clamp_range(x, partial.x);
         partial.y = clamp_range(y, partial.y);
-        
+
         result.point = view_move_buffer_point(app, view, position, partial);
         result.still_animating = true;
     }
@@ -53,7 +53,7 @@ delta_apply(Application_Links *app, View_ID view,
 }
 
 function Buffer_Point_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             Delta_Rule_Function *func, String_Const_u8 delta_ctx,
             f32 dt, Buffer_Scroll scroll){
     return(delta_apply(app, view, func, delta_ctx,
@@ -61,7 +61,7 @@ delta_apply(Application_Links *app, View_ID view,
 }
 
 function Buffer_Point_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             f32 dt, Buffer_Point position, Buffer_Point target){
     View_Context ctx = view_current_context(app, view);
     String_Const_u8 delta_ctx = view_current_context_hook_memory(app, view, HookID_DeltaRule);
@@ -70,7 +70,7 @@ delta_apply(Application_Links *app, View_ID view,
 }
 
 function Buffer_Point_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             f32 dt, Buffer_Scroll scroll){
     View_Context ctx = view_current_context(app, view);
     String_Const_u8 delta_ctx = view_current_context_hook_memory(app, view, HookID_DeltaRule);
@@ -79,7 +79,7 @@ delta_apply(Application_Links *app, View_ID view,
 }
 
 function Vec2_f32_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             Delta_Rule_Function *func, String_Const_u8 delta_ctx,
             f32 dt, Vec2_f32 position, Vec2_f32 target){
     Vec2_f32_Delta_Result result = {};
@@ -93,14 +93,14 @@ delta_apply(Application_Links *app, View_ID view,
         }
         void *rule_data = delta_ctx_get_user_data(delta_ctx);
         Vec2_f32 partial = func(pending, is_new_target, dt, rule_data);
-        
+
         // NOTE(allen): clamp partial into the box from the origin
         // to the pending delta.
         Range_f32 x = If32(pending.x, 0.f);
         Range_f32 y = If32(pending.y, 0.f);
         partial.x = clamp_range(x, partial.x);
         partial.y = clamp_range(y, partial.y);
-        
+
         result.p = position + partial;
         result.still_animating = true;
     }
@@ -111,7 +111,7 @@ delta_apply(Application_Links *app, View_ID view,
 }
 
 function Vec2_f32_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             Delta_Rule_Function *func, String_Const_u8 delta_ctx,
             f32 dt, Basic_Scroll scroll){
     return(delta_apply(app, view, func, delta_ctx,
@@ -119,7 +119,7 @@ delta_apply(Application_Links *app, View_ID view,
 }
 
 function Vec2_f32_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             f32 dt, Vec2_f32 position, Vec2_f32 target){
     View_Context ctx = view_current_context(app, view);
     String_Const_u8 delta_ctx = view_current_context_hook_memory(app, view, HookID_DeltaRule);
@@ -128,7 +128,7 @@ delta_apply(Application_Links *app, View_ID view,
 }
 
 function Vec2_f32_Delta_Result
-delta_apply(Application_Links *app, View_ID view,
+delta_apply(App *app, View_ID view,
             f32 dt, Basic_Scroll scroll){
     View_Context ctx = view_current_context(app, view);
     String_Const_u8 delta_ctx = view_current_context_hook_memory(app, view, HookID_DeltaRule);

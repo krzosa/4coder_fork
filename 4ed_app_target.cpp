@@ -18,9 +18,9 @@
 #include "4coder_types.h"
 #include "4coder_default_colors.h"
 
-function Thread_Context* get_thread_context(Application_Links *app);
-function void print_message(Application_Links *app, String_Const_u8 message);
-function Profile_Global_List* get_core_profile_list(Application_Links *app);
+function Thread_Context* get_thread_context(App *app);
+function void print_message(App *app, String_Const_u8 message);
+function Profile_Global_List* get_core_profile_list(App *app);
 
 #include "4coder_string_match.h"
 #include "4coder_token.h"

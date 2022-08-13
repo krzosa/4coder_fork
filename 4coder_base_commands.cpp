@@ -6,7 +6,7 @@ moving the cursor, which work even without the default 4coder framework.
 // TOP
 
 function void
-write_text(Application_Links *app, String_Const_u8 insert){
+write_text(App *app, String_Const_u8 insert){
     ProfileScope(app, "write character");
     if (insert.str != 0 && insert.size > 0){
         View_ID view = get_active_view(app, Access_ReadWriteVisible);
@@ -151,7 +151,7 @@ CUSTOM_DOC("Deletes the text in the range between the cursor and the mark.")
 }
 
 function  void
-current_view_boundary_delete(Application_Links *app, Scan_Direction direction, Boundary_Function_List funcs){
+current_view_boundary_delete(App *app, Scan_Direction direction, Boundary_Function_List funcs){
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     Range_i64 range = {};
@@ -178,7 +178,7 @@ CUSTOM_DOC("Delete characters between the cursor position and the first alphanum
 }
 
 function void
-current_view_snipe_delete(Application_Links *app, Scan_Direction direction, Boundary_Function_List funcs){
+current_view_snipe_delete(App *app, Scan_Direction direction, Boundary_Function_List funcs){
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     i64 pos = view_get_cursor_pos(app, view);
@@ -293,7 +293,7 @@ CUSTOM_DOC("Reads the scroll wheel value from the mouse state and scrolls accord
 ////////////////////////////////
 
 internal void
-move_vertical_pixels(Application_Links *app, View_ID view, f32 pixels){
+move_vertical_pixels(App *app, View_ID view, f32 pixels){
     ProfileScope(app, "move vertical pixels");
     i64 pos = view_get_cursor_pos(app, view);
     Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(pos));
@@ -312,13 +312,13 @@ move_vertical_pixels(Application_Links *app, View_ID view, f32 pixels){
 }
 
 internal void
-move_vertical_pixels(Application_Links *app, f32 pixels){
+move_vertical_pixels(App *app, f32 pixels){
     View_ID view = get_active_view(app, Access_ReadVisible);
     move_vertical_pixels(app, view, pixels);
 }
 
 internal void
-move_vertical_lines(Application_Links *app, View_ID view, i64 lines){
+move_vertical_lines(App *app, View_ID view, i64 lines){
     if (lines > 0){
         for (i64 i = 0; i < lines; i += 1){
             move_vertical_pixels(app, 1.f);
@@ -332,13 +332,13 @@ move_vertical_lines(Application_Links *app, View_ID view, i64 lines){
 }
 
 internal void
-move_vertical_lines(Application_Links *app, i64 lines){
+move_vertical_lines(App *app, i64 lines){
     View_ID view = get_active_view(app, Access_ReadVisible);
     move_vertical_lines(app, view, lines);
 }
 
 internal f32
-get_page_jump(Application_Links *app, View_ID view){
+get_page_jump(App *app, View_ID view){
     Rect_f32 region = view_get_buffer_region(app, view);
     return(rect_height(region)*.9f);
 }
@@ -394,7 +394,7 @@ CUSTOM_DOC("Scrolls the view down one view height and moves the cursor down one 
 }
 
 internal void
-seek_blank_line(Application_Links *app, Scan_Direction direction, Position_Within_Line position){
+seek_blank_line(App *app, Scan_Direction direction, Position_Within_Line position){
     View_ID view = get_active_view(app, Access_ReadVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
     i64 pos = view_get_cursor_pos(app, view);
@@ -467,7 +467,7 @@ CUSTOM_DOC("Moves the cursor one character to the right.")
 }
 
 function void
-current_view_scan_move(Application_Links *app, Scan_Direction direction, Boundary_Function_List funcs){
+current_view_scan_move(App *app, Scan_Direction direction, Boundary_Function_List funcs){
     View_ID view = get_active_view(app, Access_ReadVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
     i64 cursor_pos = view_get_cursor_pos(app, view);
@@ -596,7 +596,7 @@ enum{
 };
 
 function void
-clean_all_lines_buffer(Application_Links *app, Buffer_ID buffer, Clean_All_Lines_Mode mode){
+clean_all_lines_buffer(App *app, Buffer_ID buffer, Clean_All_Lines_Mode mode){
     ProfileScope(app, "clean all lines");
     Scratch_Block scratch(app);
     Batch_Edit *batch_first = 0;
@@ -875,13 +875,13 @@ CUSTOM_COMMAND_SIG(search);
 CUSTOM_COMMAND_SIG(reverse_search);
 
 function void
-isearch__update_highlight(Application_Links *app, View_ID view, Range_i64 range){
+isearch__update_highlight(App *app, View_ID view, Range_i64 range){
     view_set_highlight_range(app, view, range);
     view_set_cursor_and_preferred_x(app, view, seek_pos(range.start));
 }
 
 function void
-isearch(Application_Links *app, Scan_Direction start_scan, i64 first_pos,
+isearch(App *app, Scan_Direction start_scan, i64 first_pos,
         String_Const_u8 query_init){
     View_ID view = get_active_view(app, Access_ReadVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
@@ -1086,21 +1086,21 @@ isearch(Application_Links *app, Scan_Direction start_scan, i64 first_pos,
 }
 
 function void
-isearch(Application_Links *app, Scan_Direction start_scan, String_Const_u8 query_init){
+isearch(App *app, Scan_Direction start_scan, String_Const_u8 query_init){
     View_ID view = get_active_view(app, Access_ReadVisible);
     i64 pos = view_get_cursor_pos(app, view);;
     isearch(app, start_scan, pos, query_init);
 }
 
 function void
-isearch(Application_Links *app, Scan_Direction start_scan){
+isearch(App *app, Scan_Direction start_scan){
     View_ID view = get_active_view(app, Access_ReadVisible);
     i64 pos = view_get_cursor_pos(app, view);;
     isearch(app, start_scan, pos, SCu8());
 }
 
 function void
-isearch_identifier(Application_Links *app, Scan_Direction scan){
+isearch_identifier(App *app, Scan_Direction scan){
     View_ID view = get_active_view(app, Access_ReadVisible);
     Buffer_ID buffer_id = view_get_buffer(app, view, Access_ReadVisible);
     i64 pos = view_get_cursor_pos(app, view);
@@ -1141,7 +1141,7 @@ struct String_Pair{
 };
 
 internal String_Pair
-query_user_replace_pair(Application_Links *app, Arena *arena){
+query_user_replace_pair(App *app, Arena *arena){
     Query_Bar *replace = push_array(arena, Query_Bar, 1);
     u8 *replace_space = push_array(arena, u8, KB(1));
     replace->prompt = string_u8_litexpr("Replace: ");
@@ -1166,7 +1166,7 @@ query_user_replace_pair(Application_Links *app, Arena *arena){
 // NOTE(allen): This is a bit of a hacky setup because of Query_Bar lifetimes.  This must be
 // called as the last operation of a command.
 internal void
-replace_in_range_query_user(Application_Links *app, Buffer_ID buffer, Range_i64 range){
+replace_in_range_query_user(App *app, Buffer_ID buffer, Range_i64 range){
     Scratch_Block scratch(app);
     Query_Bar_Group group(app);
     String_Pair pair = query_user_replace_pair(app, scratch);
@@ -1212,7 +1212,7 @@ CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of
 }
 
 function void
-query_replace_base(Application_Links *app, View_ID view, Buffer_ID buffer_id, i64 pos, String_Const_u8 r, String_Const_u8 w){
+query_replace_base(App *app, View_ID view, Buffer_ID buffer_id, i64 pos, String_Const_u8 r, String_Const_u8 w){
     i64 new_pos = 0;
     seek_string_forward(app, buffer_id, pos - 1, 0, r, &new_pos);
 
@@ -1251,7 +1251,7 @@ query_replace_base(Application_Links *app, View_ID view, Buffer_ID buffer_id, i6
 }
 
 function void
-query_replace_parameter(Application_Links *app, String_Const_u8 replace_str, i64 start_pos, b32 add_replace_query_bar){
+query_replace_parameter(App *app, String_Const_u8 replace_str, i64 start_pos, b32 add_replace_query_bar){
     Query_Bar_Group group(app);
     Query_Bar replace = {};
     replace.prompt = string_u8_litexpr("Replace: ");
@@ -1367,7 +1367,7 @@ CUSTOM_DOC("Read from the top of the point stack and jump there; if already ther
 ////////////////////////////////
 
 function void
-delete_file_base(Application_Links *app, String_Const_u8 file_name, Buffer_ID buffer_id){
+delete_file_base(App *app, String_Const_u8 file_name, Buffer_ID buffer_id){
     String_Const_u8 path = string_remove_last_folder(file_name);
     Scratch_Block scratch(app);
     List_String_Const_u8 list = {};
@@ -1521,7 +1521,7 @@ CUSTOM_DOC("Queries the user for a name and creates a new directory with the giv
 ////////////////////////////////
 
 internal void
-current_view_move_line(Application_Links *app, Scan_Direction direction){
+current_view_move_line(App *app, Scan_Direction direction){
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     i64 pos = view_get_cursor_pos(app, view);
@@ -1578,7 +1578,7 @@ CUSTOM_DOC("Delete the line the on which the cursor sits.")
 ////////////////////////////////
 
 function b32
-get_cpp_matching_file(Application_Links *app, Buffer_ID buffer, Buffer_ID *buffer_out){
+get_cpp_matching_file(App *app, Buffer_ID buffer, Buffer_ID *buffer_out){
     b32 result = false;
     Scratch_Block scratch(app);
     String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer);
@@ -1724,7 +1724,7 @@ CUSTOM_DOC("Reopen the current buffer from the hard drive.")
 ////////////////////////////////
 
 internal i64
-record_get_new_cursor_position_undo(Application_Links *app, Buffer_ID buffer_id, History_Record_Index index, Record_Info record){
+record_get_new_cursor_position_undo(App *app, Buffer_ID buffer_id, History_Record_Index index, Record_Info record){
     i64 new_edit_position = record.pos_before_edit;
 #if 0
     switch (record.kind){
@@ -1744,13 +1744,13 @@ record_get_new_cursor_position_undo(Application_Links *app, Buffer_ID buffer_id,
 }
 
 internal i64
-record_get_new_cursor_position_undo(Application_Links *app, Buffer_ID buffer_id, History_Record_Index index){
+record_get_new_cursor_position_undo(App *app, Buffer_ID buffer_id, History_Record_Index index){
     Record_Info record = buffer_history_get_record_info(app, buffer_id, index);
     return(record_get_new_cursor_position_undo(app, buffer_id, index, record));
 }
 
 internal i64
-record_get_new_cursor_position_redo(Application_Links *app, Buffer_ID buffer_id, History_Record_Index index, Record_Info record){
+record_get_new_cursor_position_redo(App *app, Buffer_ID buffer_id, History_Record_Index index, Record_Info record){
     i64 new_edit_position = 0;
     switch (record.kind){
         default:
@@ -1768,13 +1768,13 @@ record_get_new_cursor_position_redo(Application_Links *app, Buffer_ID buffer_id,
 }
 
 internal i64
-record_get_new_cursor_position_redo(Application_Links *app, Buffer_ID buffer_id, History_Record_Index index){
+record_get_new_cursor_position_redo(App *app, Buffer_ID buffer_id, History_Record_Index index){
     Record_Info record = buffer_history_get_record_info(app, buffer_id, index);
     return(record_get_new_cursor_position_redo(app, buffer_id, index, record));
 }
 
 function void
-undo__fade_finish(Application_Links *app, Fade_Range *range){
+undo__fade_finish(App *app, Fade_Range *range){
     Buffer_ID buffer = range->buffer_id;
     History_Record_Index current = buffer_history_get_current_state_index(app, buffer);
     if (current > 0){
@@ -1783,7 +1783,7 @@ undo__fade_finish(Application_Links *app, Fade_Range *range){
 }
 
 function void
-undo__flush_fades(Application_Links *app, Buffer_ID buffer){
+undo__flush_fades(App *app, Buffer_ID buffer){
     Fade_Range **prev_next = &buffer_fade_ranges.first;
     for (Fade_Range *node = buffer_fade_ranges.first, *next = 0;
          node != 0;

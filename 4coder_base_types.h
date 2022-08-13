@@ -1415,10 +1415,10 @@ struct Scratch_Block{
   Scratch_Block(struct Thread_Context *tctx, Arena *a1);
   Scratch_Block(struct Thread_Context *tctx, Arena *a1, Arena *a2);
   Scratch_Block(struct Thread_Context *tctx, Arena *a1, Arena *a2, Arena *a3);
-  Scratch_Block(struct Application_Links *app);
-  Scratch_Block(struct Application_Links *app, Arena *a1);
-  Scratch_Block(struct Application_Links *app, Arena *a1, Arena *a2);
-  Scratch_Block(struct Application_Links *app, Arena *a1, Arena *a2, Arena *a3);
+  Scratch_Block(struct App *app);
+  Scratch_Block(struct App *app, Arena *a1);
+  Scratch_Block(struct App *app, Arena *a1, Arena *a2);
+  Scratch_Block(struct App *app, Arena *a1, Arena *a2, Arena *a3);
   ~Scratch_Block();
   operator Arena*();
   void restore(void);

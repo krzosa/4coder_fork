@@ -87,7 +87,7 @@ make_colors(Arena *arena, ARGB_Color *colors, i32 count){
 }
 
 function Color_Table
-make_color_table(Application_Links *app, Arena *arena){
+make_color_table(App *app, Arena *arena){
     Managed_ID highest_color_id = managed_id_group_highest_id(app, string_u8_litexpr("colors"));
     Color_Table result = {};
     result.count = (u32)(clamp_top(highest_color_id + 1, max_u32));
@@ -102,7 +102,7 @@ make_color_table(Application_Links *app, Arena *arena){
 }
 
 function void
-set_default_color_scheme(Application_Links *app){
+set_default_color_scheme(App *app){
     if (global_theme_arena.base_allocator == 0){
         global_theme_arena = make_arena_system();
     }

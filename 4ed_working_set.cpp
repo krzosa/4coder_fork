@@ -82,19 +82,19 @@ working_set_allocate_file(Working_Set *working_set, Lifetime_Allocator *lifetime
         sll_stack_pop(working_set->free_files);
     }
     block_zero_struct(file);
-    
+
     dll_insert_back(&working_set->active_file_sentinel, &file->main_chain_node);
     dll_insert_back(&working_set->touch_order_sentinel, &file->touch_node);
     working_set->active_file_count += 1;
-    
+
     file->id = working_set->id_counter;
     working_set->id_counter += 1;
-    
+
     working_set_file_default_settings(working_set, file);
-    
+
     table_insert(&working_set->id_to_ptr_table,
                  (u64)file->id, (u64)(PtrAsInt(file)));
-    
+
     return(file);
 }
 
@@ -124,18 +124,18 @@ internal void
 working_set_init(Models *models, Working_Set *working_set){
     block_zero_struct(working_set);
     working_set->arena = make_arena_system();
-    
+
     working_set->id_counter = 1;
-    
+
     dll_init_sentinel(&working_set->active_file_sentinel);
     dll_init_sentinel(&working_set->touch_order_sentinel);
-    
+
     local_const i32 slot_count = 128;
     Base_Allocator *allocator = get_base_allocator_system();
     working_set->id_to_ptr_table = make_table_u64_u64(allocator, slot_count);
     working_set->canon_table = make_table_Data_u64(allocator, slot_count);
     working_set->name_table = make_table_Data_u64(allocator, slot_count);
-    
+
     dll_init_sentinel(&working_set->has_external_mod_sentinel);
     working_set->mutex = system_mutex_make();
     working_set->file_change_thread = system_thread_launch(file_change_notification_thread_main, models);
@@ -340,23 +340,23 @@ internal void
 buffer_bind_name_low_level(Arena *scratch, Working_Set *working_set, Editing_File *file, String_Const_u8 base_name, String_Const_u8 name){
     Assert(file->base_name.name_size == 0);
     Assert(file->unique_name.name_size == 0);
-    
+
     Editing_File_Name new_name = {};
     buffer_resolve_name_low_level(scratch, working_set, &new_name, name);
-    
+
     {
         u64 size = base_name.size;
         size = clamp_top(size, sizeof(file->base_name.name_space));
         block_copy(file->base_name.name_space, base_name.str, size);
         file->base_name.name_size = size;
     }
-    
+
     {
         u64 size = new_name.name_size;
         block_copy(file->unique_name.name_space, new_name.name_space, size);
         file->unique_name.name_size = size;
     }
-    
+
     b32 result = working_set_add_name(working_set, file, string_from_file_name(&file->unique_name));
     Assert(result);
 }
@@ -373,7 +373,7 @@ buffer_unbind_name_low_level(Working_Set *working_set, Editing_File *file){
 internal void
 buffer_bind_name(Thread_Context *tctx, Models *models, Arena *scratch, Working_Set *working_set, Editing_File *file, String_Const_u8 base_name){
     Temp_Memory temp = begin_temp(scratch);
-    
+
     // List of conflict files.
     struct Node_Ptr{
         Node_Ptr *next;
@@ -382,14 +382,14 @@ buffer_bind_name(Thread_Context *tctx, Models *models, Arena *scratch, Working_S
     Node_Ptr *conflict_first = 0;
     Node_Ptr *conflict_last = 0;
     i32 conflict_count = 0;
-    
+
     {
         Node_Ptr *node = push_array(scratch, Node_Ptr, 1);
         sll_queue_push(conflict_first, conflict_last, node);
         node->file_ptr = file;
         conflict_count += 1;
     }
-    
+
     Node *used_nodes = &working_set->active_file_sentinel;
     for (Node *node = used_nodes->next;
          node != used_nodes;
@@ -402,10 +402,10 @@ buffer_bind_name(Thread_Context *tctx, Models *models, Arena *scratch, Working_S
             conflict_count += 1;
         }
     }
-    
+
     // Fill conflict array.
     Buffer_Name_Conflict_Entry *conflicts = push_array(scratch, Buffer_Name_Conflict_Entry, conflict_count);
-    
+
     {
         i32 i = 0;
         for (Node_Ptr *node = conflict_first;
@@ -414,10 +414,10 @@ buffer_bind_name(Thread_Context *tctx, Models *models, Arena *scratch, Working_S
             Editing_File *file_ptr = node->file_ptr;
             Buffer_Name_Conflict_Entry *entry = &conflicts[i];
             entry->buffer_id = file_ptr->id;
-            
+
             entry->file_name = push_string_copy(scratch, string_from_file_name(&file_ptr->canon));
             entry->base_name = push_string_copy(scratch, base_name);
-            
+
             String_Const_u8 b = base_name;
             if (i > 0){
                 b = string_from_file_name(&file_ptr->unique_name);
@@ -431,15 +431,15 @@ buffer_bind_name(Thread_Context *tctx, Models *models, Arena *scratch, Working_S
             entry->unique_name_capacity = unique_name_capacity;
         }
     }
-    
+
     // Get user's resolution data.
     if (models->buffer_name_resolver != 0){
-        Application_Links app = {};
+        App app = {};
         app.tctx = tctx;
         app.cmd_context = models;
         models->buffer_name_resolver(&app, conflicts, conflict_count);
     }
-    
+
     // Re-bind all of the files
     {
         i32 i = 0;
@@ -452,7 +452,7 @@ buffer_bind_name(Thread_Context *tctx, Models *models, Arena *scratch, Working_S
             }
         }
     }
-    
+
     {
         i32 i = 0;
         for (Node_Ptr *node = conflict_first;
@@ -464,7 +464,7 @@ buffer_bind_name(Thread_Context *tctx, Models *models, Arena *scratch, Working_S
             buffer_bind_name_low_level(scratch, working_set, file_ptr, base_name, unique_name);
         }
     }
-    
+
     end_temp(temp);
 }
 

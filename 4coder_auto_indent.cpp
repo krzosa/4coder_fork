@@ -5,7 +5,7 @@
 // TOP
 
 internal Batch_Edit*
-make_batch_from_indentations(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, i64 *indentations, Indent_Flag flags, i32 tab_width){
+make_batch_from_indentations(App *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, i64 *indentations, Indent_Flag flags, i32 tab_width){
     i64 *shifted_indentations = indentations - lines.first;
 
     Batch_Edit *batch_first = 0;
@@ -54,7 +54,7 @@ make_batch_from_indentations(Application_Links *app, Arena *arena, Buffer_ID buf
 }
 
 internal void
-set_line_indents(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, i64 *indentations, Indent_Flag flags, i32 tab_width){
+set_line_indents(App *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, i64 *indentations, Indent_Flag flags, i32 tab_width){
     Batch_Edit *batch = make_batch_from_indentations(app, arena, buffer, lines, indentations, flags, tab_width);
     if (batch != 0){
         buffer_batch_edit(app, buffer, batch);
@@ -62,7 +62,7 @@ set_line_indents(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i
 }
 
 internal Token*
-find_anchor_token(Application_Links *app, Buffer_ID buffer, Token_Array *tokens, i64 invalid_line){
+find_anchor_token(App *app, Buffer_ID buffer, Token_Array *tokens, i64 invalid_line){
     ProfileScope(app, "find anchor token");
     Token *result = 0;
 
@@ -150,7 +150,7 @@ indent__unfinished_statement(Token *token, Nest *current_nest){
 }
 
 function void
-line_indent_cache_update(Application_Links *app, Buffer_ID buffer, i32 tab_width, Indent_Line_Cache *line_cache){
+line_indent_cache_update(App *app, Buffer_ID buffer, i32 tab_width, Indent_Line_Cache *line_cache){
     if (line_cache->line_number_for_cached_indent != line_cache->where_token_starts){
         ProfileScope(app, "get indent info");
         line_cache->line_number_for_cached_indent = line_cache->where_token_starts;
@@ -161,7 +161,7 @@ line_indent_cache_update(Application_Links *app, Buffer_ID buffer, i32 tab_width
 }
 
 internal i64*
-get_indentation_array(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, Indent_Flag flags, i32 tab_width, i32 indent_width){
+get_indentation_array(App *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, Indent_Flag flags, i32 tab_width, i32 indent_width){
     ProfileScope(app, "get indentation array");
     i64 count = lines.max - lines.min + 1;
     i64 *indentations = push_array(arena, i64, count);
@@ -355,7 +355,7 @@ actual_indent = N; )
 }
 
 internal b32
-auto_indent_buffer(Application_Links *app, Buffer_ID buffer, Range_i64 pos, Indent_Flag flags, i32 tab_width, i32 indent_width){
+auto_indent_buffer(App *app, Buffer_ID buffer, Range_i64 pos, Indent_Flag flags, i32 tab_width, i32 indent_width){
     ProfileScope(app, "auto indent buffer");
     Token_Array token_array = get_token_array_from_buffer(app, buffer);
     Token_Array *tokens = &token_array;
@@ -392,7 +392,7 @@ auto_indent_buffer(Application_Links *app, Buffer_ID buffer, Range_i64 pos, Inde
 }
 
 function void
-auto_indent_buffer(Application_Links *app, Buffer_ID buffer, Range_i64 pos, Indent_Flag flags){
+auto_indent_buffer(App *app, Buffer_ID buffer, Range_i64 pos, Indent_Flag flags){
     i32 indent_width = (i32)debug_config_indent_width;
     i32 tab_width = (i32)debug_config_default_tab_width;
     tab_width = clamp_bot(1, tab_width);
@@ -405,7 +405,7 @@ auto_indent_buffer(Application_Links *app, Buffer_ID buffer, Range_i64 pos, Inde
 }
 
 function void
-auto_indent_buffer(Application_Links *app, Buffer_ID buffer, Range_i64 pos){
+auto_indent_buffer(App *app, Buffer_ID buffer, Range_i64 pos){
     auto_indent_buffer(app, buffer, pos, 0);
 }
 

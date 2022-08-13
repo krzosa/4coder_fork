@@ -6,7 +6,7 @@ open file, switch buffer, or kill buffer.
 // TOP
 
 function void
-generate_all_buffers_list__output_buffer(Application_Links *app, Lister *lister,
+generate_all_buffers_list__output_buffer(App *app, Lister *lister,
                                          Buffer_ID buffer){
     Dirty_State dirty = buffer_get_dirty_state(app, buffer);
     String_Const_u8 status = {};
@@ -21,7 +21,7 @@ generate_all_buffers_list__output_buffer(Application_Links *app, Lister *lister,
 }
 
 function void
-generate_all_buffers_list(Application_Links *app, Lister *lister){
+generate_all_buffers_list(App *app, Lister *lister){
     lister_begin_new_item_set(app, lister);
 
     Buffer_ID viewed_buffers[16];
@@ -78,7 +78,7 @@ generate_all_buffers_list(Application_Links *app, Lister *lister){
 }
 
 function Buffer_ID
-get_buffer_from_user(Application_Links *app, String_Const_u8 query){
+get_buffer_from_user(App *app, String_Const_u8 query){
     Lister_Handlers handlers = lister_get_default_handlers();
     handlers.refresh = generate_all_buffers_list;
     Lister_Result l_result = run_lister_with_refresh_handler(app, query, handlers);
@@ -90,7 +90,7 @@ get_buffer_from_user(Application_Links *app, String_Const_u8 query){
 }
 
 function Buffer_ID
-get_buffer_from_user(Application_Links *app, char *query){
+get_buffer_from_user(App *app, char *query){
     return(get_buffer_from_user(app, SCu8(query)));
 }
 
@@ -126,7 +126,7 @@ command_lister_status_bindings(Mapping *mapping, Command_Map_ID map_id){
 }
 
 function Custom_Command_Function*
-get_command_from_user(Application_Links *app, String_Const_u8 query, i32 *command_ids, i32 command_id_count, Command_Lister_Status_Rule *status_rule){
+get_command_from_user(App *app, String_Const_u8 query, i32 *command_ids, i32 command_id_count, Command_Lister_Status_Rule *status_rule){
     if (command_ids == 0){
         command_id_count = command_one_past_last_id;
     }
@@ -182,25 +182,25 @@ get_command_from_user(Application_Links *app, String_Const_u8 query, i32 *comman
 }
 
 function Custom_Command_Function*
-get_command_from_user(Application_Links *app, String_Const_u8 query, Command_Lister_Status_Rule *status_rule){
+get_command_from_user(App *app, String_Const_u8 query, Command_Lister_Status_Rule *status_rule){
     return(get_command_from_user(app, query, 0, 0, status_rule));
 }
 
 function Custom_Command_Function*
-get_command_from_user(Application_Links *app, char *query,
+get_command_from_user(App *app, char *query,
                       i32 *command_ids, i32 command_id_count, Command_Lister_Status_Rule *status_rule){
     return(get_command_from_user(app, SCu8(query), command_ids, command_id_count, status_rule));
 }
 
 function Custom_Command_Function*
-get_command_from_user(Application_Links *app, char *query, Command_Lister_Status_Rule *status_rule){
+get_command_from_user(App *app, char *query, Command_Lister_Status_Rule *status_rule){
     return(get_command_from_user(app, SCu8(query), 0, 0, status_rule));
 }
 
 ////////////////////////////////
 
 function Color_Table*
-get_color_table_from_user(Application_Links *app, String_Const_u8 query, Color_Table_List *color_table_list){
+get_color_table_from_user(App *app, String_Const_u8 query, Color_Table_List *color_table_list){
     if (color_table_list == 0){
         color_table_list = &global_theme_list;
     }
@@ -230,14 +230,14 @@ get_color_table_from_user(Application_Links *app, String_Const_u8 query, Color_T
 }
 
 function Color_Table*
-get_color_table_from_user(Application_Links *app){
+get_color_table_from_user(App *app){
     return(get_color_table_from_user(app, string_u8_litexpr("Theme:"), 0));
 }
 
 ////////////////////////////////
 
 function Lister_Activation_Code
-lister__write_character__file_path(Application_Links *app){
+lister__write_character__file_path(App *app){
     Lister_Activation_Code result = ListerActivation_Continue;
     View_ID view = get_this_ctx_view(app, Access_Always);
     Lister *lister = view_get_lister(app, view);
@@ -263,7 +263,7 @@ lister__write_character__file_path(Application_Links *app){
 }
 
 function void
-lister__backspace_text_field__file_path(Application_Links *app){
+lister__backspace_text_field__file_path(App *app){
     View_ID view = get_this_ctx_view(app, Access_Always);
     Lister *lister = view_get_lister(app, view);
     if (lister != 0){
@@ -301,7 +301,7 @@ lister__backspace_text_field__file_path(Application_Links *app){
 }
 
 function void
-generate_hot_directory_file_list(Application_Links *app, Lister *lister){
+generate_hot_directory_file_list(App *app, Lister *lister){
     Scratch_Block scratch(app, lister->arena);
 
     Temp_Memory temp = begin_temp(lister->arena);
@@ -378,7 +378,7 @@ struct File_Name_Result{
 };
 
 function File_Name_Result
-get_file_name_from_user(Application_Links *app, Arena *arena, String_Const_u8 query, View_ID view){
+get_file_name_from_user(App *app, Arena *arena, String_Const_u8 query, View_ID view){
     Lister_Handlers handlers = lister_get_default_handlers();
     handlers.refresh = generate_hot_directory_file_list;
     handlers.write_character = lister__write_character__file_path;
@@ -415,7 +415,7 @@ get_file_name_from_user(Application_Links *app, Arena *arena, String_Const_u8 qu
 }
 
 function File_Name_Result
-get_file_name_from_user(Application_Links *app, Arena *arena, char *query, View_ID view){
+get_file_name_from_user(App *app, Arena *arena, char *query, View_ID view){
     return(get_file_name_from_user(app, arena, SCu8(query), view));
 }
 
@@ -429,7 +429,7 @@ enum{
 };
 
 function b32
-do_buffer_kill_user_check(Application_Links *app, Buffer_ID buffer, View_ID view){
+do_buffer_kill_user_check(App *app, Buffer_ID buffer, View_ID view){
     Scratch_Block scratch(app);
     Lister_Choice_List list = {};
     lister_choice(scratch, &list, "(N)o"  , "", KeyCode_N, SureToKill_No);
@@ -470,7 +470,7 @@ do_buffer_kill_user_check(Application_Links *app, Buffer_ID buffer, View_ID view
 }
 
 function b32
-do_4coder_close_user_check(Application_Links *app, View_ID view){
+do_4coder_close_user_check(App *app, View_ID view){
     Scratch_Block scratch(app);
     Lister_Choice_List list = {};
     lister_choice(scratch, &list, "(N)o"  , "", KeyCode_N, SureToKill_No);
@@ -537,7 +537,7 @@ enum{
 };
 
 function b32
-query_create_folder(Application_Links *app, String_Const_u8 folder_name){
+query_create_folder(App *app, String_Const_u8 folder_name){
     Scratch_Block scratch(app);
     Lister_Choice_List list = {};
     lister_choice(scratch, &list, "(N)o"  , "", KeyCode_N, SureToKill_No);
@@ -575,7 +575,7 @@ query_create_folder(Application_Links *app, String_Const_u8 folder_name){
 ////////////////////////////////
 
 function Lister_Activation_Code
-activate_open_or_new__generic(Application_Links *app, View_ID view,
+activate_open_or_new__generic(App *app, View_ID view,
                               String_Const_u8 path, String_Const_u8 file_name, b32 is_folder,
                               Buffer_Create_Flag flags){
     Lister_Activation_Code result = 0;

@@ -23,10 +23,10 @@ struct Profile_Block{
     Profile_Global_List *list;
     b32 is_closed;
     Profile_ID id;
-    
+
     Profile_Block(Thread_Context *tctx, Profile_Global_List *list,
                   String_Const_u8 name, String_Const_u8 location);
-    Profile_Block(Application_Links *app, String_Const_u8 name, String_Const_u8 location);
+    Profile_Block(App *app, String_Const_u8 name, String_Const_u8 location);
     ~Profile_Block();
     void close_now();
 };
@@ -36,10 +36,10 @@ struct Profile_Scope_Block{
     Profile_Global_List *list;
     b32 is_closed;
     Profile_ID id;
-    
+
     Profile_Scope_Block(Thread_Context *tctx, Profile_Global_List *list,
                         String_Const_u8 name, String_Const_u8 location);
-    Profile_Scope_Block(Application_Links *app, String_Const_u8 name, String_Const_u8 location);
+    Profile_Scope_Block(App *app, String_Const_u8 name, String_Const_u8 location);
     ~Profile_Scope_Block();
     void close_now();
 };

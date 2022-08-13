@@ -39,7 +39,7 @@ binary_search(i64 *array, i32 stride, i32 count, i64 x){
 }
 
 internal Sticky_Jump_Array
-parse_buffer_to_jump_array(Application_Links *app, Arena *arena, Buffer_ID buffer){
+parse_buffer_to_jump_array(App *app, Arena *arena, Buffer_ID buffer){
     Sticky_Jump_Node *jump_first = 0;;
     Sticky_Jump_Node *jump_last = 0;
     i32 jump_count = 0;
@@ -102,7 +102,7 @@ parse_buffer_to_jump_array(Application_Links *app, Arena *arena, Buffer_ID buffe
 }
 
 internal void
-init_marker_list(Application_Links *app, Heap *heap, Buffer_ID buffer, Marker_List *list){
+init_marker_list(App *app, Heap *heap, Buffer_ID buffer, Marker_List *list){
     Scratch_Block scratch(app);
 
     Sticky_Jump_Array jumps = parse_buffer_to_jump_array(app, scratch, buffer);
@@ -218,7 +218,7 @@ get_marker_list_for_buffer(Buffer_ID buffer_id){
 }
 
 internal Marker_List*
-get_or_make_list_for_buffer(Application_Links *app, Heap *heap, Buffer_ID buffer_id){
+get_or_make_list_for_buffer(App *app, Heap *heap, Buffer_ID buffer_id){
     Marker_List *result = get_marker_list_for_buffer(buffer_id);
     if (result != 0){
         i32 buffer_size = (i32)buffer_get_size(app, buffer_id);
@@ -240,7 +240,7 @@ get_or_make_list_for_buffer(Application_Links *app, Heap *heap, Buffer_ID buffer
 }
 
 internal b32
-get_stored_jump_from_list(Application_Links *app, Marker_List *list, i32 index,
+get_stored_jump_from_list(App *app, Marker_List *list, i32 index,
                           Sticky_Jump_Stored *stored_out){
     Sticky_Jump_Stored stored = {};
     if (list != 0){
@@ -253,7 +253,7 @@ get_stored_jump_from_list(Application_Links *app, Marker_List *list, i32 index,
 }
 
 internal Sticky_Jump_Stored*
-get_all_stored_jumps_from_list(Application_Links *app, Arena *arena, Marker_List *list){
+get_all_stored_jumps_from_list(App *app, Arena *arena, Marker_List *list){
     Sticky_Jump_Stored *stored = 0;
     if (list != 0){
         Temp_Memory restore_point = begin_temp(arena);
@@ -269,7 +269,7 @@ get_all_stored_jumps_from_list(Application_Links *app, Arena *arena, Marker_List
 }
 
 internal b32
-get_jump_from_list(Application_Links *app, Marker_List *list, i32 index, ID_Pos_Jump_Location *location){
+get_jump_from_list(App *app, Marker_List *list, i32 index, ID_Pos_Jump_Location *location){
     b32 result = false;
     Sticky_Jump_Stored stored = {};
     if (get_stored_jump_from_list(app, list, index, &stored)){
@@ -293,7 +293,7 @@ get_jump_from_list(Application_Links *app, Marker_List *list, i32 index, ID_Pos_
 }
 
 internal i64
-get_line_from_list(Application_Links *app, Marker_List *list, i32 index){
+get_line_from_list(App *app, Marker_List *list, i32 index){
     i64 result = 0;
     if (list != 0){
         Sticky_Jump_Stored stored = {};
@@ -305,7 +305,7 @@ get_line_from_list(Application_Links *app, Marker_List *list, i32 index){
 }
 
 internal b32
-get_is_sub_error_from_list(Application_Links *app, Marker_List *list, i32 index){
+get_is_sub_error_from_list(App *app, Marker_List *list, i32 index){
     b32 result = false;
     if (list != 0){
         Sticky_Jump_Stored stored = {};
@@ -317,7 +317,7 @@ get_is_sub_error_from_list(Application_Links *app, Marker_List *list, i32 index)
 }
 
 internal i32
-get_index_nearest_from_list(Application_Links *app, Marker_List *list, i64 line){
+get_index_nearest_from_list(App *app, Marker_List *list, i64 line){
     i32 result = -1;
     if (list != 0){
         Scratch_Block scratch(app);
@@ -330,7 +330,7 @@ get_index_nearest_from_list(Application_Links *app, Marker_List *list, i64 line)
 }
 
 internal i32
-get_index_exact_from_list(Application_Links *app, Marker_List *list, i64 line){
+get_index_exact_from_list(App *app, Marker_List *list, i64 line){
     i32 result = -1;
     if (list != 0){
         Scratch_Block scratch(app);
@@ -348,7 +348,7 @@ get_index_exact_from_list(Application_Links *app, Marker_List *list, i64 line){
 // CUSTOM_COMMAND_SIG(goto_jump_at_cursor)
 // CUSTOM_DOC("If the cursor is found to be on a jump location, parses the jump location and brings up the file and position in another view and changes the active panel to the view containing the jump.")
 function void
-jump_to_jump_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel){
+jump_to_jump_at_cursor(App *app, View_ID active_view, i64 pos, b32 same_panel){
     Heap *heap = &global_heap;
     Buffer_ID buffer = view_get_buffer(app, active_view, Access_ReadVisible);
     Marker_List *list = get_or_make_list_for_buffer(app, heap, buffer);
@@ -373,7 +373,7 @@ jump_to_jump_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32
 }
 
 function b32
-jump_to_definition_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel) {
+jump_to_definition_at_cursor(App *app, View_ID active_view, i64 pos, b32 same_panel) {
   b32 result = false;
 
   if (active_view != 0){
@@ -417,7 +417,7 @@ jump_to_definition_at_cursor(Application_Links *app, View_ID active_view, i64 po
 }
 
 function String_Const_u8
-construct_relative_path_in_the_same_folder_as_buffer(Application_Links *app, Arena *scratch, Buffer_ID buffer, String_Const_u8 relative_path){
+construct_relative_path_in_the_same_folder_as_buffer(App *app, Arena *scratch, Buffer_ID buffer, String_Const_u8 relative_path){
     String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer);
     String_Const_u8 path = string_remove_last_folder(file_name);
     if (character_is_slash(string_get_character(path, path.size - 1))){
@@ -429,7 +429,7 @@ construct_relative_path_in_the_same_folder_as_buffer(Application_Links *app, Are
 
 
 function b32
-jump_to_file_in_quotes_at_cursor(Application_Links *app, View_ID active_view, i64 pos, b32 same_panel) {
+jump_to_file_in_quotes_at_cursor(App *app, View_ID active_view, i64 pos, b32 same_panel) {
   b32 result = false;
   Buffer_ID buffer = view_get_buffer(app, active_view, Access_ReadVisible);
   if (buffer_exists(app, buffer)){
@@ -461,7 +461,7 @@ jump_to_file_in_quotes_at_cursor(Application_Links *app, View_ID active_view, i6
 }
 
 function void
-get_active_view_and_cursor_pos_or_mouse_pos_for_command(Application_Links *app, View_ID *view, i64 *pos){
+get_active_view_and_cursor_pos_or_mouse_pos_for_command(App *app, View_ID *view, i64 *pos){
   User_Input in = get_current_input(app);
   *view = get_active_view(app, Access_ReadVisible);
   *pos = view_get_cursor_pos(app, *view);
@@ -495,7 +495,7 @@ CUSTOM_DOC("Jump to the first definition in the code index matching an identifie
 }
 
 internal void
-goto_jump_in_order(Application_Links *app, Marker_List *list, View_ID jump_view, ID_Pos_Jump_Location location){
+goto_jump_in_order(App *app, Marker_List *list, View_ID jump_view, ID_Pos_Jump_Location location){
     Buffer_ID buffer = {};
     if (get_jump_buffer(app, &buffer, &location)){
         View_ID target_view = get_active_view(app, Access_Always);
@@ -515,7 +515,7 @@ jump_is_repeat(ID_Pos_Jump_Location prev, ID_Pos_Jump_Location location){
 }
 
 internal void
-goto_next_filtered_jump(Application_Links *app, Marker_List *list, View_ID jump_view, i32 list_index, i32 direction, b32 skip_repeats, b32 skip_sub_errors){
+goto_next_filtered_jump(App *app, Marker_List *list, View_ID jump_view, i32 list_index, i32 direction, b32 skip_repeats, b32 skip_sub_errors){
     Assert(direction == 1 || direction == -1);
 
     if (list != 0){
@@ -544,7 +544,7 @@ goto_next_filtered_jump(Application_Links *app, Marker_List *list, View_ID jump_
 }
 
 internal Locked_Jump_State
-get_locked_jump_state(Application_Links *app, Heap *heap){
+get_locked_jump_state(App *app, Heap *heap){
     Locked_Jump_State result = {};
     result.view = get_view_for_locked_jump_buffer(app);
     if (result.view != 0){

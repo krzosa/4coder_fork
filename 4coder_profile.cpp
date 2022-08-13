@@ -41,7 +41,7 @@ profile_clear(Profile_Global_List *list){
     }
     list->first_arena = 0;
     list->last_arena = 0;
-    
+
     linalloc_clear(&list->node_arena);
     list->first_thread = 0;
     list->last_thread = 0;
@@ -54,12 +54,12 @@ profile_thread_flush(Thread_Context *tctx, Profile_Global_List *list){
         Mutex_Lock lock(list->mutex);
         if (list->disable_bits == 0){
             Profile_Thread* thread = prof__get_thread(list, system_thread_get_id());
-            
+
             Arena_Node* node = push_array(&list->node_arena, Arena_Node, 1);
             sll_queue_push(list->first_arena, list->last_arena, node);
             node->arena = tctx->prof_arena;
             tctx->prof_arena = make_arena_system(KB(16));
-            
+
             if (tctx->prof_first != 0){
             if (thread->first_record == 0){
                 thread->first_record = tctx->prof_first;
@@ -129,13 +129,13 @@ thread_profile_record_pop(Thread_Context *tctx, u64 time, Profile_ID id){
 }
 
 function Profile_ID
-thread_profile_record_push(Application_Links *app, u64 time,
+thread_profile_record_push(App *app, u64 time,
                            String_Const_u8 name, String_Const_u8 location){
     Thread_Context *tctx = get_thread_context(app);
     return(thread_profile_record_push(tctx, time, name, location));
 }
 function void
-thread_profile_record_pop(Application_Links *app, u64 time, Profile_ID id){
+thread_profile_record_pop(App *app, u64 time, Profile_ID id){
     Thread_Context *tctx = get_thread_context(app);
     thread_profile_record_pop(tctx, time, id);
 }
@@ -166,7 +166,7 @@ Profile_Block::Profile_Block(Thread_Context *tctx, Profile_Global_List *list,
                              String_Const_u8 name, String_Const_u8 location){
     profile_block__init(tctx, list, name, location, this);
 }
-Profile_Block::Profile_Block(Application_Links *app, String_Const_u8 name,
+Profile_Block::Profile_Block(App *app, String_Const_u8 name,
                              String_Const_u8 location){
     Thread_Context *v_tctx = get_thread_context(app);
     Profile_Global_List *v_list = get_core_profile_list(app);
@@ -189,7 +189,7 @@ Profile_Scope_Block::Profile_Scope_Block(Thread_Context *tctx, Profile_Global_Li
                                          String_Const_u8 name, String_Const_u8 location){
     profile_block__init(tctx, list, name, location, this);
 }
-Profile_Scope_Block::Profile_Scope_Block(Application_Links *app, String_Const_u8 name,
+Profile_Scope_Block::Profile_Scope_Block(App *app, String_Const_u8 name,
                                          String_Const_u8 location){
     Thread_Context *v_tctx = get_thread_context(app);
     Profile_Global_List *v_list = get_core_profile_list(app);

@@ -42,12 +42,12 @@ internal void
 free_query_slot(Query_Set *set, Query_Bar *match_bar){
     Query_Slot *slot = 0;
     Query_Slot *prev = 0;
-    
+
     for (slot = set->used_slot; slot != 0; slot = slot->next){
         if (slot->query_bar == match_bar) break;
         prev = slot;
     }
-    
+
     if (slot){
         if (prev){
             prev->next = slot->next;
@@ -97,17 +97,17 @@ internal View*
 live_set_alloc_view(Lifetime_Allocator *lifetime_allocator, Live_Views *live_set, Panel *panel){
     Assert(live_set->count < live_set->max);
     ++live_set->count;
-    
+
     View *result = live_set->free_sentinel.next;
     dll_remove(result);
     block_zero_struct(result);
-    
+
     result->in_use = true;
     init_query_set(&result->query_set);
     result->lifetime_object = lifetime_alloc_object(lifetime_allocator, DynamicWorkspace_View, result);
     panel->view = result;
     result->panel = panel;
-    
+
     return(result);
 }
 
@@ -115,13 +115,13 @@ internal void
 live_set_free_view(Lifetime_Allocator *lifetime_allocator, Live_Views *live_set, View *view){
     Assert(live_set->count > 0);
     --live_set->count;
-    
+
     view->next = live_set->free_sentinel.next;
     view->prev = &live_set->free_sentinel;
     live_set->free_sentinel.next = view;
     view->next->prev = view;
     view->in_use = false;
-    
+
     lifetime_free_object(lifetime_allocator, view->lifetime_object);
 }
 
@@ -148,7 +148,7 @@ view_get_buffer_rect(Thread_Context *tctx, Models *models, View *view){
     if (models->buffer_region != 0){
         Rect_f32 rect = region;
         Rect_f32 sub_region = Rf32(V2f32(0, 0), rect_dim(rect));
-        Application_Links app = {};
+        App app = {};
         app.tctx = tctx;
         app.cmd_context = models;
         sub_region = models->buffer_region(&app, view_get_id(&models->view_set, view), sub_region);
@@ -335,31 +335,31 @@ view_move_view_to_cursor(Thread_Context *tctx, Models *models, View *view, Buffe
     Face *face = file_get_face(models, file);
     Rect_f32 rect = view_get_buffer_rect(tctx, models, view);
     Vec2_f32 view_dim = rect_dim(rect);
-    
+
     Layout_Function *layout_func = file_get_layout_func(file);
-    
+
     File_Edit_Positions edit_pos = view_get_edit_pos(view);
     Vec2_f32 p = file_relative_xy_of_pos(tctx, models, file,
                                          layout_func, view_dim.x, face,
                                          scroll->target.line_number, edit_pos.cursor_pos);
     p -= scroll->target.pixel_shift;
-    
+
     f32 line_height = face->metrics.line_height;
     f32 normal_advance = face->metrics.normal_advance;
-    
+
     Vec2_f32 margin = view->cursor_margin;
     Vec2_f32 push_in = view->cursor_push_in_multiplier;
-    
+
     Vec2_f32 lim_dim = view_dim*0.45f;
     margin.x = clamp_top(margin.x, lim_dim.x);
     margin.y = clamp_top(margin.y, lim_dim.y);
-    
+
     Vec2_f32 push_in_lim_dim = hadamard(lim_dim, V2f32(1.f/line_height, 1.f/normal_advance)) - margin;
 	push_in_lim_dim.x = clamp_bot(0.f, push_in_lim_dim.x);
 	push_in_lim_dim.y = clamp_bot(0.f, push_in_lim_dim.y);
     push_in.x = clamp_top(push_in.x, push_in_lim_dim.x);
     push_in.y = clamp_top(push_in.y, push_in_lim_dim.y);
-    
+
     Vec2_f32 target_p_relative = {};
     if (p.y < margin.y){
         target_p_relative.y = p.y - margin.y - line_height*push_in.y;
@@ -377,7 +377,7 @@ view_move_view_to_cursor(Thread_Context *tctx, Models *models, View *view, Buffe
     scroll->target = view_normalize_buffer_point(tctx, models, view, scroll->target);
     scroll->target.pixel_shift.x = f32_round32(scroll->target.pixel_shift.x);
     scroll->target.pixel_shift.y = f32_round32(scroll->target.pixel_shift.y);
-    
+
     return(target_p_relative != V2f32(0.f, 0.f));
 }
 
@@ -387,16 +387,16 @@ view_move_cursor_to_view(Thread_Context *tctx, Models *models, View *view, Buffe
     Face *face = file_get_face(models, file);
     Rect_f32 rect = view_get_buffer_rect(tctx, models, view);
     Vec2_f32 view_dim = rect_dim(rect);
-    
+
     Layout_Function *layout_func = file_get_layout_func(file);
-    
+
     Vec2_f32 p = file_relative_xy_of_pos(tctx, models, file,
                                          layout_func, view_dim.x, face,
                                          scroll.target.line_number, *pos_in_out);
     p -= scroll.target.pixel_shift;
-    
+
     f32 line_height = face->metrics.line_height;
-    
+
     b32 adjusted_y = true;
     if (p.y < 0.f){
         p.y = line_height*1.5f;
@@ -407,7 +407,7 @@ view_move_cursor_to_view(Thread_Context *tctx, Models *models, View *view, Buffe
     else{
         adjusted_y = false;
     }
-    
+
     b32 result = false;
     if (adjusted_y){
         p += scroll.target.pixel_shift;
@@ -416,7 +416,7 @@ view_move_cursor_to_view(Thread_Context *tctx, Models *models, View *view, Buffe
                                               scroll.target.line_number, p);
         result = true;
     }
-    
+
     return(result);
 }
 
@@ -459,31 +459,31 @@ view_set_cursor_and_scroll(Thread_Context *tctx, Models *models, View *view, i64
 internal void
 view_set_file(Thread_Context *tctx, Models *models, View *view, Editing_File *file){
     Assert(file != 0);
-    
+
     Editing_File *old_file = view->file;
-    
+
     if (models->view_change_buffer != 0){
-        Application_Links app = {};
+        App app = {};
         app.tctx = tctx;
         app.cmd_context = models;
         models->view_change_buffer(&app, view_get_id(&models->view_set, view),
                                    (old_file != 0)?old_file->id:0, file->id);
     }
-    
+
     if (old_file != 0){
         file_touch(&models->working_set, old_file);
         file_edit_positions_push(old_file, view_get_edit_pos(view));
     }
-    
+
     view->file = file;
-    
+
     File_Edit_Positions edit_pos = file_edit_positions_pop(file);
     view_set_edit_pos(view, edit_pos);
     view->mark = edit_pos.cursor_pos;
     Buffer_Cursor cursor = view_compute_cursor(view, seek_pos(edit_pos.cursor_pos));
     Vec2_f32 p = view_relative_xy_of_pos(tctx, models, view, cursor.line, edit_pos.cursor_pos);
     view->preferred_x = p.x;
-    
+
     models->layout.panel_state_dirty = true;
 }
 
@@ -544,7 +544,7 @@ co_handle_request(Thread_Context *tctx, Models *models, Coroutine *co, Co_Out *o
             in.face_id = (face != 0)?face->id:0;
             result = coroutine_run(&models->coroutines, co, &in, out);
         }break;
-        
+
         case CoRequest_ModifyFace:
         {
             Face_Description *description = out->face_description;
@@ -553,13 +553,13 @@ co_handle_request(Thread_Context *tctx, Models *models, Coroutine *co, Co_Out *o
             in.success = font_set_modify_face(&models->font_set, face_id, description);
             result = coroutine_run(&models->coroutines, co, &in, out);
         }break;
-        
+
         case CoRequest_AcquireGlobalFrameMutex:
         {
             system_acquire_global_frame_mutex(tctx);
             result = coroutine_run(&models->coroutines, co, 0, out);
         }break;
-        
+
         case CoRequest_ReleaseGlobalFrameMutex:
         {
             system_release_global_frame_mutex(tctx);
@@ -584,7 +584,7 @@ view_event_context_base__inner(Coroutine *coroutine){
     Models *models = in->models;
     Custom_Command_Function *event_context_base = in->event_context_base;
     Assert(event_context_base != 0);
-    Application_Links app = {};
+    App app = {};
     app.tctx = coroutine->tctx;
     app.cmd_context = models;
     event_context_base(&app);
@@ -594,18 +594,18 @@ function void
 view_init(Thread_Context *tctx, Models *models, View *view, Editing_File *initial_buffer,
           Custom_Command_Function *event_context_base){
     view_set_file(tctx, models, view, initial_buffer);
-    
+
     view->node_arena = make_arena_system();
-    
+
     View_Context first_ctx = {};
     first_ctx.render_caller = models->render_caller;
     first_ctx.delta_rule = models->delta_rule;
     first_ctx.delta_rule_memory_size = models->delta_rule_memory_size;
     view_push_context(view, &first_ctx);
-    
+
     view->cursor_margin = V2f32(0.f, 0.f);
     view->cursor_push_in_multiplier = V2f32(1.5f, 1.5f);
-    
+
     view->co = coroutine_create(&models->coroutines, view_event_context_base__inner);
     view->co->user_data = view;
     Co_In in = {};
@@ -664,7 +664,7 @@ co_full_abort(Thread_Context *tctx, Models *models, View *view){
         co  = co_run(tctx, models, co, &in, &view->co_out);
     }
     if (co != 0){
-        Application_Links app = {};
+        App app = {};
         app.tctx = tctx;
         app.cmd_context = models;
 #define M "SERIOUS ERROR: full stack abort did not complete"
@@ -678,10 +678,10 @@ co_full_abort(Thread_Context *tctx, Models *models, View *view){
 function b32
 co_send_event(Thread_Context *tctx, Models *models, View *view, Input_Event *event){
     b32 event_was_handled = false;
-    
+
     Coroutine *co = view->co;
     Co_Out *co_out = &view->co_out;
-    
+
     {
         models->current_input_unhandled = false;
         Co_In in = {};
@@ -695,7 +695,7 @@ co_send_event(Thread_Context *tctx, Models *models, View *view, Input_Event *eve
         }
         event_was_handled = !models->current_input_unhandled;
     }
-    
+
     return(event_was_handled);
 }
 
@@ -754,7 +754,7 @@ function void
 view_quit_ui(Thread_Context *tctx, Models *models, View *view){
     for (u32 j = 0;; j += 1){
         if (j == 100){
-            Application_Links app = {};
+            App app = {};
             app.tctx = tctx;
             app.cmd_context = models;
 #define M "SERIOUS ERROR: view quit ui did not complete"

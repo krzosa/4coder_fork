@@ -84,15 +84,15 @@ struct Fallback_Dispatch_Result{
 
 ////////////////////////////////
 
-typedef void View_Render_Hook(Application_Links *app, View_ID view, Frame_Info frame_info, Rect_f32 inner);
+typedef void View_Render_Hook(App *app, View_ID view, Frame_Info frame_info, Rect_f32 inner);
 
 ////////////////////////////////
 
 function b32
-do_buffer_kill_user_check(Application_Links *app, Buffer_ID buffer, View_ID view);
+do_buffer_kill_user_check(App *app, Buffer_ID buffer, View_ID view);
 
 function b32
-do_4coder_close_user_check(Application_Links *app, View_ID view);
+do_4coder_close_user_check(App *app, View_ID view);
 
 ////////////////////////////////
 
@@ -120,8 +120,8 @@ struct Fade_Range{
     ARGB_Color color;
     b32 negate_fade_direction;
     Range_i64 range;
-    
-    void (*finish_call)(Application_Links *app, struct Fade_Range *range);
+
+    void (*finish_call)(App *app, struct Fade_Range *range);
     void *opaque[4];
 };
 
@@ -140,7 +140,7 @@ struct Implicit_Map_Result{
     Custom_Command_Function *command;
 };
 
-typedef Implicit_Map_Result Implicit_Map_Function(Application_Links *app,
+typedef Implicit_Map_Result Implicit_Map_Function(App *app,
                                                   String_ID buffer_language,
                                                   String_ID global_mode,
                                                   Input_Event *event);

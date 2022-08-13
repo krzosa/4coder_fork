@@ -27,7 +27,7 @@ _vars_init(void){
 function String_ID
 vars_save_string(String_Const_u8 string){
     _vars_init();
-    
+
     String_ID result = 0;
     String_Const_u8 string_data = make_data(string.str, string.size);
     Table_Lookup location = table_lookup(&vars_string_to_id, string_data);
@@ -47,7 +47,7 @@ vars_save_string(String_Const_u8 string){
 function String_Const_u8
 vars_read_string(Arena *arena, String_ID id){
     _vars_init();
-    
+
     String_Const_u8 result = {};
     Table_Lookup location = table_lookup(&vars_id_to_string, id);
     if (location.found_match){
@@ -159,7 +159,7 @@ vars_b32_from_var(Variable_Handle var){
 }
 
 function u64
-vars_u64_from_var(Application_Links *app, Variable_Handle var){
+vars_u64_from_var(App *app, Variable_Handle var){
     Scratch_Block scratch(app);
     String_ID val = vars_string_id_from_var(var);
     String_Const_u8 string = vars_read_string(scratch, val);
@@ -219,7 +219,7 @@ _vars_free_variable_children(Variable *var){
          node = node->next){
         _vars_free_variable_children(node);
     }
-    
+
     if (!vars_is_nil(var->first)){
         var->last->next = vars_free_variables;
         vars_free_variables = var->first;
@@ -238,7 +238,7 @@ vars_erase(Variable_Handle var, String_ID key){
             }
             prev = node;
         }
-        
+
         if (!vars_is_nil(node)){
             _vars_free_variable_children(node);
             if (!vars_is_nil(prev)){
@@ -268,7 +268,7 @@ vars_new_variable(Variable_Handle var, String_ID key){
             }
             prev = node;
         }
-        
+
         if (!vars_is_nil(node)){
             handle.ptr = node;
             _vars_free_variable_children(node);
@@ -292,7 +292,7 @@ vars_new_variable(Variable_Handle var, String_ID key){
 			handle.ptr->next = vars_get_nil().ptr;
             handle.ptr->key = key;
         }
-        
+
         handle.ptr->string = 0;
         handle.ptr->first = handle.ptr->last = vars_get_nil().ptr;
     }
@@ -314,23 +314,23 @@ vars_clear_keys(Variable_Handle var){
 }
 
 function void
-vars_print_indented(Application_Links *app, Variable_Handle var, i32 indent){
+vars_print_indented(App *app, Variable_Handle var, i32 indent){
     Scratch_Block scratch(app);
     local_persist char spaces[] =
         "                                                                "
         "                                                                "
         "                                                                "
         "                                                                ";
-    
+
     String_Const_u8 var_key = vars_key_from_var(scratch, var);
     String_Const_u8 var_val = vars_string_from_var(scratch, var);
-    
+
     String_Const_u8 line = push_stringf(scratch, "%.*s%.*s: \"%.*s\"\n",
                                         clamp_top(indent, sizeof(spaces)), spaces,
                                         string_expand(var_key),
                                         string_expand(var_val));
     print_message(app, line);
-    
+
     i32 sub_indent = indent + 1;
     for (Variable_Handle sub = vars_first_child(var);
          !vars_is_nil(sub);
@@ -340,7 +340,7 @@ vars_print_indented(Application_Links *app, Variable_Handle var, i32 indent){
 }
 
 function void
-vars_print(Application_Links *app, Variable_Handle var){
+vars_print(App *app, Variable_Handle var){
     vars_print_indented(app, var, 0);
 }
 

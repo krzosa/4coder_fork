@@ -7,7 +7,7 @@
 #if !defined(FCODER_EVENTS_H)
 #define FCODER_EVENTS_H
 
-typedef void Custom_Command_Function(struct Application_Links *app);
+typedef void Custom_Command_Function(struct App *app);
 
 typedef u32 Key_Code;
 typedef u32 Mouse_Code;
@@ -26,7 +26,7 @@ enum{
     InputEventKind_MouseMove,
     InputEventKind_Core,
     InputEventKind_CustomFunction,
-    
+
     InputEventKind_COUNT,
 };
 
@@ -53,7 +53,7 @@ struct Input_Event{
     union{
         struct{
             String_Const_u8 string;
-            
+
             // used internally
             Input_Event *next_text;
             b32 blocked;
@@ -62,7 +62,7 @@ struct Input_Event{
             Key_Code code;
             Key_Flags flags;
             Input_Modifier_Set modifiers;
-            
+
             // used internally
             Input_Event *first_dependent_text;
         } key;

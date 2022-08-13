@@ -5,21 +5,21 @@
 // TOP
 
 function void
-write_string(Application_Links *app, View_ID view, Buffer_ID buffer, String_Const_u8 string){
+write_string(App *app, View_ID view, Buffer_ID buffer, String_Const_u8 string){
     i64 pos = view_get_cursor_pos(app, view);
     buffer_replace_range(app, buffer, Ii64(pos), string);
     view_set_cursor_and_preferred_x(app, view, seek_pos(pos + string.size));
 }
 
 function void
-write_string(Application_Links *app, String_Const_u8 string){
+write_string(App *app, String_Const_u8 string){
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     write_string(app, view, buffer, string);
 }
 
 function void
-write_named_comment_string(Application_Links *app, char *type_string){
+write_named_comment_string(App *app, char *type_string){
     Scratch_Block scratch(app);
     String_Const_u8 name = debug_config_user_name;
     String_Const_u8 str = {};
@@ -33,7 +33,7 @@ write_named_comment_string(Application_Links *app, char *type_string){
 }
 
 function void
-long_braces(Application_Links *app, char *text, i32 size){
+long_braces(App *app, char *text, i32 size){
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     i64 pos = view_get_cursor_pos(app, view);
@@ -104,14 +104,14 @@ CUSTOM_DOC("At the cursor, insert a ' = {};'.")
 }
 
 function i64
-get_start_of_line_at_cursor(Application_Links *app, View_ID view, Buffer_ID buffer){
+get_start_of_line_at_cursor(App *app, View_ID view, Buffer_ID buffer){
     i64 pos = view_get_cursor_pos(app, view);
     i64 line = get_line_number_from_pos(app, buffer, pos);
     return(get_pos_past_lead_whitespace_from_line_number(app, buffer, line));
 }
 
 function b32
-c_line_comment_starts_at_position(Application_Links *app, Buffer_ID buffer, i64 pos){
+c_line_comment_starts_at_position(App *app, Buffer_ID buffer, i64 pos){
     b32 alread_has_comment = false;
     u8 check_buffer[2];
     if (buffer_read_range(app, buffer, Ii64(pos, pos + 2), check_buffer)){
@@ -186,7 +186,7 @@ static Snippet default_snippets[] = {
 
     // for 4coder development
     {"4command", "CUSTOM_COMMAND_SIG()\nCUSTOM_DOC()\n{\n\n}\n", 19, 32},
-    {"4app", "Application_Links *app", 22, 22},
+    {"4app", "App *app", 22, 22},
 
 #if defined(SNIPPET_EXPANSION)
 #include SNIPPET_EXPANSION
@@ -194,7 +194,7 @@ static Snippet default_snippets[] = {
 };
 
 function void
-write_snippet(Application_Links *app, View_ID view, Buffer_ID buffer,
+write_snippet(App *app, View_ID view, Buffer_ID buffer,
               i64 pos, Snippet *snippet){
     if (snippet != 0){
         String_Const_u8 snippet_text = SCu8(snippet->text);
@@ -208,7 +208,7 @@ write_snippet(Application_Links *app, View_ID view, Buffer_ID buffer,
 }
 
 function Snippet*
-get_snippet_from_user(Application_Links *app, Snippet *snippets, i32 snippet_count,
+get_snippet_from_user(App *app, Snippet *snippets, i32 snippet_count,
                       String_Const_u8 query){
     Scratch_Block scratch(app);
     Lister_Block lister(app, scratch);
@@ -229,7 +229,7 @@ get_snippet_from_user(Application_Links *app, Snippet *snippets, i32 snippet_cou
 
 
 function Snippet*
-get_snippet_from_user(Application_Links *app, Snippet *snippets, i32 snippet_count,
+get_snippet_from_user(App *app, Snippet *snippets, i32 snippet_count,
                       char *query){
     return(get_snippet_from_user(app, snippets, snippet_count, SCu8(query)));
 }

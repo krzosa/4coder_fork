@@ -15,7 +15,7 @@ get_layout_reflex(Layout_Item_List *list, Buffer_ID buffer, f32 width, Face_ID f
 }
 
 function Rect_f32
-layout_reflex_get_rect(Application_Links *app, Layout_Reflex *reflex, i64 pos, b32 *unresolved_dependence){
+layout_reflex_get_rect(App *app, Layout_Reflex *reflex, i64 pos, b32 *unresolved_dependence){
   Rect_f32 rect = {};
   pos = clamp_bot(0, pos);
   if (range_contains(reflex->list->input_index_range, pos)){
@@ -285,7 +285,7 @@ lr_tb_align_rightward(LefRig_TopBot_Layout_Vars *vars, f32 align_x){
 ////////////////////////////////
 
 function Layout_Item_List
-layout_unwrapped_small_blank_lines(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_unwrapped_small_blank_lines(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   Layout_Item_List list = get_empty_item_list(range);
 
   Scratch_Block scratch(app);
@@ -380,7 +380,7 @@ layout_unwrapped_small_blank_lines(Application_Links *app, Arena *arena, Buffer_
 }
 
 function Layout_Item_List
-layout_wrap_anywhere(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_wrap_anywhere(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   Scratch_Block scratch(app);
 
   Layout_Item_List list = get_empty_item_list(range);
@@ -456,7 +456,7 @@ layout_wrap_anywhere(Application_Links *app, Arena *arena, Buffer_ID buffer, Ran
 }
 
 function Layout_Item_List
-layout_unwrapped__inner(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Virtual_Indent virt_indent){
+layout_unwrapped__inner(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Virtual_Indent virt_indent){
   Layout_Item_List list = get_empty_item_list(range);
 
   Scratch_Block scratch(app);
@@ -535,7 +535,7 @@ layout_unwrapped__inner(Application_Links *app, Arena *arena, Buffer_ID buffer, 
 }
 
 function Layout_Item_List
-layout_wrap_whitespace__inner(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Virtual_Indent virt_indent){
+layout_wrap_whitespace__inner(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Virtual_Indent virt_indent){
   Scratch_Block scratch(app);
 
   Layout_Item_List list = get_empty_item_list(range);
@@ -682,17 +682,17 @@ layout_wrap_whitespace__inner(Application_Links *app, Arena *arena, Buffer_ID bu
 }
 
 function Layout_Item_List
-layout_unwrapped(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_unwrapped(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   return(layout_unwrapped__inner(app, arena, buffer, range, face, width, LayoutVirtualIndent_Off));
 }
 
 function Layout_Item_List
-layout_wrap_whitespace(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_wrap_whitespace(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   return(layout_wrap_whitespace__inner(app, arena, buffer, range, face, width, LayoutVirtualIndent_Off));
 }
 
 function Layout_Item_List
-layout_basic(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Wrap_Kind kind){
+layout_basic(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Wrap_Kind kind){
   Layout_Item_List result = {};
   switch (kind){
     case Layout_Unwrapped:
@@ -708,7 +708,7 @@ layout_basic(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 r
 }
 
 function Layout_Item_List
-layout_generic(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_generic(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   Managed_Scope scope = buffer_get_managed_scope(app, buffer);
   b32 *wrap_lines_ptr = scope_attachment(app, scope, buffer_wrap_lines, b32);
   b32 wrap_lines = (wrap_lines_ptr != 0 && *wrap_lines_ptr);
@@ -716,17 +716,17 @@ layout_generic(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64
 }
 
 function Layout_Item_List
-layout_virt_indent_literal_unwrapped(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_virt_indent_literal_unwrapped(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   return(layout_unwrapped__inner(app, arena, buffer, range, face, width, LayoutVirtualIndent_On));
 }
 
 function Layout_Item_List
-layout_virt_indent_literal_wrapped(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_virt_indent_literal_wrapped(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   return(layout_wrap_whitespace__inner(app, arena, buffer, range, face, width, LayoutVirtualIndent_On));
 }
 
 function Layout_Item_List
-layout_virt_indent_literal(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Wrap_Kind kind){
+layout_virt_indent_literal(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Wrap_Kind kind){
   Layout_Item_List result = {};
   switch (kind){
     case Layout_Unwrapped:
@@ -742,7 +742,7 @@ layout_virt_indent_literal(Application_Links *app, Arena *arena, Buffer_ID buffe
 }
 
 function Layout_Item_List
-layout_virt_indent_literal_generic(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_virt_indent_literal_generic(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
   Managed_Scope scope = buffer_get_managed_scope(app, buffer);
   b32 *wrap_lines_ptr = scope_attachment(app, scope, buffer_wrap_lines, b32);
   b32 wrap_lines = (wrap_lines_ptr != 0 && *wrap_lines_ptr);

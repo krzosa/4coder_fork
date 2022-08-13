@@ -7,7 +7,7 @@ struct Thread_Context_Extra_Info{
     void *async_thread;
 };
 api(custom)
-struct Application_Links{
+struct App{
     Thread_Context *tctx;
     void *cmd_context;
 };
@@ -479,11 +479,11 @@ struct Query_Bar_Ptr_Array{
 
 api(custom)
 struct Query_Bar_Group{
-    Application_Links *app;
+    App *app;
     View_ID view;
 
-    Query_Bar_Group(Application_Links *app);
-    Query_Bar_Group(Application_Links *app, View_ID view);
+    Query_Bar_Group(App *app);
+    Query_Bar_Group(App *app, View_ID view);
     ~Query_Bar_Group();
 };
 
@@ -617,8 +617,8 @@ struct Record_Info{
 #endif
 
 #if !defined(META_PASS)
-#define CUSTOM_COMMAND_SIG(name) export void name(struct Application_Links *app)
-#define CUSTOM_UI_COMMAND_SIG(name) export void name(struct Application_Links *app)
+#define CUSTOM_COMMAND_SIG(name) export void name(struct App *app)
+#define CUSTOM_UI_COMMAND_SIG(name) export void name(struct App *app)
 #define CUSTOM_DOC(str)
 #define CUSTOM_ID(group, name) global Managed_ID name;
 #else
@@ -655,8 +655,8 @@ enum{
 };
 
 api(custom)
-typedef i32 Hook_Function(Application_Links *app);
-#define HOOK_SIG(name) i32 name(Application_Links *app)
+typedef i32 Hook_Function(App *app);
+#define HOOK_SIG(name) i32 name(App *app)
 
 api(custom)
 struct Buffer_Name_Conflict_Entry{
@@ -669,40 +669,40 @@ struct Buffer_Name_Conflict_Entry{
 };
 
 api(custom)
-typedef void Buffer_Name_Resolver_Function(Application_Links *app, Buffer_Name_Conflict_Entry *conflicts, i32 conflict_count);
-#define BUFFER_NAME_RESOLVER_SIG(n) void n(Application_Links *app, Buffer_Name_Conflict_Entry *conflicts, i32 conflict_count)
+typedef void Buffer_Name_Resolver_Function(App *app, Buffer_Name_Conflict_Entry *conflicts, i32 conflict_count);
+#define BUFFER_NAME_RESOLVER_SIG(n) void n(App *app, Buffer_Name_Conflict_Entry *conflicts, i32 conflict_count)
 
 api(custom)
-typedef i32 Buffer_Hook_Function(Application_Links *app, Buffer_ID buffer_id);
-#define BUFFER_HOOK_SIG(name) i32 name(Application_Links *app, Buffer_ID buffer_id)
+typedef i32 Buffer_Hook_Function(App *app, Buffer_ID buffer_id);
+#define BUFFER_HOOK_SIG(name) i32 name(App *app, Buffer_ID buffer_id)
 
 api(custom)
-typedef i32 Buffer_Edit_Range_Function(Application_Links *app, Buffer_ID buffer_id,
+typedef i32 Buffer_Edit_Range_Function(App *app, Buffer_ID buffer_id,
                                        Range_i64 new_range, Range_Cursor old_range);
-#define BUFFER_EDIT_RANGE_SIG(name) i32 name(Application_Links *app, Buffer_ID buffer_id, Range_i64 new_range, Range_Cursor old_cursor_range)
+#define BUFFER_EDIT_RANGE_SIG(name) i32 name(App *app, Buffer_ID buffer_id, Range_i64 new_range, Range_Cursor old_cursor_range)
 
 api(custom)
 typedef Vec2_f32 Delta_Rule_Function(Vec2_f32 pending, b32 is_new_target, f32 dt, void *data);
 #define DELTA_RULE_SIG(name) Vec2_f32 name(Vec2_f32 pending, b32 is_new_target, f32 dt, void *data)
 
 api(custom)
-typedef Rect_f32 Buffer_Region_Function(Application_Links *app, View_ID view_id, Rect_f32 region);
+typedef Rect_f32 Buffer_Region_Function(App *app, View_ID view_id, Rect_f32 region);
 
 api(custom)
-typedef void New_Clipboard_Contents_Function(Application_Links *app, String_Const_u8 contents);
-#define NEW_CLIPBOARD_CONTENTS_SIG(name) void name(Application_Links *app, String_Const_u8 contents)
+typedef void New_Clipboard_Contents_Function(App *app, String_Const_u8 contents);
+#define NEW_CLIPBOARD_CONTENTS_SIG(name) void name(App *app, String_Const_u8 contents)
 
 api(custom)
-typedef void Tick_Function(Application_Links *app, Frame_Info frame_info);
+typedef void Tick_Function(App *app, Frame_Info frame_info);
 
 api(custom)
-typedef void Render_Caller_Function(Application_Links *app, Frame_Info frame_info, View_ID view);
+typedef void Render_Caller_Function(App *app, Frame_Info frame_info, View_ID view);
 
 api(custom)
-typedef void Whole_Screen_Render_Caller_Function(Application_Links *app, Frame_Info frame_info);
+typedef void Whole_Screen_Render_Caller_Function(App *app, Frame_Info frame_info);
 
 api(custom)
-typedef void View_Change_Buffer_Function(Application_Links *app, View_ID view_id,
+typedef void View_Change_Buffer_Function(App *app, View_ID view_id,
                                          Buffer_ID old_buffer_id, Buffer_ID new_buffer_id);
 
 api(custom)
@@ -744,7 +744,7 @@ struct Layout_Item_List{
 };
 
 api(custom)
-typedef Layout_Item_List Layout_Function(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width);
+typedef Layout_Item_List Layout_Function(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width);
 
 api(custom)
 struct View_Context{

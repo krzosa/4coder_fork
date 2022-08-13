@@ -5,7 +5,7 @@
 // TOP
 
 function void
-point_stack_push(Application_Links *app, Buffer_ID buffer, i64 pos){
+point_stack_push(App *app, Buffer_ID buffer, i64 pos){
     Managed_Object object = alloc_buffer_markers_on_buffer(app, buffer, 1, 0);
     Marker *marker = (Marker*)managed_object_get_pointer(app, object);
     marker->pos = pos;
@@ -26,14 +26,14 @@ point_stack_push(Application_Links *app, Buffer_ID buffer, i64 pos){
 }
 
 function void
-point_stack_push_view_cursor(Application_Links *app, View_ID view){
+point_stack_push_view_cursor(App *app, View_ID view){
     Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
     i64 pos = view_get_cursor_pos(app, view);
     point_stack_push(app, buffer, pos);
 }
 
 function b32
-point_stack_pop(Application_Links *app){
+point_stack_pop(App *app){
     b32 result = false;
     if (point_stack.top != point_stack.bot){
         result = true;
@@ -51,7 +51,7 @@ point_stack_pop(Application_Links *app){
 }
 
 function b32
-point_stack_read_top(Application_Links *app, Buffer_ID *buffer_out, i64 *pos_out){
+point_stack_read_top(App *app, Buffer_ID *buffer_out, i64 *pos_out){
     b32 result = false;
     if (point_stack.top != point_stack.bot){
         result = true;
@@ -85,7 +85,7 @@ unlock_jump_buffer(void){
 }
 
 function void
-lock_jump_buffer(Application_Links *app, String_Const_u8 name){
+lock_jump_buffer(App *app, String_Const_u8 name){
     if (name.size < sizeof(locked_buffer_space)){
         block_copy(locked_buffer_space, name.str, name.size);
         locked_buffer = SCu8(locked_buffer_space, name.size);
@@ -97,19 +97,19 @@ lock_jump_buffer(Application_Links *app, String_Const_u8 name){
 }
 
 function void
-lock_jump_buffer(Application_Links *app, char *name, i32 size){
+lock_jump_buffer(App *app, char *name, i32 size){
     lock_jump_buffer(app, SCu8(name, size));
 }
 
 function void
-lock_jump_buffer(Application_Links *app, Buffer_ID buffer_id){
+lock_jump_buffer(App *app, Buffer_ID buffer_id){
     Scratch_Block scratch(app);
     String_Const_u8 buffer_name = push_buffer_unique_name(app, scratch, buffer_id);
     lock_jump_buffer(app, buffer_name);
 }
 
 function Buffer_ID
-get_locked_jump_buffer(Application_Links *app){
+get_locked_jump_buffer(App *app){
     Buffer_ID result = 0;
     if (locked_buffer.size > 0){
         result = get_buffer_by_name(app, locked_buffer, Access_Always);
@@ -121,7 +121,7 @@ get_locked_jump_buffer(Application_Links *app){
 }
 
 function View_ID
-get_view_for_locked_jump_buffer(Application_Links *app){
+get_view_for_locked_jump_buffer(App *app){
     View_ID result = 0;
     Buffer_ID buffer = get_locked_jump_buffer(app);
     if (buffer != 0){
@@ -134,7 +134,7 @@ get_view_for_locked_jump_buffer(Application_Links *app){
 
 // TODO(allen): re-evaluate the setup of this.
 function void
-new_view_settings(Application_Links *app, View_ID view){
+new_view_settings(App *app, View_ID view){
     b32 use_file_bars = debug_config_use_file_bars;
     view_set_setting(app, view, ViewSetting_ShowFileBar, use_file_bars);
 }
@@ -142,7 +142,7 @@ new_view_settings(Application_Links *app, View_ID view){
 ////////////////////////////////
 
 function void
-view_set_passive(Application_Links *app, View_ID view_id, b32 value){
+view_set_passive(App *app, View_ID view_id, b32 value){
     Managed_Scope scope = view_get_managed_scope(app, view_id);
     b32 *is_passive = scope_attachment(app, scope, view_is_passive_loc, b32);
     if (is_passive != 0){
@@ -151,7 +151,7 @@ view_set_passive(Application_Links *app, View_ID view_id, b32 value){
 }
 
 function b32
-view_get_is_passive(Application_Links *app, View_ID view_id){
+view_get_is_passive(App *app, View_ID view_id){
     Managed_Scope scope = view_get_managed_scope(app, view_id);
     b32 *is_passive = scope_attachment(app, scope, view_is_passive_loc, b32);
     b32 result = false;
@@ -162,7 +162,7 @@ view_get_is_passive(Application_Links *app, View_ID view_id){
 }
 
 function View_ID
-open_footer_panel(Application_Links *app, View_ID view){
+open_footer_panel(App *app, View_ID view){
     View_ID special_view = open_view(app, view, ViewSplit_Bottom);
     new_view_settings(app, special_view);
     Buffer_ID buffer = view_get_buffer(app, special_view, Access_Always);
@@ -174,7 +174,7 @@ open_footer_panel(Application_Links *app, View_ID view){
 }
 
 function void
-close_build_footer_panel(Application_Links *app){
+close_build_footer_panel(App *app){
     if (view_exists(app, build_footer_panel_view_id)){
         view_close(app, build_footer_panel_view_id);
     }
@@ -182,7 +182,7 @@ close_build_footer_panel(Application_Links *app){
 }
 
 function View_ID
-open_build_footer_panel(Application_Links *app){
+open_build_footer_panel(App *app){
     if (!view_exists(app, build_footer_panel_view_id)){
         View_ID view = get_active_view(app, Access_Always);
         build_footer_panel_view_id = open_footer_panel(app, view);
@@ -192,7 +192,7 @@ open_build_footer_panel(Application_Links *app){
 }
 
 function View_ID
-get_next_view_looped_primary_panels(Application_Links *app, View_ID start_view_id, Access_Flag access){
+get_next_view_looped_primary_panels(App *app, View_ID start_view_id, Access_Flag access){
     View_ID view_id = start_view_id;
     do{
         view_id = get_next_view_looped_all_panels(app, view_id, access);
@@ -204,7 +204,7 @@ get_next_view_looped_primary_panels(Application_Links *app, View_ID start_view_i
 }
 
 function View_ID
-get_prev_view_looped_primary_panels(Application_Links *app, View_ID start_view_id, Access_Flag access){
+get_prev_view_looped_primary_panels(App *app, View_ID start_view_id, Access_Flag access){
     View_ID view_id = start_view_id;
     do{
         view_id = get_prev_view_looped_all_panels(app, view_id, access);
@@ -216,7 +216,7 @@ get_prev_view_looped_primary_panels(Application_Links *app, View_ID start_view_i
 }
 
 function View_ID
-get_next_view_after_active(Application_Links *app, Access_Flag access){
+get_next_view_after_active(App *app, Access_Flag access){
     View_ID view = get_active_view(app, access);
     if (view != 0){
         view = get_next_view_looped_primary_panels(app, view, access);
@@ -227,12 +227,12 @@ get_next_view_after_active(Application_Links *app, Access_Flag access){
 ////////////////////////////////
 
 function void
-call_after_ctx_shutdown(Application_Links *app, View_ID view, Custom_Command_Function *func){
+call_after_ctx_shutdown(App *app, View_ID view, Custom_Command_Function *func){
     view_enqueue_command_function(app, view, func);
 }
 
 function Fallback_Dispatch_Result
-fallback_command_dispatch(Application_Links *app, Mapping *mapping, Command_Map *map,
+fallback_command_dispatch(App *app, Mapping *mapping, Command_Map *map,
                           User_Input *in){
     Fallback_Dispatch_Result result = {};
     if (mapping != 0 && map != 0){
@@ -259,7 +259,7 @@ fallback_command_dispatch(Application_Links *app, Mapping *mapping, Command_Map 
 }
 
 function b32
-ui_fallback_command_dispatch(Application_Links *app, View_ID view,
+ui_fallback_command_dispatch(App *app, View_ID view,
                              Mapping *mapping, Command_Map *map, User_Input *in){
     b32 result = false;
     Fallback_Dispatch_Result disp_result =
@@ -275,7 +275,7 @@ ui_fallback_command_dispatch(Application_Links *app, View_ID view,
 }
 
 function b32
-ui_fallback_command_dispatch(Application_Links *app, View_ID view, User_Input *in){
+ui_fallback_command_dispatch(App *app, View_ID view, User_Input *in){
     b32 result = false;
     View_Context ctx = view_current_context(app, view);
     if (ctx.mapping != 0){
@@ -291,7 +291,7 @@ ui_fallback_command_dispatch(Application_Links *app, View_ID view, User_Input *i
 ////////////////////////////////
 
 function void
-view_buffer_set(Application_Links *app, Buffer_ID *buffers, i64 *positions, i32 count){
+view_buffer_set(App *app, Buffer_ID *buffers, i64 *positions, i32 count){
     if (count > 0){
         Scratch_Block scratch(app);
 
@@ -342,7 +342,7 @@ view_buffer_set(Application_Links *app, Buffer_ID *buffers, i64 *positions, i32 
 ////////////////////////////////
 
 function void
-change_active_panel_send_command(Application_Links *app, Custom_Command_Function *custom_func){
+change_active_panel_send_command(App *app, Custom_Command_Function *custom_func){
     View_ID view = get_active_view(app, Access_Always);
     view = get_next_view_looped_primary_panels(app, view, Access_Always);
     if (view != 0){
@@ -394,7 +394,7 @@ CUSTOM_DOC("Create a new panel by horizontally splitting the active panel.")
 // NOTE(allen): Credits to nj/FlyingSolomon for authoring the original version of this helper.
 
 function Buffer_ID
-create_or_switch_to_buffer_and_clear_by_name(Application_Links *app, String_Const_u8 name_string, View_ID default_target_view){
+create_or_switch_to_buffer_and_clear_by_name(App *app, String_Const_u8 name_string, View_ID default_target_view){
     Buffer_ID search_buffer = get_buffer_by_name(app, name_string, Access_Always);
     if (search_buffer != 0){
         buffer_set_setting(app, search_buffer, BufferSetting_ReadOnly, true);
@@ -433,7 +433,7 @@ create_or_switch_to_buffer_and_clear_by_name(Application_Links *app, String_Cons
 ////////////////////////////////
 
 function void
-save_all_dirty_buffers_with_postfix(Application_Links *app, String_Const_u8 postfix){
+save_all_dirty_buffers_with_postfix(App *app, String_Const_u8 postfix){
     ProfileScope(app, "save all dirty buffers");
     Scratch_Block scratch(app);
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_ReadWriteVisible);
@@ -554,7 +554,7 @@ setup_essential_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_i
 }
 
 function void
-setup_built_in_mapping(Application_Links *app, String_Const_u8 name, Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
+setup_built_in_mapping(App *app, String_Const_u8 name, Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Thread_Context *tctx = get_thread_context(app);
     if (string_match(name, string_u8_litexpr("default"))){
         mapping_release(tctx, mapping);
@@ -578,7 +578,7 @@ setup_built_in_mapping(Application_Links *app, String_Const_u8 name, Mapping *ma
 }
 
 function void
-change_mode(Application_Links *app, String_Const_u8 mode){
+change_mode(App *app, String_Const_u8 mode){
     fcoder_mode = FCoderMode_Original;
     if (string_match(mode, string_u8_litexpr("4coder"))){
         fcoder_mode = FCoderMode_Original;
@@ -592,7 +592,7 @@ change_mode(Application_Links *app, String_Const_u8 mode){
 }
 
 function void
-default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_names, i32 override_font_size, b32 override_hinting){
+default_4coder_initialize(App *app, String_Const_u8_Array file_names, i32 override_font_size, b32 override_hinting){
 #define M \
 "Welcome to " VERSION "\n" \
 "If you're new to 4coder there is a built in tutorial\n" \
@@ -669,13 +669,13 @@ default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_nam
 }
 
 function void
-default_4coder_initialize(Application_Links *app, i32 override_font_size, b32 override_hinting){
+default_4coder_initialize(App *app, i32 override_font_size, b32 override_hinting){
     String_Const_u8_Array file_names = {};
     default_4coder_initialize(app, file_names, override_font_size, override_hinting);
 }
 
 function void
-default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_names){
+default_4coder_initialize(App *app, String_Const_u8_Array file_names){
     Face_Description description = get_face_description(app, 0);
     default_4coder_initialize(app, file_names,
                               description.parameters.pt_size,
@@ -683,14 +683,14 @@ default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_nam
 }
 
 function void
-default_4coder_initialize(Application_Links *app){
+default_4coder_initialize(App *app){
     Face_Description command_line_description = get_face_description(app, 0);
     String_Const_u8_Array file_names = {};
     default_4coder_initialize(app, file_names, command_line_description.parameters.pt_size, command_line_description.parameters.hinting);
 }
 
 function void
-default_4coder_side_by_side_panels(Application_Links *app,
+default_4coder_side_by_side_panels(App *app,
                                    Buffer_Identifier left, Buffer_Identifier right){
     Buffer_ID left_id = buffer_identifier_to_id(app, left);
     Buffer_ID right_id = buffer_identifier_to_id(app, right);
@@ -710,7 +710,7 @@ default_4coder_side_by_side_panels(Application_Links *app,
 }
 
 function void
-default_4coder_side_by_side_panels(Application_Links *app,
+default_4coder_side_by_side_panels(App *app,
                                    Buffer_Identifier left, Buffer_Identifier right,
                                    String_Const_u8_Array file_names){
     if (file_names.count > 0){
@@ -723,20 +723,20 @@ default_4coder_side_by_side_panels(Application_Links *app,
 }
 
 function void
-default_4coder_side_by_side_panels(Application_Links *app, String_Const_u8_Array file_names){
+default_4coder_side_by_side_panels(App *app, String_Const_u8_Array file_names){
     Buffer_Identifier left = buffer_identifier(string_u8_litexpr("*scratch*"));
     Buffer_Identifier right = buffer_identifier(string_u8_litexpr("*messages*"));
     default_4coder_side_by_side_panels(app, left, right, file_names);
 }
 
 function void
-default_4coder_side_by_side_panels(Application_Links *app){
+default_4coder_side_by_side_panels(App *app){
     String_Const_u8_Array file_names = {};
     default_4coder_side_by_side_panels(app, file_names);
 }
 
 function void
-default_4coder_one_panel(Application_Links *app, Buffer_Identifier buffer){
+default_4coder_one_panel(App *app, Buffer_Identifier buffer){
     Buffer_ID id = buffer_identifier_to_id(app, buffer);
     View_ID view = get_active_view(app, Access_Always);
     new_view_settings(app, view);
@@ -744,7 +744,7 @@ default_4coder_one_panel(Application_Links *app, Buffer_Identifier buffer){
 }
 
 function void
-default_4coder_one_panel(Application_Links *app, String_Const_u8_Array file_names){
+default_4coder_one_panel(App *app, String_Const_u8_Array file_names){
     Buffer_Identifier buffer = buffer_identifier(string_u8_litexpr("*messages*"));
     if (file_names.count > 0){
         buffer = buffer_identifier(file_names.vals[0]);
@@ -753,7 +753,7 @@ default_4coder_one_panel(Application_Links *app, String_Const_u8_Array file_name
 }
 
 function void
-default_4coder_one_panel(Application_Links *app){
+default_4coder_one_panel(App *app){
     String_Const_u8_Array file_names = {};
     default_4coder_one_panel(app, file_names);
 }
@@ -844,7 +844,7 @@ free_fade_range(Fade_Range *range){
 }
 
 function Fade_Range*
-buffer_post_fade(Application_Links *app, Buffer_ID buffer_id, f32 seconds, Range_i64 range, ARGB_Color color){
+buffer_post_fade(App *app, Buffer_ID buffer_id, f32 seconds, Range_i64 range, ARGB_Color color){
     Fade_Range *fade_range = alloc_fade_range();
     sll_queue_push(buffer_fade_ranges.first, buffer_fade_ranges.last, fade_range);
     buffer_fade_ranges.count += 1;
@@ -874,7 +874,7 @@ buffer_shift_fade_ranges(Buffer_ID buffer_id, i64 shift_after_p, i64 shift_amoun
 }
 
 function b32
-tick_all_fade_ranges(Application_Links *app, f32 t){
+tick_all_fade_ranges(App *app, f32 t){
     Fade_Range **prev_next = &buffer_fade_ranges.first;
     for (Fade_Range *node = buffer_fade_ranges.first, *next = 0;
          node != 0;
@@ -898,7 +898,7 @@ tick_all_fade_ranges(Application_Links *app, f32 t){
 }
 
 function void
-paint_fade_ranges(Application_Links *app, Text_Layout_ID layout, Buffer_ID buffer){
+paint_fade_ranges(App *app, Text_Layout_ID layout, Buffer_ID buffer){
     for (Fade_Range *node = buffer_fade_ranges.first;
          node != 0;
          node = node->next){
@@ -1017,12 +1017,12 @@ push_clipboard_index(Arena *arena, i32 clipboard_id, i32 item_index){
 ////////////////////////////////
 
 function void
-initialize_managed_id_metadata(Application_Links *app);
+initialize_managed_id_metadata(App *app);
 
 ////////////////////////////////
 
 function void
-default_input_handler_init(Application_Links *app, Arena *arena){
+default_input_handler_init(App *app, Arena *arena){
     Thread_Context *tctx = get_thread_context(app);
 
     View_ID view = get_this_ctx_view(app, Access_Always);
@@ -1038,7 +1038,7 @@ default_input_handler_init(Application_Links *app, Arena *arena){
 }
 
 function Command_Map_ID
-default_get_map_id(Application_Links *app, View_ID view){
+default_get_map_id(App *app, View_ID view){
     Command_Map_ID result = 0;
     Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
     Managed_Scope buffer_scope = buffer_get_managed_scope(app, buffer);
@@ -1056,7 +1056,7 @@ default_get_map_id(Application_Links *app, View_ID view){
 }
 
 function void
-set_next_rewrite(Application_Links *app, View_ID view, Rewrite_Type rewrite){
+set_next_rewrite(App *app, View_ID view, Rewrite_Type rewrite){
     Managed_Scope scope = view_get_managed_scope(app, view);
     Rewrite_Type *next_rewrite = scope_attachment(app, scope, view_next_rewrite_loc, Rewrite_Type);
     if (next_rewrite != 0){
@@ -1065,7 +1065,7 @@ set_next_rewrite(Application_Links *app, View_ID view, Rewrite_Type rewrite){
 }
 
 function void
-default_pre_command(Application_Links *app, Managed_Scope scope){
+default_pre_command(App *app, Managed_Scope scope){
     Rewrite_Type *next_rewrite =
         scope_attachment(app, scope, view_next_rewrite_loc, Rewrite_Type);
     *next_rewrite = Rewrite_None;
@@ -1083,7 +1083,7 @@ default_pre_command(Application_Links *app, Managed_Scope scope){
 }
 
 function void
-default_post_command(Application_Links *app, Managed_Scope scope){
+default_post_command(App *app, Managed_Scope scope){
     Rewrite_Type *next_rewrite = scope_attachment(app, scope, view_next_rewrite_loc, Rewrite_Type);
     if (next_rewrite != 0){
         if (*next_rewrite != Rewrite_NoChange){

@@ -6,14 +6,14 @@
 // TOP
 
 function void
-rewrite_lines_to_crlf(Application_Links *app, Buffer_ID buffer){
+rewrite_lines_to_crlf(App *app, Buffer_ID buffer){
     ProfileScope(app, "rewrite lines to crlf");
     Scratch_Block scratch(app);
     i64 size = buffer_get_size(app, buffer);
-    
+
     Batch_Edit *first = 0;
     Batch_Edit *last = 0;
-    
+
     ProfileBlockNamed(app, "build batch edit", profile_batch);
     i64 pos = -1;
     Character_Predicate pred_cr = character_predicate_from_character('\r');
@@ -26,7 +26,7 @@ rewrite_lines_to_crlf(Application_Links *app, Buffer_ID buffer){
             break;
         }
         pos = match.range.min;
-        
+
         u8 c1 = buffer_get_char(app, buffer, pos);
         u8 c2 = buffer_get_char(app, buffer, pos + 1);
         if (c1 == '\r'){
@@ -48,18 +48,18 @@ rewrite_lines_to_crlf(Application_Links *app, Buffer_ID buffer){
         }
     }
     ProfileCloseNow(profile_batch);
-    
+
     buffer_batch_edit(app, buffer, first);
 }
 
 function void
-rewrite_lines_to_lf(Application_Links *app, Buffer_ID buffer){
+rewrite_lines_to_lf(App *app, Buffer_ID buffer){
     ProfileScope(app, "rewrite lines to lf");
     Scratch_Block scratch(app);
-    
+
     Batch_Edit *first = 0;
     Batch_Edit *last = 0;
-    
+
     ProfileBlockNamed(app, "build batch edit", profile_batch);
     i64 pos = -1;
     Character_Predicate pred = character_predicate_from_character('\r');
@@ -70,14 +70,14 @@ rewrite_lines_to_lf(Application_Links *app, Buffer_ID buffer){
             break;
         }
         pos = match.range.min;
-        
+
         Batch_Edit *edit = push_array(scratch, Batch_Edit, 1);
         sll_queue_push(first, last, edit);
         edit->edit.text = string_u8_litexpr("");
         edit->edit.range = match.range;
     }
     ProfileCloseNow(profile_batch);
-    
+
 	buffer_batch_edit(app, buffer, first);
 }
 

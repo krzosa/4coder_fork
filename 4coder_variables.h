@@ -56,7 +56,7 @@ function String8         vars_key_from_var(Arena *arena, Variable_Handle var);
 function String_ID       vars_string_id_from_var(Variable_Handle var);
 function String8         vars_string_from_var(Arena *arena, Variable_Handle var);
 function b32             vars_b32_from_var(Variable_Handle var);
-function u64             vars_u64_from_var(Application_Links *app, Variable_Handle var);
+function u64             vars_u64_from_var(App *app, Variable_Handle var);
 
 function void            vars_set_string(Variable_Handle var, String_ID string);
 function void            vars_erase(Variable_Handle var, String_ID key);
@@ -64,8 +64,8 @@ function Variable_Handle vars_new_variable(Variable_Handle var, String_ID key);
 function Variable_Handle vars_new_variable(Variable_Handle var, String_ID key, String_ID string);
 function void            vars_clear_keys(Variable_Handle var);
 
-function void            vars_print_indented(Application_Links *app, Variable_Handle var, i32 indent);
-function void            vars_print(Application_Links *app, Variable_Handle var);
+function void            vars_print_indented(App *app, Variable_Handle var, i32 indent);
+function void            vars_print(App *app, Variable_Handle var);
 
 #endif //4CODER_VARIABLES_H
 

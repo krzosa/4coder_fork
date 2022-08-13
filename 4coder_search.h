@@ -14,15 +14,15 @@ enum{
 };
 
 struct Word_Complete_Iterator{
-    Application_Links *app;
+    App *app;
     Arena *arena;
-    
+
     Temp_Memory arena_restore;
     Buffer_ID first_buffer;
     Buffer_ID current_buffer;
     b32 scan_all_buffers;
     String_Const_u8 needle;
-    
+
     List_String_Const_u8 list;
     Node_String_Const_u8 *node;
     Table_Data_u64 already_used_table;

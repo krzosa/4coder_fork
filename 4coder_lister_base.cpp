@@ -15,7 +15,7 @@ get_mouse_position_in_panel_space(Mouse_State mouse, Vec2_f32 file_region_p0){
 }
 
 function Vec2_f32
-get_mouse_position_in_panel_space(Application_Links *app, Vec2_f32 file_region_p0){
+get_mouse_position_in_panel_space(App *app, Vec2_f32 file_region_p0){
     return(get_mouse_position_in_panel_space(get_mouse_state(app), file_region_p0));
 }
 
@@ -39,7 +39,7 @@ lister_get_top_level_layout(Rect_f32 rect, f32 text_field_height){
 ////////////////////////////////
 
 function Lister*
-view_get_lister(Application_Links *app, View_ID view){
+view_get_lister(App *app, View_ID view){
     Managed_Scope scope = view_get_managed_scope(app, view);
     Lister **ptr = scope_attachment(app, scope, view_lister_loc, Lister*);
     Lister *result = 0;
@@ -50,7 +50,7 @@ view_get_lister(Application_Links *app, View_ID view){
 }
 
 function Lister*
-view_set_lister(Application_Links *app, View_ID view, Lister *lister){
+view_set_lister(App *app, View_ID view, Lister *lister){
     Managed_Scope scope = view_get_managed_scope(app, view);
     Lister **ptr = scope_attachment(app, scope, view_lister_loc, Lister*);
     Lister *result = 0;
@@ -74,7 +74,7 @@ lister_set_map(Lister *lister, Mapping *mapping, Command_Map_ID map){
 }
 
 function Lister_Prev_Current
-begin_lister(Application_Links *app, Arena *arena, f32 item_height_multiplier = 1){
+begin_lister(App *app, Arena *arena, f32 item_height_multiplier = 1){
     Lister_Prev_Current result = {};
     Lister *lister = push_array_zero(arena, Lister, 1);
     lister->arena = arena;
@@ -93,9 +93,9 @@ begin_lister(Application_Links *app, Arena *arena, f32 item_height_multiplier = 
 
 
 struct Lister_Block{
-    Application_Links *app;
+    App *app;
     Lister_Prev_Current lister;
-    Lister_Block(Application_Links *app, Arena *arena, f32 item_height_multiplier = 1){
+    Lister_Block(App *app, Arena *arena, f32 item_height_multiplier = 1){
         Lister_Prev_Current new_lister = begin_lister(app, arena, item_height_multiplier);
         this->app = app;
         this->lister = new_lister;
@@ -178,7 +178,7 @@ lister_zero_scroll(Lister *lister){
 }
 
 function void
-lister_render(Application_Links *app, Frame_Info frame_info, View_ID view){
+lister_render(App *app, Frame_Info frame_info, View_ID view){
     Scratch_Block scratch(app);
 
     Lister *lister = view_get_lister(app, view);
@@ -420,7 +420,7 @@ lister_update_selection_values(Lister *lister){
 }
 
 function void
-lister_update_filtered_list(Application_Links *app, Lister *lister){
+lister_update_filtered_list(App *app, Lister *lister){
     Arena *arena = lister->arena;
     Scratch_Block scratch(app, arena);
 
@@ -457,7 +457,7 @@ lister_update_filtered_list(Application_Links *app, Lister *lister){
 }
 
 function void
-lister_call_refresh_handler(Application_Links *app, Lister *lister){
+lister_call_refresh_handler(App *app, Lister *lister){
     if (lister->handlers.refresh != 0){
         lister->handlers.refresh(app, lister);
         lister->filter_restore_point = begin_temp(lister->arena);
@@ -466,14 +466,14 @@ lister_call_refresh_handler(Application_Links *app, Lister *lister){
 }
 
 function void
-lister_activate(Application_Links *app, Lister *lister, void *user_data, b32 mouse){
+lister_activate(App *app, Lister *lister, void *user_data, b32 mouse){
     lister->out.activated_by_click = mouse;
     lister->out.text_field = lister->text_field.string;
     lister->out.user_data = user_data;
 }
 
 function void*
-lister_user_data_at_p(Application_Links *app, View_ID view, Lister *lister, Vec2_f32 m_p){
+lister_user_data_at_p(App *app, View_ID view, Lister *lister, Vec2_f32 m_p){
     Rect_f32 region = view_get_screen_rect(app, view);
     // TODO(allen): eliminate this. bad bad bad bad :(
     region = rect_inner(region, 3.f);
@@ -509,7 +509,7 @@ lister_user_data_at_p(Application_Links *app, View_ID view, Lister *lister, Vec2
 }
 
 function Lister_Result
-run_lister(Application_Links *app, Lister *lister){
+run_lister(App *app, Lister *lister){
     lister->filter_restore_point = begin_temp(lister->arena);
     lister_update_filtered_list(app, lister);
 
@@ -738,7 +738,7 @@ lister_prealloced(String_Const_u8 string){
 }
 
 function void
-lister_begin_new_item_set(Application_Links *app, Lister *lister){
+lister_begin_new_item_set(App *app, Lister *lister){
     end_temp(lister->restore_all_point);
     block_zero_struct(&lister->options);
     block_zero_struct(&lister->filtered);
@@ -778,7 +778,7 @@ lister_add_item(Lister *lister, String_Const_u8 string, String_Const_u8 status, 
 }
 
 function Lister_Activation_Code
-lister__write_string__default(Application_Links *app){
+lister__write_string__default(App *app){
     Lister_Activation_Code result = ListerActivation_Continue;
     View_ID view = get_active_view(app, Access_Always);
     Lister *lister = view_get_lister(app, view);
@@ -797,7 +797,7 @@ lister__write_string__default(Application_Links *app){
 }
 
 function void
-lister__backspace_text_field__default(Application_Links *app){
+lister__backspace_text_field__default(App *app){
     View_ID view = get_active_view(app, Access_Always);
     Lister *lister = view_get_lister(app, view);
     if (lister != 0){
@@ -810,7 +810,7 @@ lister__backspace_text_field__default(Application_Links *app){
 }
 
 function void
-lister__navigate__default(Application_Links *app, View_ID view, Lister *lister, i32 delta){
+lister__navigate__default(App *app, View_ID view, Lister *lister, i32 delta){
     i32 new_index = lister->item_index + delta;
     if (new_index < 0 && lister->item_index == 0){
         lister->item_index = lister->filtered.count - 1;
@@ -844,7 +844,7 @@ lister_set_default_handlers(Lister *lister){
 ////////////////////////////////
 
 function Lister_Result
-run_lister_with_refresh_handler(Application_Links *app, Arena *arena, String_Const_u8 query, Lister_Handlers handlers){
+run_lister_with_refresh_handler(App *app, Arena *arena, String_Const_u8 query, Lister_Handlers handlers){
     Lister_Result result = {};
     if (handlers.refresh != 0){
         Lister_Block lister(app, arena);
@@ -864,18 +864,18 @@ run_lister_with_refresh_handler(Application_Links *app, Arena *arena, String_Con
 }
 
 function Lister_Result
-run_lister_with_refresh_handler(Application_Links *app, String_Const_u8 query,  Lister_Handlers handlers){
+run_lister_with_refresh_handler(App *app, String_Const_u8 query,  Lister_Handlers handlers){
     Scratch_Block scratch(app);
     return(run_lister_with_refresh_handler(app, scratch, query, handlers));
 }
 
 function Lister_Result
-run_lister_with_refresh_handler(Application_Links *app, Arena *arena, char *query, Lister_Handlers handlers){
+run_lister_with_refresh_handler(App *app, Arena *arena, char *query, Lister_Handlers handlers){
     return(run_lister_with_refresh_handler(app, arena, SCu8(query), handlers));
 }
 
 function Lister_Result
-run_lister_with_refresh_handler(Application_Links *app, char *query, Lister_Handlers handlers){
+run_lister_with_refresh_handler(App *app, char *query, Lister_Handlers handlers){
     return(run_lister_with_refresh_handler(app, SCu8(query), handlers));
 }
 
@@ -928,7 +928,7 @@ lister_choice(Arena *arena, Lister_Choice_List *list, char *string, char *status
 }
 
 function Lister_Activation_Code
-lister__key_stroke__choice_list(Application_Links *app){
+lister__key_stroke__choice_list(App *app){
     Lister_Activation_Code result = ListerActivation_Continue;
     View_ID view = get_active_view(app, Access_Always);
     Lister *lister = view_get_lister(app, view);
@@ -957,7 +957,7 @@ lister__key_stroke__choice_list(Application_Links *app){
 }
 
 function Lister_Choice*
-get_choice_from_user(Application_Links *app, String_Const_u8 query,
+get_choice_from_user(App *app, String_Const_u8 query,
                      Lister_Choice_List list){
     Scratch_Block scratch(app);
     Lister_Block lister(app, scratch);
@@ -984,7 +984,7 @@ get_choice_from_user(Application_Links *app, String_Const_u8 query,
 }
 
 function Lister_Choice*
-get_choice_from_user(Application_Links *app, char *query, Lister_Choice_List list){
+get_choice_from_user(App *app, char *query, Lister_Choice_List list){
     return(get_choice_from_user(app, SCu8(query), list));
 }
 

@@ -13,10 +13,10 @@ struct File_Name_Data{
 };
 
 struct View_Context_Block{
-    Application_Links *app;
+    App *app;
     View_ID view;
-    
-    View_Context_Block(Application_Links *app, View_ID view, View_Context *ctx);
+
+    View_Context_Block(App *app, View_ID view, View_Context *ctx);
     ~View_Context_Block();
 };
 
@@ -40,90 +40,90 @@ enum{
 typedef b8 Character_Predicate_Function(u8 c);
 
 global Character_Predicate character_predicate_alpha = { {
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        254, 255, 255,   7, 254, 255, 255,   7, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,   0,   0,   0,   0,   0,   0,   0,
+        254, 255, 255,   7, 254, 255, 255,   7,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_alpha_numeric = { {
-        0,   0,   0,   0,   0,   0, 255,   3, 
-        254, 255, 255,   7, 254, 255, 255,   7, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,   0,   0,   0,   0,   0, 255,   3,
+        254, 255, 255,   7, 254, 255, 255,   7,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_alpha_numeric_underscore = { {
-        0,   0,   0,   0,   0,   0, 255,   3, 
-        254, 255, 255, 135, 254, 255, 255,   7, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,   0,   0,   0,   0,   0, 255,   3,
+        254, 255, 255, 135, 254, 255, 255,   7,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_uppercase = { {
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        254, 255, 255,   7,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,   0,   0,   0,   0,   0,   0,   0,
+        254, 255, 255,   7,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_lowercase = { {
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0, 254, 255, 255,   7, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0, 254, 255, 255,   7,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_base10 = { {
-        0,   0,   0,   0,   0,   0, 255,   3, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,   0,   0,   0,   0,   0, 255,   3,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_base16 = { {
-        0,   0,   0,   0,   0,   0, 255,   3, 
-        126,   0,   0,   0, 126,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,   0,   0,   0,   0,   0, 255,   3,
+        126,   0,   0,   0, 126,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_whitespace = { {
-        0,  62,   0,   0,   1,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
+        0,  62,   0,   0,   1,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
     } };
 
 global Character_Predicate character_predicate_non_whitespace = { {
-        255, 193, 255, 255, 254, 255, 255, 255, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
+        255, 193, 255, 255, 254, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255,
     } };
 
 global Character_Predicate character_predicate_utf8_byte = { {
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        0,   0,   0,   0,   0,   0,   0,   0, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
+        0,   0,   0,   0,   0,   0,   0,   0,
+        0,   0,   0,   0,   0,   0,   0,   0,
+        255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255,
     } };
 
 global Character_Predicate character_predicate_alpha_numeric_utf8 = { {
-        0,   0,   0,   0,   0,   0, 255,   3, 
-        254, 255, 255,   7, 254, 255, 255,   7, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
+        0,   0,   0,   0,   0,   0, 255,   3,
+        254, 255, 255,   7, 254, 255, 255,   7,
+        255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255,
     } };
 
 global Character_Predicate character_predicate_alpha_numeric_underscore_utf8 = { {
-        0,   0,   0,   0,   0,   0, 255,   3, 
-        254, 255, 255, 135, 254, 255, 255,   7, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
-        255, 255, 255, 255, 255, 255, 255, 255, 
+        0,   0,   0,   0,   0,   0, 255,   3,
+        254, 255, 255, 135, 254, 255, 255,   7,
+        255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255,
     } };
 
-typedef i64 Boundary_Function(Application_Links *app, Buffer_ID buffer, Side side, Scan_Direction direction, i64 pos);
+typedef i64 Boundary_Function(App *app, Buffer_ID buffer, Side side, Scan_Direction direction, i64 pos);
 
 struct Boundary_Function_Node{
     Boundary_Function_Node *next;
@@ -135,7 +135,7 @@ struct Boundary_Function_List{
     i32 count;
 };
 
-typedef Range_i64 Enclose_Function(Application_Links *app, Buffer_ID buffer, Range_i64 range);
+typedef Range_i64 Enclose_Function(App *app, Buffer_ID buffer, Range_i64 range);
 
 struct Indent_Info{
     i64 first_char_pos;
@@ -154,7 +154,7 @@ struct Sort_Pair_i32{
 ////////////////////////////////
 
 struct History_Group{
-    Application_Links *app;
+    App *app;
     Buffer_ID buffer;
     History_Record_Index first;
 };

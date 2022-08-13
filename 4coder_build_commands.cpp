@@ -5,7 +5,7 @@
 // TOP
 
 static String_Const_u8
-push_build_directory_at_file(Application_Links *app, Arena *arena, Buffer_ID buffer){
+push_build_directory_at_file(App *app, Arena *arena, Buffer_ID buffer){
     String_Const_u8 result = {};
     String_Const_u8 file_name = push_buffer_file_name(app, arena, buffer);
     Temp_Memory restore_point = begin_temp(arena);
@@ -57,14 +57,14 @@ global_const Buffer_Identifier standard_build_build_buffer_identifier = buffer_i
 global_const u32 standard_build_exec_flags = CLI_OverlapWithConflict|CLI_SendEndSignal;
 
 static void
-standard_build_exec_command(Application_Links *app, View_ID view, String_Const_u8 dir, String_Const_u8 cmd){
+standard_build_exec_command(App *app, View_ID view, String_Const_u8 dir, String_Const_u8 cmd){
     exec_system_command(app, view, standard_build_build_buffer_identifier,
                         dir, cmd,
                         standard_build_exec_flags);
 }
 
 function b32
-standard_search_and_build_from_dir(Application_Links *app, View_ID view, String_Const_u8 start_dir){
+standard_search_and_build_from_dir(App *app, View_ID view, String_Const_u8 start_dir){
     Scratch_Block scratch(app);
 
     // NOTE(allen): Search
@@ -100,7 +100,7 @@ standard_search_and_build_from_dir(Application_Links *app, View_ID view, String_
 // NOTE(allen): This searches first using the active file's directory,
 // then if no build script is found, it searches from 4coders hot directory.
 static void
-standard_search_and_build(Application_Links *app, View_ID view, Buffer_ID active_buffer){
+standard_search_and_build(App *app, View_ID view, Buffer_ID active_buffer){
     Scratch_Block scratch(app);
     b32 did_build = false;
     String_Const_u8 build_dir = push_build_directory_at_file(app, scratch, active_buffer);
@@ -131,12 +131,12 @@ CUSTOM_DOC("Looks for a build.bat, build.sh, or makefile in the current and pare
 }
 
 static Buffer_ID
-get_comp_buffer(Application_Links *app){
+get_comp_buffer(App *app){
     return(get_buffer_by_name(app, string_u8_litexpr("*compilation*"), Access_Always));
 }
 
 static View_ID
-get_or_open_build_panel(Application_Links *app){
+get_or_open_build_panel(App *app){
     View_ID view = 0;
     Buffer_ID buffer = get_comp_buffer(app);
     if (buffer != 0){
@@ -149,7 +149,7 @@ get_or_open_build_panel(Application_Links *app){
 }
 
 function void
-set_fancy_compilation_buffer_font(Application_Links *app){
+set_fancy_compilation_buffer_font(App *app){
     Scratch_Block scratch(app);
     Buffer_ID buffer = get_comp_buffer(app);
     Font_Load_Location font = {};

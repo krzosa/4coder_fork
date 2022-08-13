@@ -52,7 +52,7 @@ CUSTOM_DOC("Default command for responding to a try-exit event")
 }
 
 function Implicit_Map_Result
-default_implicit_map(Application_Links *app, String_ID lang, String_ID mode, Input_Event *event){
+default_implicit_map(App *app, String_ID lang, String_ID mode, Input_Event *event){
     Implicit_Map_Result result = {};
 
     View_ID view = get_this_ctx_view(app, Access_Always);
@@ -111,7 +111,7 @@ CUSTOM_DOC("Input consumption loop for default view behavior")
 }
 
 function void
-code_index_update_tick(Application_Links *app){
+code_index_update_tick(App *app){
     Scratch_Block scratch(app);
     for (Buffer_Modified_Node *node = global_buffer_modified_set.first;
          node != 0;
@@ -147,7 +147,7 @@ code_index_update_tick(Application_Links *app){
 }
 
 function void
-default_tick(Application_Links *app, Frame_Info frame_info){
+default_tick(App *app, Frame_Info frame_info){
     ////////////////////////////////
     // NOTE(allen): Update code index
 
@@ -173,7 +173,7 @@ default_tick(Application_Links *app, Frame_Info frame_info){
 }
 
 function Rect_f32
-default_buffer_region(Application_Links *app, View_ID view_id, Rect_f32 region){
+default_buffer_region(App *app, View_ID view_id, Rect_f32 region){
     Buffer_ID buffer = view_get_buffer(app, view_id, Access_Always);
     Face_ID face_id = get_face_id(app, buffer);
     Face_Metrics metrics = get_face_metrics(app, face_id);
@@ -219,7 +219,7 @@ default_buffer_region(Application_Links *app, View_ID view_id, Rect_f32 region){
 }
 
 function void
-recursive_nest_highlight(Application_Links *app, Text_Layout_ID layout_id, Range_i64 range,
+recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range,
                          Code_Index_Nest_Ptr_Array *array, i32 counter){
     Code_Index_Nest **ptr = array->ptrs;
     Code_Index_Nest **ptr_end = ptr + array->count;
@@ -251,13 +251,13 @@ recursive_nest_highlight(Application_Links *app, Text_Layout_ID layout_id, Range
 }
 
 function void
-recursive_nest_highlight(Application_Links *app, Text_Layout_ID layout_id, Range_i64 range,
+recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range,
                          Code_Index_File *file){
     recursive_nest_highlight(app, layout_id, range, &file->nest_array, 0);
 }
 
 function void
-default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
+default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                       Buffer_ID buffer, Text_Layout_ID text_layout_id,
                       Rect_f32 rect){
     ProfileScope(app, "render buffer");
@@ -451,7 +451,7 @@ default_render_buffer(Application_Links *app, View_ID view_id, Face_ID face_id,
 }
 
 function Rect_f32
-default_draw_query_bars(Application_Links *app, Rect_f32 region, View_ID view_id, Face_ID face_id){
+default_draw_query_bars(App *app, Rect_f32 region, View_ID view_id, Face_ID face_id){
     Face_Metrics face_metrics = get_face_metrics(app, face_id);
     f32 line_height = face_metrics.line_height;
 
@@ -469,7 +469,7 @@ default_draw_query_bars(Application_Links *app, Rect_f32 region, View_ID view_id
 }
 
 function void
-default_render_caller(Application_Links *app, Frame_Info frame_info, View_ID view_id){
+default_render_caller(App *app, Frame_Info frame_info, View_ID view_id){
     ProfileScope(app, "default render caller");
     Rect_f32 region = draw_background_and_margin(app, view_id);
     Rect_f32 prev_clip = draw_set_clip(app, region);
@@ -537,7 +537,7 @@ default_render_caller(Application_Links *app, Frame_Info frame_info, View_ID vie
 }
 
 function void
-default_whole_screen_render_caller(Application_Links *app, Frame_Info frame_info){
+default_whole_screen_render_caller(App *app, Frame_Info frame_info){
 #if 0
     Rect_f32 region = global_get_screen_rectangle(app);
     Vec2_f32 center = rect_center(region);
@@ -680,7 +680,7 @@ BUFFER_NAME_RESOLVER_SIG(default_buffer_name_resolution){
 function void
 parse_async__inner(Async_Context *actx, Buffer_ID buffer_id,
                    String_Const_u8 contents, Token_Array *tokens, i32 limit_factor){
-    Application_Links *app = actx->app;
+    App *app = actx->app;
     ProfileBlock(app, "async parse");
 
     Arena arena = make_arena_system(KB(16));
@@ -717,7 +717,7 @@ parse_async__inner(Async_Context *actx, Buffer_ID buffer_id,
 
 function void
 do_full_lex_async__inner(Async_Context *actx, Buffer_ID buffer_id){
-    Application_Links *app = actx->app;
+    App *app = actx->app;
     ProfileScope(app, "async lex");
     Scratch_Block scratch(app);
 
@@ -778,7 +778,7 @@ do_full_lex_async(Async_Context *actx, String_Const_u8 data){
 }
 
 function String_Const_u8_Array
-parse_extension_line_to_extension_list(Application_Links *app, Arena *arena, String_Const_u8 str){
+parse_extension_line_to_extension_list(App *app, Arena *arena, String_Const_u8 str){
     ProfileScope(app, "parse extension line to extension list");
     i32 count = 0;
     for (u64 i = 0; i < str.size; i += 1){
@@ -1141,7 +1141,7 @@ BUFFER_HOOK_SIG(default_end_buffer){
 }
 
 function void
-default_view_change_buffer(Application_Links *app, View_ID view_id,
+default_view_change_buffer(App *app, View_ID view_id,
                            Buffer_ID old_buffer_id, Buffer_ID new_buffer_id){
     Managed_Scope scope = view_get_managed_scope(app, view_id);
     Buffer_ID *prev_buffer_id = scope_attachment(app, scope, view_previous_buffer, Buffer_ID);
@@ -1151,7 +1151,7 @@ default_view_change_buffer(Application_Links *app, View_ID view_id,
 }
 
 internal void
-set_all_default_hooks(Application_Links *app){
+set_all_default_hooks(App *app){
     set_custom_hook(app, HookID_BufferViewerUpdate, default_view_adjust);
 
     set_custom_hook(app, HookID_ViewEventHandler, default_view_input_handler);

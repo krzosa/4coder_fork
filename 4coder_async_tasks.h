@@ -31,7 +31,7 @@ struct Async_Node{
 
 struct Async_System{
     void *cmd_context;
-    
+
     Heap node_heap;
     Arena node_arena;
     System_Mutex mutex;
@@ -41,12 +41,12 @@ struct Async_System{
     Async_Node *free_nodes;
     Node task_sent;
     i32 task_count;
-    
+
     Async_Thread thread;
 };
 
 struct Async_Context{
-    Application_Links *app;
+    App *app;
     Async_Thread *thread;
 };
 

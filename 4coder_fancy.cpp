@@ -546,7 +546,7 @@ push_fancy_line(Arena *arena, Fancy_Block *block){
 ////////////////////////////////
 
 function f32
-get_fancy_string_width__inner(Application_Links *app, Face_ID face,
+get_fancy_string_width__inner(App *app, Face_ID face,
                               Fancy_String *string){
     f32 result = 0.f;
     for (;string != 0;
@@ -566,7 +566,7 @@ get_fancy_string_width__inner(Application_Links *app, Face_ID face,
 }
 
 function f32
-get_fancy_string_height__inner(Application_Links *app, Face_ID face, Fancy_String *string){
+get_fancy_string_height__inner(App *app, Face_ID face, Fancy_String *string){
     f32 result = 0.f;
     if (face != 0){
         Face_Metrics metrics = get_face_metrics(app, face);
@@ -584,7 +584,7 @@ get_fancy_string_height__inner(Application_Links *app, Face_ID face, Fancy_Strin
 }
 
 function f32
-get_fancy_string_text_height__inner(Application_Links *app, Face_ID face, Fancy_String *string){
+get_fancy_string_text_height__inner(App *app, Face_ID face, Fancy_String *string){
     f32 result = 0.f;
     if (face != 0){
         Face_Metrics metrics = get_face_metrics(app, face);
@@ -602,7 +602,7 @@ get_fancy_string_text_height__inner(Application_Links *app, Face_ID face, Fancy_
 }
 
 function Vec2_f32
-draw_fancy_string__inner(Application_Links *app, Face_ID face, FColor fore, Fancy_String *first_string, Vec2_f32 p, u32 flags, Vec2_f32 delta){
+draw_fancy_string__inner(App *app, Face_ID face, FColor fore, Fancy_String *first_string, Vec2_f32 p, u32 flags, Vec2_f32 delta){
     f32 base_line = 0.f;
     for (Fancy_String *string = first_string;
          string != 0;
@@ -657,7 +657,7 @@ draw_fancy_string__inner(Application_Links *app, Face_ID face, FColor fore, Fanc
 }
 
 function f32
-get_fancy_string_width(Application_Links *app, Face_ID face,
+get_fancy_string_width(App *app, Face_ID face,
                        Fancy_String *string){
     Fancy_String *next = string->next;
     string->next = 0;
@@ -667,7 +667,7 @@ get_fancy_string_width(Application_Links *app, Face_ID face,
 }
 
 function f32
-get_fancy_string_height(Application_Links *app, Face_ID face,
+get_fancy_string_height(App *app, Face_ID face,
                         Fancy_String *string){
     Fancy_String *next = string->next;
     string->next = 0;
@@ -677,7 +677,7 @@ get_fancy_string_height(Application_Links *app, Face_ID face,
 }
 
 function f32
-get_fancy_string_text_height(Application_Links *app, Face_ID face,
+get_fancy_string_text_height(App *app, Face_ID face,
                              Fancy_String *string){
     Fancy_String *next = string->next;
     string->next = 0;
@@ -687,7 +687,7 @@ get_fancy_string_text_height(Application_Links *app, Face_ID face,
 }
 
 function Vec2_f32
-get_fancy_string_dim(Application_Links *app, Face_ID face, Fancy_String *string){
+get_fancy_string_dim(App *app, Face_ID face, Fancy_String *string){
     Fancy_String *next = string->next;
     string->next = 0;
     Vec2_f32 result = V2f32(get_fancy_string_width__inner(app, face, string),
@@ -697,7 +697,7 @@ get_fancy_string_dim(Application_Links *app, Face_ID face, Fancy_String *string)
 }
 
 function Vec2_f32
-draw_fancy_string(Application_Links *app, Face_ID face, FColor fore,
+draw_fancy_string(App *app, Face_ID face, FColor fore,
                   Fancy_String *string, Vec2_f32 p, u32 flags, Vec2_f32 delta){
     Fancy_String *next = string->next;
     string->next = 0;
@@ -707,7 +707,7 @@ draw_fancy_string(Application_Links *app, Face_ID face, FColor fore,
 }
 
 function f32
-get_fancy_line_width(Application_Links *app, Face_ID face, Fancy_Line *line){
+get_fancy_line_width(App *app, Face_ID face, Fancy_Line *line){
     f32 result = 0.f;
     if (line != 0){
         if (line->face != 0){
@@ -719,7 +719,7 @@ get_fancy_line_width(Application_Links *app, Face_ID face, Fancy_Line *line){
 }
 
 function f32
-get_fancy_line_height(Application_Links *app, Face_ID face, Fancy_Line *line){
+get_fancy_line_height(App *app, Face_ID face, Fancy_Line *line){
     f32 result = 0.f;
     if (line != 0){
         if (line->face != 0){
@@ -731,7 +731,7 @@ get_fancy_line_height(Application_Links *app, Face_ID face, Fancy_Line *line){
 }
 
 function f32
-get_fancy_line_text_height(Application_Links *app, Face_ID face, Fancy_Line *line){
+get_fancy_line_text_height(App *app, Face_ID face, Fancy_Line *line){
     f32 result = 0.f;
     if (line != 0){
         if (line->face != 0){
@@ -743,7 +743,7 @@ get_fancy_line_text_height(Application_Links *app, Face_ID face, Fancy_Line *lin
 }
 
 function Vec2_f32
-get_fancy_line_dim(Application_Links *app, Face_ID face, Fancy_Line *line){
+get_fancy_line_dim(App *app, Face_ID face, Fancy_Line *line){
     Vec2_f32 result = {};
     if (line != 0){
         if (line->face != 0){
@@ -755,7 +755,7 @@ get_fancy_line_dim(Application_Links *app, Face_ID face, Fancy_Line *line){
 }
 
 function Vec2_f32
-draw_fancy_line(Application_Links *app, Face_ID face, FColor fore,
+draw_fancy_line(App *app, Face_ID face, FColor fore,
                 Fancy_Line *line, Vec2_f32 p, u32 flags, Vec2_f32 delta){
     Vec2_f32 result = {};
     if (line != 0){
@@ -771,7 +771,7 @@ draw_fancy_line(Application_Links *app, Face_ID face, FColor fore,
 }
 
 function f32
-get_fancy_block_width(Application_Links *app, Face_ID face, Fancy_Block *block){
+get_fancy_block_width(App *app, Face_ID face, Fancy_Block *block){
     f32 width = 0.f;
     for (Fancy_Line *node = block->first;
          node != 0;
@@ -783,7 +783,7 @@ get_fancy_block_width(Application_Links *app, Face_ID face, Fancy_Block *block){
 }
 
 function f32
-get_fancy_block_height(Application_Links *app, Face_ID face, Fancy_Block *block){
+get_fancy_block_height(App *app, Face_ID face, Fancy_Block *block){
     f32 height = 0.f;
     for (Fancy_Line *node = block->first;
          node != 0;
@@ -794,7 +794,7 @@ get_fancy_block_height(Application_Links *app, Face_ID face, Fancy_Block *block)
 }
 
 function Vec2_f32
-get_fancy_block_dim(Application_Links *app, Face_ID face, Fancy_Block *block){
+get_fancy_block_dim(App *app, Face_ID face, Fancy_Block *block){
     Vec2_f32 result = {};
     result.x = get_fancy_block_width(app, face, block);
     result.y = get_fancy_block_height(app, face, block);
@@ -802,7 +802,7 @@ get_fancy_block_dim(Application_Links *app, Face_ID face, Fancy_Block *block){
 }
 
 function void
-draw_fancy_block(Application_Links *app, Face_ID face, FColor fore,
+draw_fancy_block(App *app, Face_ID face, FColor fore,
                  Fancy_Block *block, Vec2_f32 p, u32 flags, Vec2_f32 delta){
     for (Fancy_Line *node = block->first;
          node != 0;
@@ -813,24 +813,24 @@ draw_fancy_block(Application_Links *app, Face_ID face, FColor fore,
 }
 
 function Vec2_f32
-draw_fancy_string(Application_Links *app, Face_ID face, FColor fore,
+draw_fancy_string(App *app, Face_ID face, FColor fore,
                   Fancy_String *string, Vec2_f32 p){
     return(draw_fancy_string(app, face, fore, string, p, 0, V2f32(1.f, 0.f)));
 }
 
 function Vec2_f32
-draw_fancy_string(Application_Links *app, Fancy_String *string, Vec2_f32 p){
+draw_fancy_string(App *app, Fancy_String *string, Vec2_f32 p){
     return(draw_fancy_string(app, 0, fcolor_zero(), string, p, 0, V2f32(1.f, 0.f)));
 }
 
 function Vec2_f32
-draw_fancy_line(Application_Links *app, Face_ID face, FColor fore,
+draw_fancy_line(App *app, Face_ID face, FColor fore,
                 Fancy_Line *line, Vec2_f32 p){
     return(draw_fancy_line(app, face, fore, line, p, 0, V2f32(1.f, 0.f)));
 }
 
 function void
-draw_fancy_block(Application_Links *app, Face_ID face, FColor fore,
+draw_fancy_block(App *app, Face_ID face, FColor fore,
                  Fancy_Block *block, Vec2_f32 p){
     draw_fancy_block(app, face, fore, block, p, 0, V2f32(1.f, 0.f));
 }

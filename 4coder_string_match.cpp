@@ -80,7 +80,7 @@ string_match_list_filter_remove_buffer(String_Match_List *list, Buffer_ID buffer
 }
 
 internal void
-string_match_list_filter_remove_buffer_predicate(Application_Links *app, String_Match_List *list, Buffer_Predicate *predicate){
+string_match_list_filter_remove_buffer_predicate(App *app, String_Match_List *list, Buffer_Predicate *predicate){
     String_Match_List new_list = {};
     for (String_Match *node = list->first, *next = 0;
          node != 0;

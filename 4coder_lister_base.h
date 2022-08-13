@@ -14,7 +14,7 @@ enum{
     ListerActivation_ContinueAndRefresh = 2,
 };
 
-typedef void Lister_Regenerate_List_Function_Type(Application_Links *app, struct Lister *lister);
+typedef void Lister_Regenerate_List_Function_Type(App *app, struct Lister *lister);
 
 struct Lister_Node{
     Lister_Node *next;
@@ -39,9 +39,9 @@ struct Lister_Node_Ptr_Array{
     i32 count;
 };
 
-typedef Lister_Activation_Code Lister_Write_Character_Function(Application_Links *app);
-typedef Lister_Activation_Code Lister_Key_Stroke_Function(Application_Links *app);
-typedef void Lister_Navigate_Function(Application_Links *app,
+typedef Lister_Activation_Code Lister_Write_Character_Function(App *app);
+typedef Lister_Activation_Code Lister_Key_Stroke_Function(App *app);
+typedef void Lister_Navigate_Function(App *app,
                                       View_ID view, struct Lister *lister,
                                       i32 index_delta);
 

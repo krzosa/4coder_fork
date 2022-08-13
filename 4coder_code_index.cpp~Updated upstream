@@ -274,7 +274,7 @@ generic_parse_skip_soft_tokens(Code_Index_File *index, Generic_Parse_State *stat
 }
 
 function void
-generic_parse_init(Application_Links *app, Arena *arena, String_Const_u8 contents, Token_Array *tokens, Generic_Parse_Comment_Function *handle_comment, Generic_Parse_State *state){
+generic_parse_init(App *app, Arena *arena, String_Const_u8 contents, Token_Array *tokens, Generic_Parse_Comment_Function *handle_comment, Generic_Parse_State *state){
     state->app = app;
     state->arena = arena;
     state->contents = contents;
@@ -783,12 +783,12 @@ function b32 generic_parse_full_input_breaks(Code_Index_File *index, Generic_Par
 // NOTE(allen): Not sure
 
 function void
-default_comment_index(Application_Links *app, Arena *arena, Code_Index_File *index, Token *token, String_Const_u8 contents){
+default_comment_index(App *app, Arena *arena, Code_Index_File *index, Token *token, String_Const_u8 contents){
 
 }
 
 function void
-generic_parse_init(Application_Links *app, Arena *arena, String_Const_u8 contents, Token_Array *tokens, Generic_Parse_State *state){
+generic_parse_init(App *app, Arena *arena, String_Const_u8 contents, Token_Array *tokens, Generic_Parse_State *state){
     generic_parse_init(app, arena, contents, tokens, default_comment_index, state);
 }
 
@@ -819,7 +819,7 @@ layout_token_pair(Token_Array *tokens, i64 pos){
 }
 
 function f32
-layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_Nest *nest, i64 pos, f32 regular_indent, b32 *unresolved_dependence) {
+layout_index_x_shift(App *app, Layout_Reflex *reflex, Code_Index_Nest *nest, i64 pos, f32 regular_indent, b32 *unresolved_dependence) {
     f32 result = 0.f;
     if (nest != 0) {
         switch (nest->kind) {
@@ -848,13 +848,13 @@ layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_N
 }
 
 function f32
-layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_Nest *nest, i64 pos, f32 regular_indent){
+layout_index_x_shift(App *app, Layout_Reflex *reflex, Code_Index_Nest *nest, i64 pos, f32 regular_indent){
     b32 ignore;
     return(layout_index_x_shift(app, reflex, nest, pos, regular_indent, &ignore));
 }
 
 function f32
-layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_File *file, i64 pos, f32 regular_indent, b32 *unresolved_dependence){
+layout_index_x_shift(App *app, Layout_Reflex *reflex, Code_Index_File *file, i64 pos, f32 regular_indent, b32 *unresolved_dependence){
     f32 indent = 0;
     Code_Index_Nest *nest = code_index_get_nest(file, pos);
     if (nest != 0){
@@ -864,7 +864,7 @@ layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_F
 }
 
 function f32
-layout_index_x_shift(Application_Links *app, Layout_Reflex *reflex, Code_Index_File *file, i64 pos, f32 regular_indent){
+layout_index_x_shift(App *app, Layout_Reflex *reflex, Code_Index_File *file, i64 pos, f32 regular_indent){
     b32 ignore;
     return(layout_index_x_shift(app, reflex, file, pos, regular_indent, &ignore));
 }
@@ -899,7 +899,7 @@ layout_token_score_wrap_token(Token_Pair *pair, Token_Cpp_Kind kind){
 }
 
 function Layout_Item_List
-layout_index__inner(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Code_Index_File *file, Layout_Wrap_Kind kind) {
+layout_index__inner(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Code_Index_File *file, Layout_Wrap_Kind kind) {
     Scratch_Block scratch(app, arena);
 
     Token_Array  tokens     = get_token_array_from_buffer(app, buffer);
@@ -1168,7 +1168,7 @@ lr_tb_advance_x_without_item(&pos_vars, shift);
 }
 
 function Layout_Item_List
-layout_virt_indent_index(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Wrap_Kind kind){
+layout_virt_indent_index(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Wrap_Kind kind){
     Layout_Item_List result = {};
 
     b32 enable_virtual_whitespace = debug_config_enable_virtual_whitespace;
@@ -1191,17 +1191,17 @@ layout_virt_indent_index(Application_Links *app, Arena *arena, Buffer_ID buffer,
 }
 
 function Layout_Item_List
-layout_virt_indent_index_unwrapped(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_virt_indent_index_unwrapped(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
     return(layout_virt_indent_index(app, arena, buffer, range, face, width, Layout_Unwrapped));
 }
 
 function Layout_Item_List
-layout_virt_indent_index_wrapped(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_virt_indent_index_wrapped(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
     return(layout_virt_indent_index(app, arena, buffer, range, face, width, Layout_Wrapped));
 }
 
 function Layout_Item_List
-layout_virt_indent_index_generic(Application_Links *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
+layout_virt_indent_index_generic(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width){
     Managed_Scope scope = buffer_get_managed_scope(app, buffer);
     b32 *wrap_lines_ptr = scope_attachment(app, scope, buffer_wrap_lines, b32);
     b32 wrap_lines = (wrap_lines_ptr != 0 && *wrap_lines_ptr);

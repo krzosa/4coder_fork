@@ -276,11 +276,11 @@ App_Init_Sig(app_init){
     models->period_wakeup_timer = system_wake_up_timer_create();
 
     // NOTE(allen): custom layer init
-    Application_Links app = {};
+    App app = {};
     app.tctx = tctx;
     app.cmd_context = models;
 
-    void custom_layer_init(Application_Links *app);
+    void custom_layer_init(App *app);
     custom_layer_init(&app);
 
     // NOTE(allen): init baked in buffers
@@ -520,7 +520,7 @@ App_Step_Sig(app_step){
         // NOTE(allen): Actually do the buffer settings for the built ins now.
         Buffer_Hook_Function *begin_buffer_func = models->begin_buffer;
         if (begin_buffer_func != 0){
-            Application_Links app = {};
+            App app = {};
             app.tctx = tctx;
             app.cmd_context = models;
             begin_buffer_func(&app, models->message_buffer->id);
@@ -677,7 +677,7 @@ App_Step_Sig(app_step){
     if (models->layout.panel_state_dirty){
         models->layout.panel_state_dirty = false;
         if (models->buffer_viewer_update != 0){
-            Application_Links app = {};
+            App app = {};
             app.tctx = tctx;
             app.cmd_context = models;
             models->buffer_viewer_update(&app);
@@ -740,7 +740,7 @@ App_Step_Sig(app_step){
         frame.literal_dt = literal_dt;
         frame.animation_dt = animation_dt;
 
-        Application_Links app = {};
+        App app = {};
         app.tctx = tctx;
         app.cmd_context = models;
 
@@ -790,7 +790,7 @@ App_Step_Sig(app_step){
             Co_Out ignore = {};
             co = co_run(tctx, models, co, &in, &ignore);
             if (j == 100){
-                Application_Links app = {};
+                App app = {};
                 app.tctx = tctx;
                 app.cmd_context = models;
 #define M "SERIOUS ERROR: coroutine wind down did not complete\n"

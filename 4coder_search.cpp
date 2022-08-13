@@ -8,17 +8,17 @@ and list all locations.
 global String_Const_u8 search_name = string_u8_litexpr("*search*");
 
 internal void
-print_string_match_list_to_buffer(Application_Links *app, Buffer_ID out_buffer_id, String_Match_List matches){
+print_string_match_list_to_buffer(App *app, Buffer_ID out_buffer_id, String_Match_List matches){
     Scratch_Block scratch(app);
     clear_buffer(app, out_buffer_id);
     Buffer_Insertion out = begin_buffer_insertion_at_buffered(app, out_buffer_id, 0, scratch, KB(64));
     buffer_set_setting(app, out_buffer_id, BufferSetting_ReadOnly, true);
     buffer_set_setting(app, out_buffer_id, BufferSetting_RecordsHistory, false);
-    
+
     Temp_Memory buffer_name_restore_point = begin_temp(scratch);
     String_Const_u8 current_file_name = {};
     Buffer_ID current_buffer = 0;
-    
+
     if (matches.first != 0){
         for (String_Match *node = matches.first;
              node != 0;
@@ -35,7 +35,7 @@ print_string_match_list_to_buffer(Application_Links *app, Buffer_ID out_buffer_i
                         current_file_name = push_buffer_unique_name(app, scratch, current_buffer);
                     }
                 }
-                
+
                 Buffer_Cursor cursor = buffer_compute_cursor(app, current_buffer, seek_pos(node->range.first));
                 Temp_Memory line_temp = begin_temp(scratch);
                 String_Const_u8 full_line_str = push_buffer_line(app, scratch, current_buffer, cursor.line);
@@ -50,12 +50,12 @@ print_string_match_list_to_buffer(Application_Links *app, Buffer_ID out_buffer_i
     else{
         insertf(&out, "no matches");
     }
-    
+
     end_buffer_insertion(&out);
 }
 
 internal void
-print_all_matches_all_buffers(Application_Links *app, String_Const_u8_Array match_patterns, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, Buffer_ID out_buffer_id){
+print_all_matches_all_buffers(App *app, String_Const_u8_Array match_patterns, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, Buffer_ID out_buffer_id){
     Scratch_Block scratch(app);
     String_Match_List matches = find_all_matches_all_buffers(app, scratch, match_patterns, must_have_flags, must_not_have_flags);
     string_match_list_filter_remove_buffer(&matches, out_buffer_id);
@@ -64,31 +64,31 @@ print_all_matches_all_buffers(Application_Links *app, String_Const_u8_Array matc
 }
 
 internal void
-print_all_matches_all_buffers(Application_Links *app, String_Const_u8 pattern, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, Buffer_ID out_buffer_id){
+print_all_matches_all_buffers(App *app, String_Const_u8 pattern, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, Buffer_ID out_buffer_id){
     String_Const_u8_Array array = {&pattern, 1};
     print_all_matches_all_buffers(app, array, must_have_flags, must_not_have_flags, out_buffer_id);
 }
 
 internal void
-print_all_matches_all_buffers_to_search(Application_Links *app, String_Const_u8_Array match_patterns, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, View_ID default_target_view){
+print_all_matches_all_buffers_to_search(App *app, String_Const_u8_Array match_patterns, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, View_ID default_target_view){
     Buffer_ID search_buffer = create_or_switch_to_buffer_and_clear_by_name(app, search_name, default_target_view);
     print_all_matches_all_buffers(app, match_patterns, must_have_flags, must_not_have_flags, search_buffer);
 }
 
 internal void
-print_all_matches_all_buffers_to_search(Application_Links *app, String_Const_u8 pattern, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, View_ID default_target_view){
+print_all_matches_all_buffers_to_search(App *app, String_Const_u8 pattern, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, View_ID default_target_view){
     String_Const_u8_Array array = {&pattern, 1};
     print_all_matches_all_buffers_to_search(app, array, must_have_flags, must_not_have_flags, default_target_view);
 }
 
 internal String_Const_u8
-query_user_list_needle(Application_Links *app, Arena *arena){
+query_user_list_needle(App *app, Arena *arena){
     u8 *space = push_array(arena, u8, KB(1));
     return(get_query_string(app, "List Locations For: ", space, KB(1)));
 }
 
 internal String_Const_u8_Array
-user_list_definition_array(Application_Links *app, Arena *arena, String_Const_u8 base_needle){
+user_list_definition_array(App *app, Arena *arena, String_Const_u8 base_needle){
     String_Const_u8_Array result = {};
     if (base_needle.size > 0){
         result.count = 12;
@@ -112,14 +112,14 @@ user_list_definition_array(Application_Links *app, Arena *arena, String_Const_u8
 }
 
 internal String_Const_u8_Array
-query_user_list_definition_needle(Application_Links *app, Arena *arena){
+query_user_list_definition_needle(App *app, Arena *arena){
     u8 *space = push_array(arena, u8, KB(1));
     String_Const_u8 base_needle = get_query_string(app, "List Definitions For: ", space, KB(1));
     return(user_list_definition_array(app, arena, base_needle));
 }
 
 internal void
-list_all_locations__generic(Application_Links *app, String_Const_u8_Array needle, List_All_Locations_Flag flags){
+list_all_locations__generic(App *app, String_Const_u8_Array needle, List_All_Locations_Flag flags){
     if (needle.count > 0){
         View_ID target_view = get_next_view_after_active(app, Access_Always);
         String_Match_Flag must_have_flags = 0;
@@ -136,7 +136,7 @@ list_all_locations__generic(Application_Links *app, String_Const_u8_Array needle
 }
 
 internal void
-list_all_locations__generic(Application_Links *app, String_Const_u8 needle, List_All_Locations_Flag flags){
+list_all_locations__generic(App *app, String_Const_u8 needle, List_All_Locations_Flag flags){
     if (needle.size != 0){
         String_Const_u8_Array array = {&needle, 1};
         list_all_locations__generic(app, array, flags);
@@ -144,7 +144,7 @@ list_all_locations__generic(Application_Links *app, String_Const_u8 needle, List
 }
 
 internal void
-list_all_locations__generic_query(Application_Links *app, List_All_Locations_Flag flags){
+list_all_locations__generic_query(App *app, List_All_Locations_Flag flags){
     Scratch_Block scratch(app);
     u8 *space = push_array(scratch, u8, KB(1));
     String_Const_u8 needle = get_query_string(app, "List Locations For: ", space, KB(1));
@@ -152,14 +152,14 @@ list_all_locations__generic_query(Application_Links *app, List_All_Locations_Fla
 }
 
 internal void
-list_all_locations__generic_identifier(Application_Links *app, List_All_Locations_Flag flags){
+list_all_locations__generic_identifier(App *app, List_All_Locations_Flag flags){
     Scratch_Block scratch(app);
     String_Const_u8 needle = push_token_or_word_under_active_cursor(app, scratch);
     list_all_locations__generic(app, needle, flags);
 }
 
 internal void
-list_all_locations__generic_view_range(Application_Links *app, List_All_Locations_Flag flags){
+list_all_locations__generic_view_range(App *app, List_All_Locations_Flag flags){
     Scratch_Block scratch(app);
     String_Const_u8 needle = push_view_range_string(app, scratch);
     list_all_locations__generic(app, needle, flags);
@@ -231,7 +231,7 @@ CUSTOM_DOC("Reads a token or word under the cursor and lists all locations of st
 }
 
 internal Range_i64
-get_word_complete_needle_range(Application_Links *app, Buffer_ID buffer, i64 pos){
+get_word_complete_needle_range(App *app, Buffer_ID buffer, i64 pos){
     Range_i64 needle_range = {};
     needle_range.max = pos;
     needle_range.min = scan(app, boundary_alpha_numeric_underscore_utf8, buffer, Scan_Backward, pos);
@@ -243,7 +243,7 @@ get_word_complete_needle_range(Application_Links *app, Buffer_ID buffer, i64 pos
 }
 
 internal void
-string_match_list_enclose_all(Application_Links *app, String_Match_List list,
+string_match_list_enclose_all(App *app, String_Match_List list,
                               Enclose_Function *enclose){
     for (String_Match *node = list.first;
          node != 0;
@@ -257,11 +257,11 @@ global String_Match_Flag complete_must = (StringMatch_CaseSensitive|
 global String_Match_Flag complete_must_not = StringMatch_LeftSideSloppy;
 
 internal String_Match_List
-get_complete_list_raw(Application_Links *app, Arena *arena, Buffer_ID buffer,
+get_complete_list_raw(App *app, Arena *arena, Buffer_ID buffer,
                       Range_i64 needle_range, String_Const_u8 needle){
     local_persist Character_Predicate *pred =
         &character_predicate_alpha_numeric_underscore_utf8;
-    
+
     String_Match_List result = {};
     i64 size = buffer_get_size(app, buffer);
     if (range_size(needle_range) > 0){
@@ -280,14 +280,14 @@ get_complete_list_raw(Application_Links *app, Arena *arena, Buffer_ID buffer,
                                          Ii64(0, size), needle, pred, Scan_Forward);
         string_match_list_filter_flags(&result, complete_must, complete_must_not);
     }
-    
+
     string_match_list_enclose_all(app, result,
                                   right_enclose_alpha_numeric_underscore_utf8);
     return(result);
 }
 
 function void
-word_complete_list_extend_from_raw(Application_Links *app, Arena *arena, String_Match_List *matches, List_String_Const_u8 *list, Table_Data_u64 *used_table){
+word_complete_list_extend_from_raw(App *app, Arena *arena, String_Match_List *matches, List_String_Const_u8 *list, Table_Data_u64 *used_table){
     ProfileScope(app, "word complete list extend from raw");
     Scratch_Block scratch(app);
     for (String_Match *node = matches->first;
@@ -305,41 +305,41 @@ word_complete_list_extend_from_raw(Application_Links *app, Arena *arena, String_
 
 function void
 word_complete_iter_init__inner(Buffer_ID buffer, String_Const_u8 needle, Range_i64 range, Word_Complete_Iterator *iter){
-    Application_Links *app = iter->app;
+    App *app = iter->app;
     Arena *arena = iter->arena;
-    
+
     Base_Allocator *allocator = get_base_allocator_system();
     if (iter->already_used_table.allocator != 0){
         end_temp(iter->arena_restore);
         table_clear(&iter->already_used_table);
     }
-    
+
     block_zero_struct(iter);
     iter->app = app;
     iter->arena = arena;
-    
+
     iter->arena_restore = begin_temp(arena);
     iter->needle = push_string_copy(arena, needle);
     iter->first_buffer = buffer;
     iter->current_buffer = buffer;
-    
+
     Scratch_Block scratch(app, arena);
     String_Match_List list = get_complete_list_raw(app, scratch, buffer, range, needle);
-    
+
     iter->already_used_table = make_table_Data_u64(allocator, 100);
     word_complete_list_extend_from_raw(app, arena, &list, &iter->list, &iter->already_used_table);
-    
+
     iter->scan_all_buffers = true;
 }
 
 function void
 word_complete_iter_init(Buffer_ID buffer, Range_i64 range, Word_Complete_Iterator *iter){
     if (iter->app != 0 && iter->arena != 0){
-        Application_Links *app = iter->app;
+        App *app = iter->app;
         Arena *arena = iter->arena;
         Scratch_Block scratch(app, arena);
         String_Const_u8 needle = push_buffer_range(app, scratch, buffer, range);
-        word_complete_iter_init__inner(buffer, needle, range, iter); 
+        word_complete_iter_init__inner(buffer, needle, range, iter);
     }
 }
 
@@ -353,7 +353,7 @@ word_complete_iter_init(Buffer_ID first_buffer, String_Const_u8 needle, Word_Com
 function void
 word_complete_iter_init(String_Const_u8 needle, Word_Complete_Iterator *iter){
     if (iter->app != 0 && iter->arena != 0){
-        Application_Links *app = iter->app;
+        App *app = iter->app;
         Buffer_ID first_buffer = get_buffer_next(app, 0, Access_Read);
         word_complete_iter_init__inner(first_buffer, needle, Ii64(), iter);
     }
@@ -373,21 +373,21 @@ word_complete_iter_next(Word_Complete_Iterator *it){
         else{
             it->node = it->node->next;
         }
-        
+
         if (it->node != 0){
             break;
         }
-        
+
         if (!it->scan_all_buffers){
             break;
         }
-        
-        Application_Links *app = it->app;
+
+        App *app = it->app;
         Buffer_ID next = get_buffer_next_looped(app, it->current_buffer, Access_Read);
         if (next == it->first_buffer){
             break;
         }
-        
+
         it->node = it->list.last;
         it->current_buffer = next;
         Scratch_Block scratch(app);
@@ -417,7 +417,7 @@ word_complete_iter_is_at_base_slot(Word_Complete_Iterator *it){
 }
 
 function Word_Complete_Iterator*
-word_complete_get_shared_iter(Application_Links *app){
+word_complete_get_shared_iter(App *app){
     local_persist Arena completion_arena = {};
     local_persist Word_Complete_Iterator it = {};
     local_persist b32 first_call = true;
@@ -434,24 +434,24 @@ CUSTOM_COMMAND_SIG(word_complete)
 CUSTOM_DOC("Iteratively tries completing the word to the left of the cursor with other words in open buffers that have the same prefix string.")
 {
     ProfileScope(app, "word complete");
-    
+
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     if (buffer != 0){
         Managed_Scope scope = view_get_managed_scope(app, view);
-        
+
         b32 first_completion = false;
         Rewrite_Type *rewrite = scope_attachment(app, scope, view_rewrite_loc, Rewrite_Type);
         if (*rewrite != Rewrite_WordComplete){
             first_completion = true;
         }
-        
+
         set_next_rewrite(app, view, Rewrite_WordComplete);
-        
+
         Word_Complete_Iterator *it = word_complete_get_shared_iter(app);
         local_persist b32 initialized = false;
         local_persist Range_i64 range = {};
-        
+
         if (first_completion || !initialized){
             ProfileBlock(app, "word complete state init");
             initialized = false;
@@ -463,15 +463,15 @@ CUSTOM_DOC("Iteratively tries completing the word to the left of the cursor with
                 word_complete_iter_init(buffer, needle_range, it);
             }
         }
-        
+
         if (initialized){
             ProfileBlock(app, "word complete apply");
-            
+
             word_complete_iter_next(it);
             String_Const_u8 str = word_complete_iter_read(it);
-            
+
             buffer_replace_range(app, buffer, range, str);
-            
+
             range.max = range.min + str.size;
             view_set_cursor_and_preferred_x(app, view, seek_pos(range.max));
         }
@@ -503,19 +503,19 @@ word_complete_menu_next(Word_Complete_Menu *menu){
 }
 
 function void
-word_complete_menu_render(Application_Links *app, Frame_Info frame_info, View_ID view){
+word_complete_menu_render(App *app, Frame_Info frame_info, View_ID view){
     Managed_Scope scope = view_get_managed_scope(app, view);
     Word_Complete_Menu **menu_ptr = scope_attachment(app, scope, view_word_complete_menu, Word_Complete_Menu*);
     Word_Complete_Menu *menu = *menu_ptr;
-    
+
     if (menu != 0){
         menu->prev_render_caller(app, frame_info, view);
-        
+
         Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
         Face_ID face = get_face_id(app, buffer);
-        
+
         Scratch_Block scratch(app);
-        
+
         Fancy_Block block = {};
         for (i32 i = 0; i < menu->count; i += 1){
             if (menu->options[i].size > 0){
@@ -524,35 +524,35 @@ word_complete_menu_render(Application_Links *app, Frame_Info frame_info, View_ID
                 push_fancy_string(scratch, line, fcolor_id(defcolor_text_default), menu->options[i]);
             }
         }
-        
+
         Rect_f32 region = view_get_buffer_region(app, view);
-        
+
         Buffer_Scroll scroll = view_get_buffer_scroll(app, view);
         Buffer_Point buffer_point = scroll.position;
         i64 pos = view_get_cursor_pos(app, view);
         Vec2_f32 cursor_p = view_relative_xy_of_pos(app, view, buffer_point.line_number, pos);
         cursor_p -= buffer_point.pixel_shift;
         cursor_p += region.p0;
-        
+
         Face_Metrics metrics = get_face_metrics(app, face);
         f32 x_padding = metrics.normal_advance;
         f32 x_half_padding = x_padding*0.5f;
-        
+
         draw_drop_down(app, face, &block, cursor_p, region, x_padding, x_half_padding,
                        fcolor_id(defcolor_margin_hover), fcolor_id(defcolor_back));
     }
 }
 
 function Edit
-get_word_complete_from_user_drop_down(Application_Links *app){
+get_word_complete_from_user_drop_down(App *app){
     View_ID view = get_this_ctx_view(app, Access_Always);
     View_Context ctx = view_current_context(app, view);
     Render_Caller_Function *prev_render_caller = ctx.render_caller;
-    
+
     Edit result = {};
-    
+
     Word_Complete_Iterator *it = word_complete_get_shared_iter(app);
-    
+
     i64 pos = view_get_cursor_pos(app, view);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     Range_i64 range = get_word_complete_needle_range(app, buffer, pos);
@@ -560,14 +560,14 @@ get_word_complete_from_user_drop_down(Application_Links *app){
         word_complete_iter_init(buffer, range, it);
         Word_Complete_Menu menu = make_word_complete_menu(prev_render_caller, it);
         word_complete_menu_next(&menu);
-        
+
         ctx.render_caller = word_complete_menu_render;
         View_Context_Block ctx_block(app, view, &ctx);
-        
+
         Managed_Scope scope = view_get_managed_scope(app, view);
         Word_Complete_Menu **menu_ptr = scope_attachment(app, scope, view_word_complete_menu, Word_Complete_Menu*);
         *menu_ptr = &menu;
-        
+
         b32 keep_looping_menu = true;
         for (;keep_looping_menu;){
             User_Input in = get_next_input(app, EventPropertyGroup_Any,
@@ -575,7 +575,7 @@ get_word_complete_from_user_drop_down(Application_Links *app){
             if (in.abort){
                 break;
             }
-            
+
             b32 handled = true;
             switch (in.event.kind){
                 case InputEventKind_TextInsert:
@@ -595,7 +595,7 @@ get_word_complete_from_user_drop_down(Application_Links *app){
                         }
                     }
                 }break;
-                
+
                 case InputEventKind_KeyStroke:
                 {
                     switch (in.event.key.code){
@@ -605,12 +605,12 @@ get_word_complete_from_user_drop_down(Application_Links *app){
                             result.range = range;
                             keep_looping_menu = false;
                         }break;
-                        
+
                         case KeyCode_Tab:
                         {
                             word_complete_menu_next(&menu);
                         }break;
-                        
+
                         case KeyCode_F1:
                         case KeyCode_F2:
                         case KeyCode_F3:
@@ -625,7 +625,7 @@ get_word_complete_from_user_drop_down(Application_Links *app){
                             result.range = range;
                             keep_looping_menu = false;
                         }break;
-                        
+
                         case KeyCode_Backspace:
                         {
                             backspace_char(app);
@@ -643,36 +643,36 @@ get_word_complete_from_user_drop_down(Application_Links *app){
                                 }
                             }
                         }break;
-                        
+
                         default:
                         {
                             leave_current_input_unhandled(app);
                         }break;
                     }
                 }break;
-                
+
                 case InputEventKind_MouseButton:
                 {
                     leave_current_input_unhandled(app);
                     keep_looping_menu = false;
                 }break;
-                
+
                 default:
                 {
                     handled = false;
                 }break;
             }
-            
+
             if (!handled){
                 leave_current_input_unhandled(app);
             }
         }
-        
+
         scope = view_get_managed_scope(app, view);
         menu_ptr = scope_attachment(app, scope, view_word_complete_menu, Word_Complete_Menu*);
         *menu_ptr = 0;
     }
-    
+
     return(result);
 }
 
