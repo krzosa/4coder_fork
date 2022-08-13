@@ -468,8 +468,18 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         Vec2_f32 dim = get_fancy_string_dim(app, 0, fancy);
         Rect_f32 button_rect = Rf32_xy_wh({view_rect.x1 - dim.x, metrics.line_height}, dim + V2f32(2,2));
 
-        f32 roundness = 3.f;
-        draw_rectangle(app, button_rect, roundness, finalize_color(defcolor_bar, 0));
+        ARGB_Color background_color = fcolor_resolve(fcolor_id(defcolor_back));
+        ARGB_Color border_color = fcolor_resolve(fcolor_id(defcolor_margin_active));
+
+        background_color &= 0x00ffffff;
+        background_color |= 0xd0000000;
+
+        border_color &= 0x00ffffff;
+        border_color |= 0xd0000000;
+
+        f32 roundness = 4.f;
+        draw_rectangle(app, button_rect, roundness, background_color);
+        draw_rectangle_outline(app, button_rect, roundness, 3.f, border_color);
 
         Vec2_f32 p = (button_rect.p0 + button_rect.p1 - dim)*0.5f;
         draw_fancy_string(app, fancy, p);
