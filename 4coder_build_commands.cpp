@@ -153,8 +153,31 @@ set_fancy_compilation_buffer_font(App *app){
     Scratch_Block scratch(app);
     Buffer_ID buffer = get_comp_buffer(app);
     Font_Load_Location font = {};
-    font.file_name = def_search_normal_full_path(scratch, str8_lit("fonts/Inconsolata-Regular.ttf"));
+    font.file_name = def_search_normal_full_path(scratch, str8_lit("fonts/liberation-mono.ttf"));
     set_buffer_face_by_font_load_location(app, buffer, &font);
+}
+
+struct View_Buffer{
+  View_ID view;
+  Buffer_ID buffer;
+  Buffer_Identifier buffer_identifier;
+};
+
+//
+// Make sure we get compilation buffer that is in inactive window always
+//
+function View_Buffer
+get_compilation_buffer(App *app){
+  Buffer_ID compilation = get_buffer_by_name(app, string_u8_litexpr("*compilation*"), Access_Always);
+  buffer_kill(app, compilation, BufferKill_AlwaysKill);
+  Buffer_ID comp_buffer = create_buffer(app, string_u8_litexpr("*compilation*"), BufferCreate_NeverAttachToFile | BufferCreate_AlwaysNew);
+  buffer_set_setting(app, comp_buffer, BufferSetting_Unimportant, true);
+  buffer_set_setting(app, comp_buffer, BufferSetting_ReadOnly, true);
+  Buffer_Identifier identifier = buffer_identifier(string_u8_litexpr("*compilation*"));
+  Buffer_ID comp_id = buffer_identifier_to_id(app, identifier);
+  View_ID view = get_next_view_after_active(app, Access_Always);
+  view_set_buffer(app, view, comp_id, 0);
+  return {view, comp_id, identifier};
 }
 
 CUSTOM_COMMAND_SIG(build_in_build_panel)
@@ -163,7 +186,7 @@ CUSTOM_DOC("Looks for a build.bat, build.sh, or makefile in the current and pare
     View_ID view = get_active_view(app, Access_Always);
     Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
 
-    View_ID build_view = get_or_open_build_panel(app);
+    View_ID build_view = get_compilation_buffer(app).view;
 
     standard_search_and_build(app, build_view, buffer);
     set_fancy_compilation_buffer_font(app);
@@ -178,14 +201,14 @@ CUSTOM_DOC("If the special build panel is open, closes it.")
     close_build_footer_panel(app);
 }
 
-CUSTOM_COMMAND_SIG(change_to_build_panel)
-CUSTOM_DOC("If the special build panel is open, makes the build panel the active panel.")
-{
-    View_ID view = get_or_open_build_panel(app);
-    if (view != 0){
-        view_set_active(app, view);
-    }
-}
+// CUSTOM_COMMAND_SIG(change_to_build_panel)
+// CUSTOM_DOC("If the special build panel is open, makes the build panel the active panel.")
+// {
+//     View_ID view = get_or_open_build_panel(app);
+//     if (view != 0){
+//         view_set_active(app, view);
+//     }
+// }
 
 // BOTTOM
 
