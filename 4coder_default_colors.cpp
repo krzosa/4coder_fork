@@ -133,7 +133,7 @@ set_default_color_scheme(App *app){
     u32 type=0xFF4EC9B0;
     u32 green=0xFFA6E22E;
     u32 purple=0xFF967EFB;
-    // u32 red=0xFFA72822;
+    u32 red=0xFFA72822;
 
     default_color_table.arrays[0] = make_colors(arena, 0xFF90B080);
     default_color_table.arrays[defcolor_bar] = make_colors(arena, border);
@@ -147,7 +147,7 @@ set_default_color_scheme(App *app){
     default_color_table.arrays[defcolor_list_item] = make_colors(arena, defcolor_margin, defcolor_back);
     default_color_table.arrays[defcolor_list_item_hover] = make_colors(arena, 0x22ffffff, 0x22ffffff);
     default_color_table.arrays[defcolor_list_item_active] = make_colors(arena, 0x33ffffff, 0x33ffffff);
-    default_color_table.arrays[defcolor_cursor] = make_colors(arena, caret, caret);
+    default_color_table.arrays[defcolor_cursor] = make_colors(arena, caret, red);
     default_color_table.arrays[defcolor_at_cursor] = make_colors(arena, 0xff000000);
     default_color_table.arrays[defcolor_highlight_cursor_line] = make_colors(arena, line_highlight);
     default_color_table.arrays[defcolor_highlight] = make_colors(arena, 0x11264F78);

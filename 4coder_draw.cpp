@@ -823,18 +823,12 @@ draw_original_4coder_style_cursor_mark_highlight(App *app, View_ID view_id, b32 
         i64 cursor_pos = view_get_cursor_pos(app, view_id);
         i64 mark_pos = view_get_mark_pos(app, view_id);
         if (is_active_view){
-            draw_character_block(app, text_layout_id, cursor_pos, roundness,
-                                 fcolor_id(defcolor_cursor, cursor_sub_id));
-            paint_text_color_pos(app, text_layout_id, cursor_pos,
-                                 fcolor_id(defcolor_at_cursor));
-            draw_character_wire_frame(app, text_layout_id, mark_pos,
-                                      roundness, outline_thickness,
-                                      fcolor_id(defcolor_mark));
+            draw_character_block(app, text_layout_id, cursor_pos, roundness, fcolor_id(defcolor_cursor, cursor_sub_id));
+            paint_text_color_pos(app, text_layout_id, cursor_pos, fcolor_id(defcolor_at_cursor));
+            draw_character_wire_frame(app, text_layout_id, mark_pos, roundness, outline_thickness, fcolor_id(defcolor_mark));
         }
         else{
-            draw_character_wire_frame(app, text_layout_id, mark_pos,
-                                      roundness, outline_thickness,
-                                      fcolor_id(defcolor_mark));
+            draw_character_wire_frame(app, text_layout_id, mark_pos, roundness, outline_thickness, fcolor_id(defcolor_mark));
             draw_character_wire_frame(app, text_layout_id, cursor_pos,
                                       roundness, outline_thickness,
                                       fcolor_id(defcolor_cursor, cursor_sub_id));
