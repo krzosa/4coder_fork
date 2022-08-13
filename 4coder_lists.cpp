@@ -132,7 +132,7 @@ get_command_from_user(App *app, String_Const_u8 query, i32 *command_ids, i32 com
     }
 
     Scratch_Block scratch(app);
-    Lister_Block lister(app, scratch, 2);
+    Lister_Block lister(app, scratch);
     lister_set_query(lister, query);
     lister_set_default_handlers(lister);
 

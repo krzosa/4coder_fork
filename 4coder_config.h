@@ -52,6 +52,7 @@ i64 debug_config_mark_thickness = 2;
 // lister_roundess is a value [0,50] setting the radius of
 // the lister items' roundness as a percentage of their height
 i64 debug_config_lister_roundness = 20;
+f32 debug_config_lister_item_height = 1.2f;
 
 // Code Wrapping
 String8 debug_config_treat_as_code = string_u8_litexpr(".cpp.c.hpp.h.cc.cs.java.rs.glsl.m.mm");

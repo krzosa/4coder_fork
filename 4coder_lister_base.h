@@ -86,8 +86,6 @@ struct Lister{
     i32 item_index;
     i32 raw_item_index;
 
-    f32 block_height_multiplier;
-
     Basic_Scroll scroll;
     i32 visible_count;
 

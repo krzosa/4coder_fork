@@ -26,11 +26,6 @@ lister_get_text_field_height(f32 line_height){
     return(line_height);
 }
 
-function f32
-lister_get_block_height(f32 line_height, f32 block_height_multiplier){
-    return(line_height*block_height_multiplier);
-}
-
 function Rect_f32_Pair
 lister_get_top_level_layout(Rect_f32 rect, f32 text_field_height){
     return(rect_split_top_bottom(rect, text_field_height));
@@ -74,11 +69,10 @@ lister_set_map(Lister *lister, Mapping *mapping, Command_Map_ID map){
 }
 
 function Lister_Prev_Current
-begin_lister(App *app, Arena *arena, f32 block_height_multiplier = 1){
+begin_lister(App *app, Arena *arena){
     Lister_Prev_Current result = {};
     Lister *lister = push_array_zero(arena, Lister, 1);
     lister->arena = arena;
-    lister->block_height_multiplier = block_height_multiplier;
     lister->query = Su8(lister->query_space, 0, sizeof(lister->query_space));
     lister->text_field = Su8(lister->text_field_space, 0, sizeof(lister->text_field_space));
     lister->key_string = Su8(lister->key_string_space, 0, sizeof(lister->key_string_space));
@@ -95,8 +89,8 @@ begin_lister(App *app, Arena *arena, f32 block_height_multiplier = 1){
 struct Lister_Block{
     App *app;
     Lister_Prev_Current lister;
-    Lister_Block(App *app, Arena *arena, f32 block_height_multiplier = 1){
-        Lister_Prev_Current new_lister = begin_lister(app, arena, block_height_multiplier);
+    Lister_Block(App *app, Arena *arena){
+        Lister_Prev_Current new_lister = begin_lister(app, arena);
         this->app = app;
         this->lister = new_lister;
     }
@@ -192,7 +186,7 @@ lister_render(App *app, Frame_Info frame_info, View_ID view){
     Face_ID face_id = get_face_id(app, 0);
     Face_Metrics metrics = get_face_metrics(app, face_id);
     f32 line_height = metrics.line_height;
-    f32 block_height = lister_get_block_height(line_height, lister->block_height_multiplier);
+    f32 block_height = line_height*debug_config_lister_item_height;
     f32 text_field_height = lister_get_text_field_height(line_height);
 
     // NOTE(allen): file bar
@@ -481,7 +475,7 @@ lister_user_data_at_p(App *app, View_ID view, Lister *lister, Vec2_f32 m_p){
     Face_ID face_id = get_face_id(app, 0);
     Face_Metrics metrics = get_face_metrics(app, face_id);
     f32 line_height = metrics.line_height;
-    f32 block_height = lister_get_block_height(line_height, lister->block_height_multiplier);
+    f32 block_height = debug_config_lister_item_height*line_height;
     f32 text_field_height = lister_get_text_field_height(line_height);
 
     b64 showing_file_bar = false;

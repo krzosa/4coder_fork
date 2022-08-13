@@ -133,7 +133,8 @@ code_index_unlock(void){
     system_mutex_release(global_code_index.mutex);
 }
 
-function void code_index__hash_file(Code_Index_File *file) {
+function void
+code_index__hash_file(Code_Index_File *file) {
     for (Code_Index_Note *node = file->note_list.first; node != 0; node = node->next) {
         Code_Index_Note_List *list = code_index__list_from_string(node->text);
         zdll_push_back_NP_(list->first, list->last, node, next_in_hash, prev_in_hash);
@@ -141,7 +142,8 @@ function void code_index__hash_file(Code_Index_File *file) {
     }
 }
 
-function void code_index__clear_file(Code_Index_File *file) {
+function void
+code_index__clear_file(Code_Index_File *file) {
     for (Code_Index_Note *node = file->note_list.first; node != 0; node = node->next) {
         Code_Index_Note_List *list = code_index__list_from_string(node->text);
         zdll_remove_NP_(list->first, list->last, node, next_in_hash, prev_in_hash);
@@ -283,6 +285,21 @@ generic_parse_init(App *app, Arena *arena, String_Const_u8 contents, Token_Array
     state->prev_line_start = contents.str;
 }
 
+function Token *
+next_token(Code_Index_File *index, Generic_Parse_State *state){
+    generic_parse_inc(state);
+    generic_parse_skip_soft_tokens(index, state);
+    Token *token = token_it_read(&state->it);
+    return token;
+}
+
+function Token *
+next_token_raw(Generic_Parse_State *state){
+    generic_parse_inc(state);
+    Token *token = token_it_read(&state->it);
+    return token;
+}
+
 ////////////////////////////////
 // NOTE(allen): Parser
 
@@ -330,45 +347,61 @@ index_new_note(Code_Index_File *index, Generic_Parse_State *state, Range_i64 ran
     return(result);
 }
 
-function void
+function Code_Index_Nest *
 cpp_parse_type_structure(Code_Index_File *index, Generic_Parse_State *state, Code_Index_Nest *parent, b32 parse_enum_body = false) {
-    generic_parse_inc(state);
-    generic_parse_skip_soft_tokens(index, state);
+    Code_Index_Nest *result = 0;
+
+    // Parse normal types
+    Token *token = next_token(index, state);
     if (state->finished) {
-        return;
+        return result;
     }
-    Token *token = token_it_read(&state->it);
+
     if (token != 0 && token->kind == TokenBaseKind_Identifier) {
-        generic_parse_inc(state);
-        generic_parse_skip_soft_tokens(index, state);
-        Token *peek = token_it_read(&state->it);
+        Token *peek = next_token(index, state);
         if (peek != 0 && peek->kind == TokenBaseKind_StatementClose || peek->kind == TokenBaseKind_ScopeOpen) {
             index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
         }
     }
 
+    // Parse enum fields
     // TODO(Krzosa): Parse enum
     if(parse_enum_body){
+        result = push_array_zero(state->arena, Code_Index_Nest, 1);
+        result->kind = CodeIndexNest_Scope;
+        result->open = Ii64(token);
+        result->close = Ii64(max_i64);
+        result->file = index;
+        state->scope_counter += 1;
 
-        Token *peek = token_it_read(&state->it);
-        for (; peek != 0;) {
-            generic_parse_inc(state);
-            generic_parse_skip_soft_tokens(index, state);
-            peek = token_it_read(&state->it);
-            if(peek->kind == TokenBaseKind_Identifier){
-                index_new_note(index, state, Ii64(peek), CodeIndexNote_Type, parent);
-                generic_parse_inc(state);
-                generic_parse_skip_soft_tokens(index, state);
-                peek = token_it_read(&state->it);
-                if(peek->sub_kind != TokenCppKind_Comma){
+        for (; token != 0;) {
+            token = next_token(index, state);
+            if(token->kind == TokenBaseKind_Identifier){
+                index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
+                token = next_token(index, state);
+                if(token->sub_kind == TokenCppKind_Eq){
+                    token = next_token(index, state);
+                    token = next_token(index, state);
+                }
+                if(token->sub_kind != TokenCppKind_Comma){
+                    next_token(index, state);
                     break;
                 }
             }
+
             else {
                 break;
             }
         }
+
+        if (token->kind == TokenBaseKind_ScopeClose){
+            result->is_closed = true;
+            result->close = Ii64(token);
+            generic_parse_inc(state);
+        }
+        state->scope_counter -= 1;
     }
+    return result;
 }
 
 function void
@@ -752,7 +785,8 @@ function b32 generic_parse_full_input_breaks(Code_Index_File *index, Generic_Par
             code_index_push_nest(&index->nest_list, nest);
         } else if (state->do_cpp_parse) {
             if (token->sub_kind == TokenCppKind_Struct || token->sub_kind == TokenCppKind_Union || token->sub_kind == TokenCppKind_Enum) {
-                cpp_parse_type_structure(index, state, 0, token->sub_kind == TokenCppKind_Enum);
+                Code_Index_Nest *nest = cpp_parse_type_structure(index, state, 0, token->sub_kind == TokenCppKind_Enum);
+                if(nest) code_index_push_nest(&index->nest_list, nest);
             } else if (token->sub_kind == TokenCppKind_Namespace) {
                 // HACK(Krzosa): This sort of somehow works.
                 // We use the property that the parser skips what it doesn't
