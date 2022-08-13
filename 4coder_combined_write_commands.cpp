@@ -211,7 +211,7 @@ function Snippet*
 get_snippet_from_user(App *app, Snippet *snippets, i32 snippet_count,
                       String_Const_u8 query){
     Scratch_Block scratch(app);
-    Lister_Block lister(app, scratch);
+    Lister_Block lister(app, scratch, 2);
     lister_set_query(lister, query);
     lister_set_default_handlers(lister);
 

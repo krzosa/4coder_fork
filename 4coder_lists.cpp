@@ -132,7 +132,7 @@ get_command_from_user(App *app, String_Const_u8 query, i32 *command_ids, i32 com
     }
 
     Scratch_Block scratch(app);
-    Lister_Block lister(app, scratch);
+    Lister_Block lister(app, scratch, 2);
     lister_set_query(lister, query);
     lister_set_default_handlers(lister);
 
@@ -783,7 +783,7 @@ CUSTOM_DOC("Opens an interactive list of all registered commands.")
 ////////////////////////////////
 
 CUSTOM_UI_COMMAND_SIG(theme_lister)
-CUSTOM_DOC("Opens an interactive list of all registered themes.")
+CUSTOM_DOC("TODO(Krzosa): Opens an interactive list of all registered themes.")
 {
     Color_Table *color_table = get_color_table_from_user(app);
     if (color_table != 0){
