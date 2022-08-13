@@ -28,7 +28,7 @@ lister_get_text_field_height(f32 line_height){
 
 function f32
 lister_get_block_height(f32 line_height){
-    return(line_height*2);
+    return(line_height  );
 }
 
 function Rect_f32_Pair
@@ -74,10 +74,11 @@ lister_set_map(Lister *lister, Mapping *mapping, Command_Map_ID map){
 }
 
 function Lister_Prev_Current
-begin_lister(Application_Links *app, Arena *arena){
+begin_lister(Application_Links *app, Arena *arena, f32 item_height_multiplier = 1){
     Lister_Prev_Current result = {};
     Lister *lister = push_array_zero(arena, Lister, 1);
     lister->arena = arena;
+    lister->item_height_multiplier = 1;
     lister->query = Su8(lister->query_space, 0, sizeof(lister->query_space));
     lister->text_field = Su8(lister->text_field_space, 0, sizeof(lister->text_field_space));
     lister->key_string = Su8(lister->key_string_space, 0, sizeof(lister->key_string_space));
@@ -90,20 +91,21 @@ begin_lister(Application_Links *app, Arena *arena){
     return(result);
 }
 
-Lister_Block::Lister_Block(Application_Links *a, Arena *arena){
-    Lister_Prev_Current new_lister = begin_lister(a, arena);
-    this->app = a;
-    this->lister = new_lister;
-}
 
-Lister_Block::~Lister_Block(){
-    View_ID view = get_this_ctx_view(app, Access_Always);
-    view_set_lister(this->app, view, this->lister.prev);
-}
-
-Lister_Block::operator Lister *(){
-    return(this->lister.current);
-}
+struct Lister_Block{
+    Application_Links *app;
+    Lister_Prev_Current lister;
+    Lister_Block(Application_Links *app, Arena *arena, f32 item_height_multiplier = 1){
+        Lister_Prev_Current new_lister = begin_lister(app, arena, item_height_multiplier);
+        this->app = app;
+        this->lister = new_lister;
+    }
+    ~Lister_Block(){
+        View_ID view = get_this_ctx_view(app, Access_Always);
+        view_set_lister(this->app, view, this->lister.prev);
+    }
+    operator Lister *() {return(this->lister.current);}
+};
 
 function void
 lister_set_string(String_Const_u8 string, String_u8 *target){

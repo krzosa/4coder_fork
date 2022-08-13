@@ -63,46 +63,40 @@ struct Lister_Result{
 struct Lister{
     Arena *arena;
     Temp_Memory restore_all_point;
-    
+
     Lister_Handlers handlers;
-    
+
     Mapping *mapping;
     Command_Map *map;
-    
+
     u8 query_space[256];
     u8 text_field_space[256];
     u8 key_string_space[256];
     String_u8 query;
     String_u8 text_field;
     String_u8 key_string;
-    
+
     Lister_Node_List options;
     Temp_Memory filter_restore_point;
     Lister_Node_Ptr_Array filtered;
-    
+
     b32 set_vertical_focus_to_item;
     Lister_Node *highlighted_node;
     void *hot_user_data;
     i32 item_index;
     i32 raw_item_index;
-    
+
+    f32 item_height_multiplier;
+
     Basic_Scroll scroll;
     i32 visible_count;
-    
+
     Lister_Result out;
 };
 
 struct Lister_Prev_Current{
     Lister *prev;
     Lister *current;
-};
-
-struct Lister_Block{
-    Application_Links *app;
-    Lister_Prev_Current lister;
-    Lister_Block(Application_Links *app, Arena *arena);
-    ~Lister_Block();
-    operator Lister *();
 };
 
 struct Lister_Prealloced_String{
