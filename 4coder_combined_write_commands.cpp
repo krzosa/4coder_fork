@@ -166,17 +166,6 @@ get_selected_lines_for_active_view(App *app) {
     return result;
 }
 
-CUSTOM_COMMAND_SIG(comment_line)
-CUSTOM_DOC("Insert '//' at the beginning of the line after leading whitespace.")
-{
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = get_start_of_line_at_cursor(app, view, buffer);
-    b32 alread_has_comment = c_line_comment_starts_at_position(app, buffer, pos);
-    if (!alread_has_comment){
-        buffer_replace_range(app, buffer, Ii64(pos), string_u8_litexpr("//"));
-    }
-}
 
 CUSTOM_COMMAND_SIG(comment_lines)
 CUSTOM_DOC("Comment out multiple lines"){
@@ -201,6 +190,21 @@ CUSTOM_DOC("Comment out multiple lines"){
     history_group_end(history_group);
 }
 
+CUSTOM_COMMAND_SIG(put_new_line_below)
+CUSTOM_DOC("Pust a new line bellow cursor line")
+{
+    Scratch_Block scratch(app);
+    View_ID view = get_active_view(app, Access_ReadWriteVisible);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    
+    i64 pos = view_get_cursor_pos(app, view);
+    i64 line = get_line_number_from_pos(app, buffer, pos) + 1;
+    String_Const_u8 s = push_buffer_line(app, scratch, buffer, line);
+    s = push_u8_stringf(scratch, "\n");
+    pos = get_line_side_pos(app, buffer, line, Side_Min);
+    buffer_replace_range(app, buffer, Ii64(pos), s);
+    view_set_cursor_and_preferred_x(app, view, seek_line_col(line, 0));
+}
 ////////////////////////////////
 
 static Snippet default_snippets[] = {
