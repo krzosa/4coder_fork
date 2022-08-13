@@ -54,6 +54,8 @@ In this readme you will find:
 
 # Todo
 
+* Query replace, search replacement idea: Store the result of query and have a key that allows you to apply the query reapetedly like in VIM
+* I would love if query replace etc. had auto complete and stuff, better text handling
 * Improve hiperlink functionality as much as possible, stuff you can click should be highlighted underlined and satisfying to click, all clickable stuff in source files should be emphesized, as much stuff should be clickable.
    * Control Shift other panel
    * Color includes

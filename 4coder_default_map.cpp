@@ -12,26 +12,27 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     SelectMap(global_id);
     Bind(keyboard_macro_switch_recording , KeyCode_U, KeyCode_Control);
     Bind(keyboard_macro_replay,           KeyCode_U, KeyCode_Alt);
-    Bind(change_active_panel,           KeyCode_Comma, KeyCode_Control);
-    Bind(change_active_panel_backwards, KeyCode_Comma, KeyCode_Control, KeyCode_Shift);
-    Bind(interactive_new,               KeyCode_N, KeyCode_Control);
+    Bind(change_active_panel,           KeyCode_1, KeyCode_Control);
+    Bind(change_active_panel_backwards, KeyCode_2, KeyCode_Control);
+    Bind(command_lister,                KeyCode_P, KeyCode_Control, KeyCode_Shift);
+    Bind(interactive_switch_buffer,     KeyCode_P, KeyCode_Control);
     Bind(interactive_open_or_new,       KeyCode_O, KeyCode_Control);
+    Bind(goto_next_jump,                KeyCode_N, KeyCode_Control);
+    Bind(goto_prev_jump,                KeyCode_N, KeyCode_Control, KeyCode_Shift);
+    Bind(save_all_dirty_buffers,        KeyCode_S, KeyCode_Control, KeyCode_Shift);
+    Bind(quick_swap_buffer,             KeyCode_Tab, KeyCode_Control);
+    Bind(list_all_functions_all_buffers_lister, KeyCode_I, KeyCode_Control);
+
+    // TODO(Krzosa): We want to move this into Fkey bindings as default
+    Bind(build_in_build_panel,          KeyCode_M, KeyCode_Alt);
+    // TODO(Krzosa): Multiple build panel behaviours ???
+    // Bind(close_build_panel,             KeyCode_Comma, KeyCode_Alt);
+
     Bind(open_in_other,                 KeyCode_O, KeyCode_Alt);
     Bind(interactive_kill_buffer,       KeyCode_K, KeyCode_Control);
-    Bind(interactive_switch_buffer,     KeyCode_I, KeyCode_Control);
-    Bind(save_all_dirty_buffers,        KeyCode_S, KeyCode_Control, KeyCode_Shift);
-    Bind(close_build_panel,             KeyCode_Comma, KeyCode_Alt);
-    Bind(goto_next_jump,                KeyCode_N, KeyCode_Alt);
-    Bind(goto_prev_jump,                KeyCode_N, KeyCode_Alt, KeyCode_Shift);
-    Bind(build_in_build_panel,          KeyCode_M, KeyCode_Alt);
+
     Bind(goto_first_jump,               KeyCode_M, KeyCode_Alt, KeyCode_Shift);
-    Bind(toggle_filebar,                KeyCode_B, KeyCode_Alt);
-    Bind(execute_any_cli,               KeyCode_Z, KeyCode_Alt);
-    Bind(execute_previous_cli,          KeyCode_Z, KeyCode_Alt, KeyCode_Shift);
-    Bind(command_lister,                KeyCode_X, KeyCode_Alt);
-    Bind(quick_swap_buffer,             KeyCode_BackwardSlash, KeyCode_Alt);
-    Bind(jump_to_last_point,            KeyCode_P, KeyCode_Control);
-    Bind(list_all_functions_current_buffer_lister, KeyCode_I, KeyCode_Control, KeyCode_Shift);
+    Bind(jump_to_last_point,            KeyCode_Q, KeyCode_Alt);
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
 
     SelectMap(file_id);
@@ -74,9 +75,9 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(duplicate_line,              KeyCode_L, KeyCode_Control);
     Bind(cursor_mark_swap,            KeyCode_M, KeyCode_Control);
     Bind(reopen,                      KeyCode_O, KeyCode_Control, KeyCode_Shift);
-    Bind(query_replace,               KeyCode_Q, KeyCode_Control);
+    // Bind(query_replace,               KeyCode_Q, KeyCode_Control);
     Bind(query_replace_identifier,    KeyCode_Q, KeyCode_Control, KeyCode_Shift);
-    Bind(query_replace_selection,     KeyCode_Q, KeyCode_Alt);
+    // Bind(query_replace_selection,     KeyCode_Q, KeyCode_Alt);
     Bind(reverse_search,              KeyCode_R, KeyCode_Control);
     Bind(save,                        KeyCode_S, KeyCode_Control);
     Bind(save_all_dirty_buffers,      KeyCode_S, KeyCode_Control, KeyCode_Shift);
@@ -87,8 +88,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(cut,                         KeyCode_X, KeyCode_Control);
     Bind(redo,                        KeyCode_Y, KeyCode_Control);
     Bind(undo,                        KeyCode_Z, KeyCode_Control);
-    Bind(view_buffer_other_panel,     KeyCode_1, KeyCode_Control);
-    Bind(swap_panels,                 KeyCode_2, KeyCode_Control);
+    // Bind(view_buffer_other_panel,     KeyCode_1, KeyCode_Control);
+    // Bind(swap_panels,                 KeyCode_2, KeyCode_Control);
     Bind(view_jump_list_with_lister,  KeyCode_Period, KeyCode_Control, KeyCode_Shift);
     Bind(jump_to_hiperlink_at_cursor, KeyCode_Q, KeyCode_Control);
     Bind(jump_to_hiperlink_at_cursor_other_panel, KeyCode_Q, KeyCode_Control, KeyCode_Shift);
