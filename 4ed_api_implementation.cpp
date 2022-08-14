@@ -106,9 +106,9 @@ get_thread_context(App *app){
 }
 
 function Child_Process_ID
-create_child_process(App *app, String_Const_u8 path, String_Const_u8 command, Child_Process_End *end_callback = 0){
+create_child_process(App *app, String_Const_u8 path, String_Const_u8 command, Child_Process_End *end_callback = 0, void *data = 0){
     Child_Process_ID result = 0;
-    if (!child_process_call(app->tctx, app->cmd_context, path, command, &result, end_callback)){
+    if (!child_process_call(app->tctx, app->cmd_context, path, command, &result, end_callback, data)){
         result = 0;
     }
     return(result);

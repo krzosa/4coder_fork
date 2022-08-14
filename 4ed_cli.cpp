@@ -99,13 +99,14 @@ child_process_lookup_return_code(Child_Process_Container *container, Child_Proce
 
 internal b32
 child_process_call(Thread_Context *tctx, Models *models, String_Const_u8 path, String_Const_u8 command, Child_Process_ID *id_out,
-                    Child_Process_End *end_callback = 0){
+                    Child_Process_End *end_callback = 0, void *data = 0){
     b32 result = false;
     Scratch_Block scratch(tctx);
     String_Const_u8 path_n = push_string_copy(scratch, path);
     String_Const_u8 command_n = push_string_copy(scratch, command);
     CLI_Handles cli_handles = {};
     cli_handles.end_callback = end_callback;
+    cli_handles.end_callback_data = data;
     if (system_cli_call(scratch, (char*)path_n.str, (char*)command_n.str, &cli_handles)){
         Child_Process_And_ID new_process = child_process_alloc_new(models, &models->child_processes);
         *id_out = new_process.id;

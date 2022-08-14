@@ -389,7 +389,7 @@ App_Step_Sig(app_step){
                 if (file != 0){
                     if(cli->end_callback){
                         App app = {tctx, models};
-                        cli->end_callback(&app, cli->exit, file->id);
+                        cli->end_callback(&app, cli->exit, file->id, cli->end_callback_data);
                     }
 
                     String_Const_u8 str = push_u8_stringf(scratch, "exited with code %d", cli->exit);

@@ -13,7 +13,7 @@ enum{
     KeyMode_Physical,
 };
 
-#define Child_Process_End_Sig(name) void name(App *app, int return_code, Buffer_ID buffer)
+#define Child_Process_End_Sig(name) void name(App *app, int return_code, Buffer_ID buffer, void *data)
 typedef Child_Process_End_Sig(Child_Process_End);
 
 struct Plat_Handle{
@@ -34,6 +34,7 @@ struct CLI_Handles{
     i32 exit;
 
     Child_Process_End *end_callback;
+    void *end_callback_data;
 };
 
 typedef i32 System_Path_Code;
