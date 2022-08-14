@@ -180,6 +180,23 @@ get_compilation_buffer(App *app){
   return {view, comp_id, identifier};
 }
 
+
+CUSTOM_COMMAND_SIG(build_in_other_panel)
+CUSTOM_DOC("Looks for a build.bat, build.sh, or makefile in the current and parent directories.  Runs the first that it finds and prints the output to *compilation*.")
+{
+    View_ID view = get_active_view(app, Access_Always);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
+
+    View_ID build_view = get_or_open_build_panel(app);
+
+    standard_search_and_build(app, build_view, buffer);
+    set_fancy_compilation_buffer_font(app);
+
+    block_zero_struct(&prev_location);
+    lock_jump_buffer(app, string_u8_litexpr("*compilation*"));
+}
+
+
 CUSTOM_COMMAND_SIG(build_in_build_panel)
 CUSTOM_DOC("Looks for a build.bat, build.sh, or makefile in the current and parent directories.  Runs the first that it finds and prints the output to *compilation*.  Puts the *compilation* buffer in a panel at the footer of the current view.")
 {
@@ -201,14 +218,14 @@ CUSTOM_DOC("If the special build panel is open, closes it.")
     close_build_footer_panel(app);
 }
 
-// CUSTOM_COMMAND_SIG(change_to_build_panel)
-// CUSTOM_DOC("If the special build panel is open, makes the build panel the active panel.")
-// {
-//     View_ID view = get_or_open_build_panel(app);
-//     if (view != 0){
-//         view_set_active(app, view);
-//     }
-// }
+CUSTOM_COMMAND_SIG(change_to_build_panel)
+CUSTOM_DOC("If the special build panel is open, makes the build panel the active panel.")
+{
+    View_ID view = get_or_open_build_panel(app);
+    if (view != 0){
+        view_set_active(app, view);
+    }
+}
 
 // BOTTOM
 

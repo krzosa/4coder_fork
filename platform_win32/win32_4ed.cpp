@@ -387,7 +387,7 @@ system_set_key_mode_sig(){
 // NOTE(allen): Clipboard
 
 internal String_Const_u8
-win32_read_clipboard_contents(Thread_Context *tctx, Arena *arena){
+    win32_read_clipboard_contents(Thread_Context *tctx, Arena *arena){
     Scratch_Block scratch(tctx, arena);
 
     String_Const_u8 result = {};
@@ -457,9 +457,6 @@ system_get_clipboard_sig(){
         else{
             for (i32 R = 0; R < 8; ++R){
                 result = win32_read_clipboard_contents(win32vars.tctx, arena);
-                if (result.str == 0){
-                    break;
-                }
             }
         }
     }

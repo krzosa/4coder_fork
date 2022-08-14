@@ -190,13 +190,6 @@ CUSTOM_DOC("Comment out multiple lines"){
     history_group_end(history_group);
 }
 
-
-// rem idea for searches: search creates a jump lister and then Control+N works for that and stuff.
-// rem fix control+N fix which goes to second error first
-// rem add move line below, up
-// rem change hotkey of build
-// rem fix clipboard memes, not saving/accessing clipboard sometimes properly
-
 CUSTOM_COMMAND_SIG(move_lines_up)
 CUSTOM_DOC("Move selected lines up") {
     Selected_Lines       lines         = get_selected_lines_for_active_view(app);
@@ -226,10 +219,10 @@ CUSTOM_DOC("Move selected lines up") {
 CUSTOM_COMMAND_SIG(move_lines_down)
 CUSTOM_DOC("Move selected lines up") {
     Selected_Lines       lines         = get_selected_lines_for_active_view(app);
-    History_Record_Index history_index = {};
-
     i64 buffer_line_count = buffer_get_line_count(app, lines.buffer);
     if(lines.max_line >= buffer_line_count) return;
+    History_Record_Index history_index = {};
+
 
     bool first = true;
     for (i64 line=lines.max_line; line>=lines.min_line; line--){
