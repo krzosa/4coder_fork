@@ -120,30 +120,6 @@ standard_search_and_build(App *app, View_ID view, Buffer_ID active_buffer){
     }
 }
 
-CUSTOM_COMMAND_SIG(build_search)
-CUSTOM_DOC("Looks for a build.bat, build.sh, or makefile in the current and parent directories.  Runs the first that it finds and prints the output to *compilation*.")
-{
-    View_ID view = get_active_view(app, Access_Always);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
-    standard_search_and_build(app, view, buffer);
-    block_zero_struct(&prev_location);
-    lock_jump_buffer(app, string_u8_litexpr("*compilation*"));
-}
-
-static Buffer_ID
-get_comp_buffer(App *app){
-    return(get_buffer_by_name(app, string_u8_litexpr("*compilation*"), Access_Always));
-}
-
-function void
-set_fancy_compilation_buffer_font(App *app){
-    Scratch_Block scratch(app);
-    Buffer_ID buffer = get_comp_buffer(app);
-    Font_Load_Location font = {};
-    font.file_name = def_search_normal_full_path(scratch, str8_lit("fonts/liberation-mono.ttf"));
-    set_buffer_face_by_font_load_location(app, buffer, &font);
-}
-
 CUSTOM_COMMAND_SIG(build_in_build_panel)
 CUSTOM_DOC("Looks for a build.bat, build.sh, or makefile in the current and parent directories.  Runs the first that it finds and prints the output to *compilation*.  Puts the *compilation* buffer in a panel at the footer of the current view.")
 {
@@ -162,12 +138,14 @@ CUSTOM_DOC("Make it big")
     Buffer_ID buffer = view_get_buffer(app, view, Access_Always);
     Face_ID face_id = get_face_id(app, buffer);
     Face_Metrics metrics = get_face_metrics(app, face_id);
+
+    // TODO(Krzosa): Adjust size to window size
     if(global_compilation_view_maximized){
         view_set_split_pixel_size(app, view, (i32)(metrics.line_height*4.f));
         view_set_active(app, global_compilation_view_before_maximized_selected_view);
     }
     else{
-        view_set_split_pixel_size(app, view, (i32)(metrics.line_height*40.f));
+        view_set_split_pixel_size(app, view, (i32)(metrics.line_height*32.f));
         global_compilation_view_before_maximized_selected_view = get_active_view(app, Access_Always);
         view_set_active(app, view);
     }
@@ -205,9 +183,6 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it the selected text")
             }
         }
     }
-
-    // print_message(app, cmd);
-    // exec_system_command(app, global_compilation_view, standard_build_build_buffer_identifier, dir, cmd, standard_build_exec_flags);
 }
 
 // BOTTOM

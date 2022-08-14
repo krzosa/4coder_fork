@@ -24,11 +24,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(list_all_functions_all_buffers_lister, KeyCode_I, KeyCode_Control);
 
     // TODO(Krzosa): We want to move this into Fkey bindings as default
-    // Bind(build_in_build_panel,          KeyCode_M, KeyCode_Alt);
     Bind(build_in_build_panel,          KeyCode_F1);
-    Bind(maximize_build_panel, KeyCode_Tick, KeyCode_Control);
-    // TODO(Krzosa): Multiple build panel behaviours ???
-    // Bind(close_build_panel,             KeyCode_Comma, KeyCode_Alt);
+    Bind(maximize_build_panel, KeyCode_Escape);
 
     Bind(open_in_other,                 KeyCode_O, KeyCode_Alt);
     // Bind(interactive_kill_buffer,       KeyCode_K, KeyCode_Control);
@@ -38,6 +35,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
 
     SelectMap(file_id);
+    Bind(python_interpreter_on_selection, KeyCode_L, KeyCode_Control);
     Bind(put_new_line_below,  KeyCode_Return, KeyCode_Control);
     Bind(move_lines_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
     Bind(move_lines_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
@@ -75,7 +73,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(list_all_locations_of_selection,  KeyCode_G, KeyCode_Control, KeyCode_Shift);
     Bind(snippet_lister,              KeyCode_J, KeyCode_Control);
     Bind(kill_buffer,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
-    Bind(duplicate_line,              KeyCode_L, KeyCode_Control);
     Bind(cursor_mark_swap,            KeyCode_M, KeyCode_Control);
     Bind(reopen,                      KeyCode_O, KeyCode_Control, KeyCode_Shift);
 
