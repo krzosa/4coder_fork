@@ -190,6 +190,67 @@ CUSTOM_DOC("Comment out multiple lines"){
     history_group_end(history_group);
 }
 
+
+// rem idea for searches: search creates a jump lister and then Control+N works for that and stuff.
+// rem fix control+N fix which goes to second error first
+// rem add move line below, up
+// rem change hotkey of build
+// rem fix clipboard memes, not saving/accessing clipboard sometimes properly
+
+CUSTOM_COMMAND_SIG(move_lines_up)
+CUSTOM_DOC("Move selected lines up") {
+    Selected_Lines       lines         = get_selected_lines_for_active_view(app);
+    if(lines.min_line <= 1) return;
+    History_Record_Index history_index = {};
+
+    bool first = true;
+    for (i64 line = lines.min_line; line <= lines.max_line; line++) {
+        view_set_cursor(app, lines.view, seek_line_col(line, 0));
+        current_view_move_line(app, Scan_Backward);
+        if (first) {
+            history_index = buffer_history_get_current_state_index(app, lines.buffer);
+        }
+        first = false;
+    }
+
+    Buffer_Cursor new_cursor_pos = view_compute_cursor(app, lines.view, seek_pos(lines.cursor_pos));
+    Buffer_Cursor new_mark_pos = view_compute_cursor(app, lines.view, seek_pos(lines.mark_pos));
+    view_set_cursor(app, lines.view, seek_line_col(new_cursor_pos.line - 1, new_cursor_pos.col));
+    view_set_mark(app, lines.view, seek_line_col(new_mark_pos.line - 1, new_mark_pos.col));
+    no_mark_snap_to_cursor(app, lines.view);
+
+    History_Record_Index history_index_end = buffer_history_get_current_state_index(app, lines.buffer);
+    buffer_history_merge_record_range(app, lines.buffer, history_index, history_index_end, RecordMergeFlag_StateInRange_MoveStateForward);
+}
+
+CUSTOM_COMMAND_SIG(move_lines_down)
+CUSTOM_DOC("Move selected lines up") {
+    Selected_Lines       lines         = get_selected_lines_for_active_view(app);
+    History_Record_Index history_index = {};
+
+    i64 buffer_line_count = buffer_get_line_count(app, lines.buffer);
+    if(lines.max_line >= buffer_line_count) return;
+
+    bool first = true;
+    for (i64 line=lines.max_line; line>=lines.min_line; line--){
+        view_set_cursor(app, lines.view, seek_line_col(line, 0));
+        current_view_move_line(app, Scan_Forward);
+        if (first) {
+            history_index = buffer_history_get_current_state_index(app, lines.buffer);
+        }
+        first = false;
+    }
+
+    Buffer_Cursor new_cursor_pos = view_compute_cursor(app, lines.view, seek_pos(lines.cursor_pos));
+    Buffer_Cursor new_mark_pos = view_compute_cursor(app, lines.view, seek_pos(lines.mark_pos));
+    view_set_cursor(app, lines.view, seek_line_col(new_cursor_pos.line + 1, new_cursor_pos.col));
+    view_set_mark(app, lines.view, seek_line_col(new_mark_pos.line + 1, new_mark_pos.col));
+    no_mark_snap_to_cursor(app, lines.view);
+
+    History_Record_Index history_index_end = buffer_history_get_current_state_index(app, lines.buffer);
+    buffer_history_merge_record_range(app, lines.buffer, history_index, history_index_end, RecordMergeFlag_StateInRange_MoveStateForward);
+}
+
 CUSTOM_COMMAND_SIG(put_new_line_below)
 CUSTOM_DOC("Pust a new line bellow cursor line")
 {

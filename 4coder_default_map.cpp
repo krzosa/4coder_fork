@@ -29,7 +29,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     // Bind(close_build_panel,             KeyCode_Comma, KeyCode_Alt);
 
     Bind(open_in_other,                 KeyCode_O, KeyCode_Alt);
-    Bind(interactive_kill_buffer,       KeyCode_K, KeyCode_Control);
+    // Bind(interactive_kill_buffer,       KeyCode_K, KeyCode_Control);
 
     Bind(goto_first_jump,               KeyCode_M, KeyCode_Alt, KeyCode_Shift);
     Bind(jump_to_last_point,            KeyCode_Q, KeyCode_Alt);
@@ -37,6 +37,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
 
     SelectMap(file_id);
     Bind(put_new_line_below,  KeyCode_Return, KeyCode_Control);
+    Bind(move_lines_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
+    Bind(move_lines_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);
     Bind(move_up,                KeyCode_Up);
@@ -53,8 +55,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(move_down_to_blank_line_end,      KeyCode_Down, KeyCode_Control);
     Bind(move_left_whitespace_boundary,    KeyCode_Left, KeyCode_Control);
     Bind(move_right_whitespace_boundary,   KeyCode_Right, KeyCode_Control);
-    Bind(move_line_up,                     KeyCode_Up, KeyCode_Alt);
-    Bind(move_line_down,                   KeyCode_Down, KeyCode_Alt);
     Bind(backspace_alpha_numeric_boundary, KeyCode_Backspace, KeyCode_Control);
     Bind(delete_alpha_numeric_boundary,    KeyCode_Delete, KeyCode_Control);
     Bind(snipe_backward_whitespace_or_token_boundary, KeyCode_Backspace, KeyCode_Alt);
@@ -63,7 +63,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(replace_in_range,            KeyCode_A, KeyCode_Control);
     Bind(copy,                        KeyCode_C, KeyCode_Control);
     Bind(delete_range,                KeyCode_D, KeyCode_Control);
-    Bind(delete_line,                 KeyCode_D, KeyCode_Control, KeyCode_Shift);
+    Bind(delete_line,                 KeyCode_K, KeyCode_Control);
     Bind(center_view,                 KeyCode_E, KeyCode_Control);
     Bind(left_adjust_view,            KeyCode_E, KeyCode_Control, KeyCode_Shift);
     Bind(search,                      KeyCode_F, KeyCode_Control);
@@ -88,7 +88,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(paste_and_indent,            KeyCode_V, KeyCode_Control);
     Bind(paste_next_and_indent,       KeyCode_V, KeyCode_Control, KeyCode_Shift);
     Bind(cut,                         KeyCode_X, KeyCode_Control);
-    Bind(redo,                        KeyCode_Y, KeyCode_Control);
+    Bind(redo,                        KeyCode_Z, KeyCode_Control, KeyCode_Shift);
     Bind(undo,                        KeyCode_Z, KeyCode_Control);
     // Bind(view_buffer_other_panel,     KeyCode_1, KeyCode_Control);
     // Bind(swap_panels,                 KeyCode_2, KeyCode_Control);
