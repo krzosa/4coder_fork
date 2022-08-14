@@ -35,7 +35,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
 
     SelectMap(file_id);
-    Bind(python_interpreter_on_selection, KeyCode_L, KeyCode_Control);
+    Bind(python_interpreter_on_comment, KeyCode_L, KeyCode_Control);
     Bind(put_new_line_below,  KeyCode_Return, KeyCode_Control);
     Bind(move_lines_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
     Bind(move_lines_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
@@ -62,7 +62,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(set_mark,                    KeyCode_Space, KeyCode_Control);
     Bind(replace_in_range,            KeyCode_A, KeyCode_Control);
     Bind(copy,                        KeyCode_C, KeyCode_Control);
-    Bind(delete_range,                KeyCode_D, KeyCode_Control);
+    Bind(delete_range,                KeyCode_X, KeyCode_Control, KeyCode_Shift);
     Bind(delete_line,                 KeyCode_K, KeyCode_Control);
     Bind(center_view,                 KeyCode_E, KeyCode_Control);
     Bind(left_adjust_view,            KeyCode_E, KeyCode_Control, KeyCode_Shift);
@@ -72,7 +72,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(goto_line,                   KeyCode_G, KeyCode_Control);
     Bind(list_all_locations_of_selection,  KeyCode_G, KeyCode_Control, KeyCode_Shift);
     Bind(snippet_lister,              KeyCode_J, KeyCode_Control);
-    Bind(kill_buffer,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
+    // Bind(kill_buffer,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
     Bind(cursor_mark_swap,            KeyCode_M, KeyCode_Control);
     Bind(reopen,                      KeyCode_O, KeyCode_Control, KeyCode_Shift);
 
