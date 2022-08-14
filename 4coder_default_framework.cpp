@@ -162,36 +162,6 @@ view_get_is_passive(App *app, View_ID view_id){
 }
 
 function View_ID
-open_footer_panel(App *app, View_ID view){
-    View_ID special_view = open_view(app, view, ViewSplit_Bottom);
-    new_view_settings(app, special_view);
-    Buffer_ID buffer = view_get_buffer(app, special_view, Access_Always);
-    Face_ID face_id = get_face_id(app, buffer);
-    Face_Metrics metrics = get_face_metrics(app, face_id);
-    view_set_split_pixel_size(app, special_view, (i32)(metrics.line_height*14.f));
-    view_set_passive(app, special_view, true);
-    return(special_view);
-}
-
-function void
-close_build_footer_panel(App *app){
-    if (view_exists(app, build_footer_panel_view_id)){
-        view_close(app, build_footer_panel_view_id);
-    }
-    build_footer_panel_view_id = 0;
-}
-
-function View_ID
-open_build_footer_panel(App *app){
-    if (!view_exists(app, build_footer_panel_view_id)){
-        View_ID view = get_active_view(app, Access_Always);
-        build_footer_panel_view_id = open_footer_panel(app, view);
-        view_set_active(app, view);
-    }
-    return(build_footer_panel_view_id);
-}
-
-function View_ID
 get_next_view_looped_primary_panels(App *app, View_ID start_view_id, Access_Flag access){
     View_ID view_id = start_view_id;
     do{
@@ -406,7 +376,7 @@ create_or_switch_to_buffer_and_clear_by_name(App *app, String_Const_u8 name_stri
             target_view = view_with_buffer_already_open;
             // TODO(allen): there needs to be something like
             // view_exit_to_base_context(app, target_view);
-            //view_end_ui_mode(app, target_view);
+            // view_end_ui_mode(app, target_view);
         }
         else{
             view_set_buffer(app, target_view, search_buffer, 0);
@@ -420,9 +390,6 @@ create_or_switch_to_buffer_and_clear_by_name(App *app, String_Const_u8 name_stri
         search_buffer = create_buffer(app, name_string, BufferCreate_AlwaysNew);
         buffer_set_setting(app, search_buffer, BufferSetting_Unimportant, true);
         buffer_set_setting(app, search_buffer, BufferSetting_ReadOnly, true);
-#if 0
-        buffer_set_setting(app, search_buffer, BufferSetting_WrapLine, false);
-#endif
         view_set_buffer(app, default_target_view, search_buffer, 0);
         view_set_active(app, default_target_view);
     }
@@ -589,25 +556,6 @@ change_mode(App *app, String_Const_u8 mode){
     else{
         print_message(app, string_u8_litexpr("Unknown mode.\n"));
     }
-}
-
-function void
-default_4coder_side_by_side_panels(App *app,
-                                   Buffer_Identifier left, Buffer_Identifier right){
-
-}
-
-function void
-default_4coder_side_by_side_panels(App *app,
-                                   Buffer_Identifier left, Buffer_Identifier right,
-                                   String_Const_u8_Array file_names){
-    if (file_names.count > 0){
-        left = buffer_identifier(file_names.vals[0]);
-        if (file_names.count > 1){
-            right = buffer_identifier(file_names.vals[1]);
-        }
-    }
-    default_4coder_side_by_side_panels(app, left, right);
 }
 
 ////////////////////////////////

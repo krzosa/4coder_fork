@@ -947,9 +947,12 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
                 block_copy(bar.string.str, previous_isearch_query, bar.string.size);
             }
             else{
+                void list_all_locations__generic(App *app, String_Const_u8_Array needle, List_All_Locations_Flag flags);
+                list_all_locations__generic(app, {&bar.string, 1}, ListAllLocationsFlag_CaseSensitive);
                 u64 size = bar.string.size;
                 size = clamp_top(size, sizeof(previous_isearch_query) - 1);
                 block_copy(previous_isearch_query, bar.string.str, size);
+
                 previous_isearch_query[size] = 0;
                 break;
             }

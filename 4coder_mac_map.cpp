@@ -21,7 +21,6 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Bind(interactive_switch_buffer,     KeyCode_I, KeyCode_Command);
     Bind(save_all_dirty_buffers,        KeyCode_S, KeyCode_Command, KeyCode_Shift);
     // Bind(change_to_build_panel,         KeyCode_Period, KeyCode_Control);
-    Bind(close_build_panel,             KeyCode_Comma, KeyCode_Control);
     Bind(goto_next_jump,                KeyCode_N, KeyCode_Control);
     Bind(goto_prev_jump,                KeyCode_N, KeyCode_Control, KeyCode_Shift);
     Bind(build_in_build_panel,          KeyCode_M, KeyCode_Control);

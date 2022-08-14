@@ -64,27 +64,10 @@ print_all_matches_all_buffers(App *app, String_Const_u8_Array match_patterns, St
 }
 
 internal void
-print_all_matches_all_buffers(App *app, String_Const_u8 pattern, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, Buffer_ID out_buffer_id){
-    String_Const_u8_Array array = {&pattern, 1};
-    print_all_matches_all_buffers(app, array, must_have_flags, must_not_have_flags, out_buffer_id);
-}
-
-internal void
 print_all_matches_all_buffers_to_search(App *app, String_Const_u8_Array match_patterns, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, View_ID default_target_view){
     Buffer_ID search_buffer = create_or_switch_to_buffer_and_clear_by_name(app, search_name, default_target_view);
     print_all_matches_all_buffers(app, match_patterns, must_have_flags, must_not_have_flags, search_buffer);
-}
-
-internal void
-print_all_matches_all_buffers_to_search(App *app, String_Const_u8 pattern, String_Match_Flag must_have_flags, String_Match_Flag must_not_have_flags, View_ID default_target_view){
-    String_Const_u8_Array array = {&pattern, 1};
-    print_all_matches_all_buffers_to_search(app, array, must_have_flags, must_not_have_flags, default_target_view);
-}
-
-internal String_Const_u8
-query_user_list_needle(App *app, Arena *arena){
-    u8 *space = push_array(arena, u8, KB(1));
-    return(get_query_string(app, "List Locations For: ", space, KB(1)));
+    lock_jump_buffer(app, search_name);
 }
 
 internal String_Const_u8_Array
@@ -121,7 +104,7 @@ query_user_list_definition_needle(App *app, Arena *arena){
 internal void
 list_all_locations__generic(App *app, String_Const_u8_Array needle, List_All_Locations_Flag flags){
     if (needle.count > 0){
-        View_ID target_view = get_next_view_after_active(app, Access_Always);
+        View_ID target_view = global_compilation_view;
         String_Match_Flag must_have_flags = 0;
         String_Match_Flag must_not_have_flags = 0;
         if (HasFlag(flags, ListAllLocationsFlag_CaseSensitive)){

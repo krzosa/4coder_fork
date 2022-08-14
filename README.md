@@ -56,7 +56,7 @@ In this readme you will find:
 
 // rem idea for searches: search creates a jump lister and then Control+N works for that and stuff.
 // rem fix control+N fix which goes to second error first
-// rem fix clipboard memes, not saving/accessing clipboard sometimes properly
+
 
 * Query replace, search replacement idea: Store the result of query and have a key that allows you to apply the query reapetedly like in VIM
 * I would love if query replace etc. had auto complete and stuff, better text handling
@@ -77,6 +77,8 @@ In this readme you will find:
 * Fkeys more functionality (binding macros maybe or some other stuff)
 * Add project managment system (easy creating, presets, loading projects)
 * Multiple cursors
+
+*CHECK* fix clipboard memes, not saving/accessing clipboard sometimes properly
 
 # Ideas
 

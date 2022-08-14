@@ -190,7 +190,7 @@ get_buffer_next(App *app, Buffer_ID buffer_id, Access_Flag access)
     return(result);
 }
 
- function Buffer_ID
+function Buffer_ID
 get_buffer_by_name(App *app, String_Const_u8 name, Access_Flag access)
 {
     Models *models = (Models*)app->cmd_context;
@@ -1445,7 +1445,7 @@ view_enqueue_command_function(App *app, View_ID view_id, Custom_Command_Function
     return(result);
 }
 
- function b32
+function b32
 view_get_setting(App *app, View_ID view_id, View_Setting_ID setting, i64 *value_out)
 {
     Models *models = (Models*)app->cmd_context;
@@ -1468,6 +1468,11 @@ view_get_setting(App *app, View_ID view_id, View_Setting_ID setting, i64 *value_
             case ViewSetting_ShowFileBar:
             {
                 *value_out = !view->hide_file_bar;
+            }break;
+
+            case ViewSetting_ColorModification:
+            {
+                *value_out = view->color_modification;
             }break;
 
             default:
@@ -1502,6 +1507,11 @@ view_set_setting(App *app, View_ID view_id, View_Setting_ID setting, i64 value)
             case ViewSetting_ShowFileBar:
             {
                 view->hide_file_bar = (b8)!value;
+            }break;
+
+            case ViewSetting_ColorModification:
+            {
+                view->color_modification = (b8)value;
             }break;
 
             default:

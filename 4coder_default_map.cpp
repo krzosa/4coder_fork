@@ -25,7 +25,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
 
     // TODO(Krzosa): We want to move this into Fkey bindings as default
     // Bind(build_in_build_panel,          KeyCode_M, KeyCode_Alt);
-    Bind(build_in_other_panel,          KeyCode_F1);
+    Bind(build_in_build_panel,          KeyCode_F1);
+    Bind(maximize_build_panel, KeyCode_Tick, KeyCode_Control);
     // TODO(Krzosa): Multiple build panel behaviours ???
     // Bind(close_build_panel,             KeyCode_Comma, KeyCode_Alt);
 

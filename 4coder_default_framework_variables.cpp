@@ -92,6 +92,10 @@ global Buffer_Modified_Set global_buffer_modified_set = {};
 
 global b32 def_enable_virtual_whitespace = false;
 
+global View_ID global_compilation_view;
+global b32     global_compilation_view_maximized;
+global View_ID global_compilation_view_before_maximized_selected_view;
+
 ////////////////////////////////
 
 global b32 global_keyboard_macro_is_recording = false;

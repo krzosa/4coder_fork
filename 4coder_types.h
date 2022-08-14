@@ -192,6 +192,7 @@ enum{
     ViewSetting_ShowWhitespace,
     ViewSetting_ShowScrollbar,
     ViewSetting_ShowFileBar,
+    ViewSetting_ColorModification,
 };
 
 

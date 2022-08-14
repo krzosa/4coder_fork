@@ -455,6 +455,10 @@ system_get_clipboard_sig(){
             win32vars.next_clipboard_is_self = false;
         }
         else{
+            // Note(Krzosa): Previously there was a condition here
+            // that breaked out of the loop when nothing was in result
+            // I deleted it, maybe that will fix the clipboard sometimes
+            // not having proper stuff.
             for (i32 R = 0; R < 8; ++R){
                 result = win32_read_clipboard_contents(win32vars.tctx, arena);
             }

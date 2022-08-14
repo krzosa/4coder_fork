@@ -274,6 +274,11 @@ draw_background_and_margin(App *app, View_ID view){
         margin = finalize_color(defcolor_margin_active, 0);
     }
 
+    i64 should_modify_color;
+    if(view_get_setting(app, view, ViewSetting_ColorModification, &should_modify_color) && should_modify_color){
+        back = 0xff000000;
+    }
+
     draw_rectangle(app, inner, 0.f, back);
     if (width > 0.f){
         draw_margin(app, view_rect, inner, margin);
