@@ -174,5 +174,41 @@ CUSTOM_DOC("Make it big")
     global_compilation_view_maximized = !global_compilation_view_maximized;
 }
 
+Child_Process_End_Sig(python_eval_callback){
+    Scratch_Block scratch(app);
+    String_Const_u8 string = push_whole_buffer(app, scratch, buffer);
+    clipboard_post(0, string);
+}
+
+CUSTOM_COMMAND_SIG(python_interpreter_on_selection)
+CUSTOM_DOC("Call python interpreter 'python' and feed it the selected text")
+{
+    Scratch_Block scratch(app);
+    View_ID view = get_active_view(app, Access_ReadWriteVisible);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    Range_i64 range = get_view_range(app, view);
+    String_Const_u8 string = push_buffer_range(app, scratch, buffer, range);
+
+
+    String8 dir = push_hot_directory(app, scratch);//get_hot_dsystem_get_path(scratch, SystemPath_UserDirectory);
+    String8 file = push_stringf(scratch, "%.*s/%s\0", string_expand(dir), "__python_gen.py");
+    system_save_file(scratch, (char *)file.str, string);
+
+    String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
+
+    Child_Process_ID child_process_id = create_child_process(app, dir, cmd, python_eval_callback);
+    if (child_process_id != 0){
+        Buffer_ID buffer = view_get_buffer(app, global_compilation_view, Access_ReadWriteVisible);
+        if (buffer != 0){
+            if (!set_buffer_system_command(app, child_process_id, buffer, standard_build_exec_flags)){
+                print_message(app, string_u8_litexpr("Failed to attach cli command to buffer"));
+            }
+        }
+    }
+
+    // print_message(app, cmd);
+    // exec_system_command(app, global_compilation_view, standard_build_build_buffer_identifier, dir, cmd, standard_build_exec_flags);
+}
+
 // BOTTOM
 

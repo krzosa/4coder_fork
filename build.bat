@@ -6,6 +6,7 @@ set L=-luser32.lib -lwinmm.lib -lgdi32.lib -lopengl32.lib -lcomdlg32.lib -lusere
 set I=-I"dependencies/freetype2" -I"."
 set N=-o 4ed
 set F=-g -fno-exceptions -DOS_WINDOWS=1 -DOS_LINUX=0 -DOS_MAC=0
+set R=-O2 -DSHIP_MODE
 
 pushd %~dp0
 

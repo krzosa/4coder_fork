@@ -387,6 +387,11 @@ App_Step_Sig(app_step){
 
             if (system_cli_end_update(cli)){
                 if (file != 0){
+                    if(cli->end_callback){
+                        App app = {tctx, models};
+                        cli->end_callback(&app, cli->exit, file->id);
+                    }
+
                     String_Const_u8 str = push_u8_stringf(scratch, "exited with code %d", cli->exit);
                     output_file_append(tctx, models, file, str);
                     edited_file = true;
