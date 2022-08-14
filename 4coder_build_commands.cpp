@@ -169,37 +169,6 @@ Child_Process_End_Sig(python_eval_callback){
     buffer_replace_range(app, py->buffer_to_modify, py->range_to_modify, string);
     heap_free(&global_heap, data);
 }
-
-function void
-eval_using_python_yank_into_clipboard(App *app, Arena *scratch, String_Const_u8 string){
-    String8 dir = push_hot_directory(app, scratch);//get_hot_dsystem_get_path(scratch, SystemPath_UserDirectory);
-    String8 file = push_stringf(scratch, "%.*s/%s\0", string_expand(dir), "__python_gen.py");
-    system_save_file(scratch, (char *)file.str, string);
-
-    String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
-
-    Child_Process_ID child_process_id = create_child_process(app, dir, cmd, python_eval_callback);
-    if (child_process_id != 0){
-        Buffer_ID buffer = buffer_identifier_to_id_create_out_buffer(app, standard_build_buffer_identifier);
-        if (buffer != 0){
-            if (set_buffer_system_command(app, child_process_id, buffer, standard_build_exec_flags)){
-                view_set_buffer(app, global_compilation_view, buffer, 0);
-            }
-        }
-    }
-}
-
-CUSTOM_COMMAND_SIG(python_interpreter_on_selection)
-CUSTOM_DOC("Call python interpreter 'python' and feed it the selected text, result ends up in clipboard")
-{
-    Scratch_Block scratch(app);
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    Range_i64 range = get_view_range(app, view);
-    String_Const_u8 string = push_buffer_range(app, scratch, buffer, range);
-    eval_using_python_yank_into_clipboard(app, scratch, string);
-}
-
 CUSTOM_COMMAND_SIG(python_interpreter_on_comment)
 CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, result ends up in clipboard")
 {
