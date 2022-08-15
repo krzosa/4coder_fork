@@ -883,54 +883,50 @@ isearch__update_highlight(App *app, View_ID view, Range_i64 range){
 function void
 quick_command_push(Quick_Command_Kind kind, String8 search, String8 replace){
     Quick_Command *c = global_last_quick_commands;
-    block_copy(c + 1, c, sizeof(c[0]));
+    block_copy(c+1, c, sizeof(*c));
 
-    i64 max_chars = sizeof(c[0].string_buffer)/2 - 1;
+    i64 max_chars = sizeof(c[0].search) - 1;
+    c[0].search_size  = clamp_top(search.size, max_chars);
+    c[0].replace_size = clamp_top(replace.size, max_chars);
+
     c[0].kind = kind;
-    {
-        i64 size = clamp_top(search.size, max_chars);
-        block_copy(c[0].string_buffer, search.str, size);
-        c[0].search.str = c[0].string_buffer;
-        c[0].search.size = size;
-        c[0].search.str[size] = 0;
-    }
-
-    {
-        u8 *buffer_begin = c[0].string_buffer + search.size + 1;
-        i64 size = clamp_top(replace.size, max_chars);
-        block_copy(buffer_begin, replace.str, size);
-
-        c[0].replace.str = buffer_begin;
-        c[0].replace.size = size;
-        c[0].replace.str[size] = 0;
-    }
+    block_copy(c[0].search, search.str, c[0].search_size);
+    block_copy(c[0].replace, replace.str, c[0].replace_size);
 }
 
 function void
-execute_quick_command(App *app, bool forward){
-    Quick_Command *c = global_last_quick_commands;
+execute_quick_command(App *app, i32 command_index, bool forward){
+    Quick_Command *c = global_last_quick_commands + command_index;
     View_ID view = get_active_view(app, Access_ReadVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
     i64 pos = view_get_cursor_pos(app, view);
+
+    String8 search = {c->search, (u64)c->search_size};
+    String8 replace = {c->replace, (u64)c->replace_size};
+
+    if(forward) seek_string_insensitive_forward(app, buffer, pos, 0, search, &pos);
+    else  seek_string_insensitive_backward(app, buffer, pos, 0, search, &pos);
+
+    i64 buffer_size = buffer_get_size(app, buffer);
+
+    b32 found = pos != -1 && pos != buffer_size;
+    if(!found) return;
     switch(c->kind){
         Case(QuickCommandKind_Search){
-            if(forward) seek_string_insensitive_forward(app, buffer, pos, 0, c->search, &pos);
-            else  seek_string_insensitive_backward(app, buffer, pos, 0, c->search, &pos);
-            if(pos != -1) view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
+            view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
         } Break;
-        InvalidDefaultCase;
+        Case(QuickCommandKind_QueryReplace){
+            view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
+            buffer_replace_range(app, buffer, Ii64_size(pos, search.size), replace);
+        } Break;
+        default:{}
     }
 }
 
-CUSTOM_COMMAND_SIG(redo_last_command_forward)
-CUSTOM_DOC("Go to last saved quick command"){
-    execute_quick_command(app, true);
-}
-
-CUSTOM_COMMAND_SIG(redo_last_command_backward)
-CUSTOM_DOC("Go to last saved quick command"){
-    execute_quick_command(app, false);
-}
+CUSTOM_COMMAND_SIG(redo_last_command_forward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 0, true);}
+CUSTOM_COMMAND_SIG(redo_last_command_backward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 0, false);}
+CUSTOM_COMMAND_SIG(redo_before_last_command_forward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 1, true);}
+CUSTOM_COMMAND_SIG(redo_before_last_command_backward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 1, false);}
 
 function void
 isearch(App *app, Scan_Direction start_scan, i64 first_pos,
@@ -1249,78 +1245,6 @@ CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of
     global_history_edit_group_end(app);
 }
 
-function void
-query_replace_base(App *app, View_ID view, Buffer_ID buffer_id, i64 pos, String_Const_u8 r, String_Const_u8 w){
-    i64 new_pos = 0;
-    seek_string_forward(app, buffer_id, pos - 1, 0, r, &new_pos);
-
-    User_Input in = {};
-    for (;;){
-        Range_i64 match = Ii64(new_pos, new_pos + r.size);
-        isearch__update_highlight(app, view, match);
-
-        in = get_next_input(app, EventProperty_AnyKey, EventProperty_MouseButton);
-        if (in.abort || match_key_code(&in, KeyCode_Escape) || !is_unmodified_key(&in.event)){
-            break;
-        }
-
-        i64 size = buffer_get_size(app, buffer_id);
-        if (match.max <= size &&
-            (match_key_code(&in, KeyCode_Y) ||
-             match_key_code(&in, KeyCode_Return) ||
-             match_key_code(&in, KeyCode_Tab))){
-            buffer_replace_range(app, buffer_id, match, w);
-            pos = match.start + w.size;
-        }
-        else{
-            pos = match.max;
-        }
-
-        seek_string_forward(app, buffer_id, pos, 0, r, &new_pos);
-    }
-
-    view_disable_highlight_range(app, view);
-
-    if (in.abort){
-        return;
-    }
-
-    view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
-}
-
-function void
-query_replace_parameter(App *app, String_Const_u8 replace_str, i64 start_pos, b32 add_replace_query_bar){
-    Query_Bar_Group group(app);
-    Query_Bar replace = {};
-    replace.prompt = string_u8_litexpr("Replace: ");
-    replace.string = replace_str;
-
-    if (add_replace_query_bar){
-        start_query_bar(app, &replace, 0);
-    }
-
-    Query_Bar with = {};
-    u8 with_space[1024];
-    with.prompt = string_u8_litexpr("With: ");
-    with.string = SCu8(with_space, (u64)0);
-    with.string_capacity = sizeof(with_space);
-
-    if (query_user_string(app, &with)){
-        String_Const_u8 r = replace.string;
-        String_Const_u8 w = with.string;
-
-        View_ID view = get_active_view(app, Access_ReadVisible);
-        Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
-        i64 pos = start_pos;
-
-        Query_Bar bar = {};
-        bar.prompt = string_u8_litexpr("Replace? (y)es, (n)ext, (esc)\n");
-        start_query_bar(app, &bar, 0);
-
-        query_replace_base(app, view, buffer, pos, r, w);
-    }
-}
-
 CUSTOM_COMMAND_SIG(query_replace)
 CUSTOM_DOC("Queries the user for two strings, and incrementally replaces every occurence of the first string with the second string.")
 {
@@ -1335,12 +1259,21 @@ CUSTOM_DOC("Queries the user for two strings, and incrementally replaces every o
         replace.string_capacity = sizeof(replace_space);
         if (query_user_string(app, &replace)){
             if (replace.string.size > 0){
-                i64 pos = view_get_cursor_pos(app, view);
-                query_replace_parameter(app, replace.string, pos, false);
+                Query_Bar with = {};
+                u8 with_space[1024];
+                with.prompt = string_u8_litexpr("With: ");
+                with.string = SCu8(with_space, (u64)0);
+                with.string_capacity = sizeof(with_space);
+
+                if (query_user_string(app, &with)){
+                    quick_command_push(QuickCommandKind_QueryReplace, replace.string, with.string);
+                }
+
             }
         }
     }
 }
+
 
 CUSTOM_COMMAND_SIG(query_replace_identifier)
 CUSTOM_DOC("Queries the user for a string, and incrementally replace every occurence of the word or token found at the cursor with the specified string.")
@@ -1353,22 +1286,16 @@ CUSTOM_DOC("Queries the user for a string, and incrementally replace every occur
         Range_i64 range = enclose_pos_alpha_numeric_underscore(app, buffer, pos);
         String_Const_u8 replace = push_buffer_range(app, scratch, buffer, range);
         if (replace.size != 0){
-            query_replace_parameter(app, replace, range.min, true);
-        }
-    }
-}
+            Query_Bar with = {};
+            u8 with_space[1024];
+            with.prompt = string_u8_litexpr("With: ");
+            with.string = SCu8(with_space, (u64)0);
+            with.string_capacity = sizeof(with_space);
 
-CUSTOM_COMMAND_SIG(query_replace_selection)
-CUSTOM_DOC("Queries the user for a string, and incrementally replace every occurence of the string found in the selected range with the specified string.")
-{
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    if (buffer != 0){
-        Scratch_Block scratch(app);
-        Range_i64 range = get_view_range(app, view);
-        String_Const_u8 replace = push_buffer_range(app, scratch, buffer, range);
-        if (replace.size != 0){
-            query_replace_parameter(app, replace, range.min, true);
+            if (query_user_string(app, &with)){
+                quick_command_push(QuickCommandKind_QueryReplace, replace, with.string);
+            }
+
         }
     }
 }

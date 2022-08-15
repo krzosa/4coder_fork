@@ -41,8 +41,10 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(move_line_down, KeyCode_Down, KeyCode_Alt);
     Bind(duplicate_line_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
     Bind(duplicate_line_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
-    Bind(redo_last_command_forward, KeyCode_Period, KeyCode_Control);
-    Bind(redo_last_command_backward, KeyCode_Period, KeyCode_Control, KeyCode_Shift);
+    Bind(redo_last_command_forward, KeyCode_Comma, KeyCode_Control);
+    Bind(redo_last_command_backward, KeyCode_Comma, KeyCode_Control, KeyCode_Shift);
+    Bind(redo_before_last_command_forward, KeyCode_Period, KeyCode_Control);
+    Bind(redo_before_last_command_backward, KeyCode_Period, KeyCode_Control, KeyCode_Shift);
 
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);
@@ -81,13 +83,12 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(cursor_mark_swap,            KeyCode_M, KeyCode_Control);
     Bind(reopen,                      KeyCode_O, KeyCode_Control, KeyCode_Shift);
 
-    // Bind(query_replace,               KeyCode_Q, KeyCode_Control);
-    Bind(query_replace_identifier,    KeyCode_Q, KeyCode_Control, KeyCode_Shift);
+    Bind(query_replace,               KeyCode_R, KeyCode_Control);
+    Bind(query_replace_identifier,    KeyCode_R, KeyCode_Control, KeyCode_Shift);
     // Bind(query_replace_selection,     KeyCode_Q, KeyCode_Alt);
-    Bind(reverse_search,              KeyCode_R, KeyCode_Control);
     Bind(save,                        KeyCode_S, KeyCode_Control);
     Bind(save_all_dirty_buffers,      KeyCode_S, KeyCode_Control, KeyCode_Shift);
-    Bind(search_identifier,           KeyCode_T, KeyCode_Control);
+    Bind(search_identifier,           KeyCode_F, KeyCode_Control, KeyCode_Shift);
     Bind(list_all_locations_of_identifier, KeyCode_T, KeyCode_Control, KeyCode_Shift);
     Bind(paste_and_indent,            KeyCode_V, KeyCode_Control);
     Bind(paste_next_and_indent,       KeyCode_V, KeyCode_Control, KeyCode_Shift);

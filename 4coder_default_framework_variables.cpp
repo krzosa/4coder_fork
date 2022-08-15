@@ -95,9 +95,10 @@ enum Quick_Command_Kind{QuickCommandKind_Invalid,
 };
 struct Quick_Command{
     Quick_Command_Kind kind;
-    String_Const_u8 search;
-    String_Const_u8 replace;
-    u8 string_buffer[1024];
+    i32 search_size;
+    i32 replace_size;
+    u8 search[512];
+    u8 replace[512];
 };
 Quick_Command global_last_quick_commands[2];
 

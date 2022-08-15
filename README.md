@@ -51,11 +51,15 @@ In this readme you will find:
 
 6. The codebase has a very weak base layer with key features that were added very late, so lots of code was written in the absence of useful features to bind things together. To make matters worse the base layer is split by the distinction of custom layer & core layer, leading to some double definitions and some incosistencies.
 
+# TODO Small
+
+* list_all_locations should happen when you press control + Enter inside search instead of enter
+* Commenting with mark at line:1 and cursor at line:2 should comment both lines
 
 # Todo
 
-// rem idea for searches: search creates a jump lister and then Control+N works for that and stuff.
 // rem fix control+N fix which goes to second error first
+
 
 
 * Query replace, search replacement idea: Store the result of query and have a key that allows you to apply the query reapetedly like in VIM
