@@ -122,16 +122,18 @@ c_line_comment_starts_at_position(App *app, Buffer_ID buffer, i64 pos){
     return(alread_has_comment);
 }
 
+////////////////////////////////
+
 struct Selected_Lines {
     Buffer_ID buffer;
     View_ID view;
 
     i64 cursor_pos;
     i64 mark_pos;
-
+    i64 cursor_line;
+    i64 mark_line;
     i64 min_pos;
     i64 max_pos;
-
     i64 min_line;
     i64 max_line;
 
@@ -151,11 +153,14 @@ get_selected_lines_for_active_view(App *app) {
     result.cursor_pos = view_get_cursor_pos(app, view);
     result.mark_pos   = view_get_mark_pos(app, view);
 
+    result.cursor_line = get_line_number_from_pos(app, buffer, result.cursor_pos);
+    result.mark_line = get_line_number_from_pos(app, buffer, result.mark_pos);
+
     result.min_pos = Min(result.cursor_pos, result.mark_pos);
     result.max_pos = Max(result.cursor_pos, result.mark_pos);
 
-    result.min_line = get_line_number_from_pos(app, buffer, result.min_pos);
-    result.max_line = get_line_number_from_pos(app, buffer, result.max_pos);
+    result.min_line = Min(result.cursor_line, result.mark_line);
+    result.max_line = Max(result.cursor_line, result.mark_line);
 
     i64 min_line = get_line_side_pos(app, buffer, result.min_line, Side_Min);
     i64 max_line = get_line_side_pos(app, buffer, result.max_line, Side_Max);
@@ -166,6 +171,15 @@ get_selected_lines_for_active_view(App *app) {
     return result;
 }
 
+internal void
+current_view_move_line(App *app, Scan_Direction direction){
+    View_ID view = get_active_view(app, Access_ReadWriteVisible);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    i64 pos = view_get_cursor_pos(app, view);
+    i64 line_number = get_line_number_from_pos(app, buffer, pos);
+    pos = move_line(app, buffer, line_number, direction);
+    view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
+}
 
 CUSTOM_COMMAND_SIG(comment_lines)
 CUSTOM_DOC("Comment out multiple lines"){
@@ -190,75 +204,74 @@ CUSTOM_DOC("Comment out multiple lines"){
     history_group_end(history_group);
 }
 
-CUSTOM_COMMAND_SIG(move_lines_up)
-CUSTOM_DOC("Move selected lines up") {
-    Selected_Lines       lines         = get_selected_lines_for_active_view(app);
-    if(lines.min_line <= 1) return;
-    History_Record_Index history_index = {};
-
-    bool first = true;
-    for (i64 line = lines.min_line; line <= lines.max_line; line++) {
-        view_set_cursor(app, lines.view, seek_line_col(line, 0));
-        current_view_move_line(app, Scan_Backward);
-        if (first) {
-            history_index = buffer_history_get_current_state_index(app, lines.buffer);
-        }
-        first = false;
-    }
-
-    Buffer_Cursor new_cursor_pos = view_compute_cursor(app, lines.view, seek_pos(lines.cursor_pos));
-    Buffer_Cursor new_mark_pos = view_compute_cursor(app, lines.view, seek_pos(lines.mark_pos));
-    view_set_cursor(app, lines.view, seek_line_col(new_cursor_pos.line - 1, new_cursor_pos.col));
-    view_set_mark(app, lines.view, seek_line_col(new_mark_pos.line - 1, new_mark_pos.col));
-    no_mark_snap_to_cursor(app, lines.view);
-
-    History_Record_Index history_index_end = buffer_history_get_current_state_index(app, lines.buffer);
-    buffer_history_merge_record_range(app, lines.buffer, history_index, history_index_end, RecordMergeFlag_StateInRange_MoveStateForward);
+CUSTOM_COMMAND_SIG(move_line_up)
+CUSTOM_DOC("Swaps the line under the cursor with the line above it, and moves the cursor up with it.")
+{
+    current_view_move_line(app, Scan_Backward);
 }
 
-CUSTOM_COMMAND_SIG(move_lines_down)
-CUSTOM_DOC("Move selected lines up") {
-    Selected_Lines       lines         = get_selected_lines_for_active_view(app);
-    i64 buffer_line_count = buffer_get_line_count(app, lines.buffer);
-    if(lines.max_line >= buffer_line_count) return;
-    History_Record_Index history_index = {};
+CUSTOM_COMMAND_SIG(move_line_down)
+CUSTOM_DOC("Swaps the line under the cursor with the line below it, and moves the cursor down with it.")
+{
+    current_view_move_line(app, Scan_Forward);
+}
 
+CUSTOM_COMMAND_SIG(duplicate_line_down)
+CUSTOM_DOC("Create a copy of the line on which the cursor sits.")
+{
+    Selected_Lines sl = get_selected_lines_for_active_view(app);
 
-    bool first = true;
-    for (i64 line=lines.max_line; line>=lines.min_line; line--){
-        view_set_cursor(app, lines.view, seek_line_col(line, 0));
-        current_view_move_line(app, Scan_Forward);
-        if (first) {
-            history_index = buffer_history_get_current_state_index(app, lines.buffer);
-        }
-        first = false;
+    Scratch_Block scratch(app);
+    String_Const_u8 s = push_buffer_line(app, scratch, sl.buffer, sl.cursor_line);
+    s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
+    i64 pos = get_line_side_pos(app, sl.buffer, sl.cursor_line, Side_Min);
+    buffer_replace_range(app, sl.buffer, Ii64(pos), s);
+    Buffer_Seek seek = {buffer_seek_line_col, {sl.cursor_line+1}};
+    seek.col = 1;
+    view_set_cursor_and_preferred_x(app, sl.view, seek);
+}
+
+CUSTOM_COMMAND_SIG(duplicate_line_up)
+CUSTOM_DOC("Create a copy of the line on which the cursor sits.")
+{
+    Scratch_Block scratch(app);
+    Selected_Lines sl = get_selected_lines_for_active_view(app);
+    String_Const_u8 s = push_buffer_line(app, scratch, sl.buffer, sl.cursor_line);
+    s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
+    i64 pos = get_line_side_pos(app, sl.buffer, sl.cursor_line, Side_Min);
+    buffer_replace_range(app, sl.buffer, Ii64(pos), s);
+}
+
+CUSTOM_COMMAND_SIG(delete_line)
+CUSTOM_DOC("Delete the line the on which the cursor sits.")
+{
+    View_ID view = get_active_view(app, Access_ReadWriteVisible);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    i64 pos = view_get_cursor_pos(app, view);
+    i64 line = get_line_number_from_pos(app, buffer, pos);
+    Range_i64 range = get_line_pos_range(app, buffer, line);
+    range.end += 1;
+    i32 size = (i32)buffer_get_size(app, buffer);
+    range.end = clamp_top(range.end, size);
+    if (range_size(range) == 0 || buffer_get_char(app, buffer, range.end - 1) != '\n'){
+        range.start -= 1;
+        range.first = clamp_bot(0, range.first);
     }
-
-    Buffer_Cursor new_cursor_pos = view_compute_cursor(app, lines.view, seek_pos(lines.cursor_pos));
-    Buffer_Cursor new_mark_pos = view_compute_cursor(app, lines.view, seek_pos(lines.mark_pos));
-    view_set_cursor(app, lines.view, seek_line_col(new_cursor_pos.line + 1, new_cursor_pos.col));
-    view_set_mark(app, lines.view, seek_line_col(new_mark_pos.line + 1, new_mark_pos.col));
-    no_mark_snap_to_cursor(app, lines.view);
-
-    History_Record_Index history_index_end = buffer_history_get_current_state_index(app, lines.buffer);
-    buffer_history_merge_record_range(app, lines.buffer, history_index, history_index_end, RecordMergeFlag_StateInRange_MoveStateForward);
+    buffer_replace_range(app, buffer, range, string_u8_litexpr(""));
 }
 
 CUSTOM_COMMAND_SIG(put_new_line_below)
 CUSTOM_DOC("Pust a new line bellow cursor line")
 {
     Scratch_Block scratch(app);
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    Selected_Lines sl = get_selected_lines_for_active_view(app);
 
-    i64 pos = view_get_cursor_pos(app, view);
-    i64 line = get_line_number_from_pos(app, buffer, pos);
-    String_Const_u8 s = push_buffer_line(app, scratch, buffer, line);
+    String_Const_u8 s = push_buffer_line(app, scratch, sl.buffer, sl.cursor_line);
     s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
-    pos = get_line_side_pos(app, buffer, line, Side_Min);
-    buffer_replace_range(app, buffer, get_line_pos_range(app, buffer, line), s);
-    view_set_cursor_and_preferred_x(app, view, seek_line_col(line+1, 0));
+    buffer_replace_range(app, sl.buffer, get_line_pos_range(app, sl.buffer, sl.cursor_line), s);
+    view_set_cursor_and_preferred_x(app, sl.view, seek_line_col(sl.cursor_line+1, 0));
 }
+
 ////////////////////////////////
 
 static Snippet default_snippets[] = {

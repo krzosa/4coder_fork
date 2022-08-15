@@ -947,8 +947,9 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
                 block_copy(bar.string.str, previous_isearch_query, bar.string.size);
             }
             else{
-                void list_all_locations__generic(App *app, String_Const_u8_Array needle, List_All_Locations_Flag flags);
-                list_all_locations__generic(app, {&bar.string, 1}, ListAllLocationsFlag_CaseSensitive);
+                // void list_all_locations__generic(App *app, String_Const_u8_Array needle, List_All_Locations_Flag flags);
+                // list_all_locations__generic(app, {&bar.string, 1}, ListAllLocationsFlag_CaseSensitive);
+                // TODO(Krzosa): Fill a recent search "record" so you can go to next occurance without search bar
                 u64 size = bar.string.size;
                 size = clamp_top(size, sizeof(previous_isearch_query) - 1);
                 block_copy(previous_isearch_query, bar.string.str, size);
@@ -1519,63 +1520,6 @@ CUSTOM_DOC("Queries the user for a name and creates a new directory with the giv
 
     String_Const_u8 cmd = push_u8_stringf(scratch, "mkdir %.*s", string_expand(bar.string));
     exec_system_command(app, 0, buffer_identifier(0), hot, cmd, 0);
-}
-
-////////////////////////////////
-
-internal void
-current_view_move_line(App *app, Scan_Direction direction){
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = view_get_cursor_pos(app, view);
-    i64 line_number = get_line_number_from_pos(app, buffer, pos);
-    pos = move_line(app, buffer, line_number, direction);
-    view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
-}
-
-CUSTOM_COMMAND_SIG(move_line_up)
-CUSTOM_DOC("Swaps the line under the cursor with the line above it, and moves the cursor up with it.")
-{
-    current_view_move_line(app, Scan_Backward);
-}
-
-CUSTOM_COMMAND_SIG(move_line_down)
-CUSTOM_DOC("Swaps the line under the cursor with the line below it, and moves the cursor down with it.")
-{
-    current_view_move_line(app, Scan_Forward);
-}
-
-CUSTOM_COMMAND_SIG(duplicate_line)
-CUSTOM_DOC("Create a copy of the line on which the cursor sits.")
-{
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = view_get_cursor_pos(app, view);
-    i64 line = get_line_number_from_pos(app, buffer, pos);
-    Scratch_Block scratch(app);
-    String_Const_u8 s = push_buffer_line(app, scratch, buffer, line);
-    s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
-    pos = get_line_side_pos(app, buffer, line, Side_Min);
-    buffer_replace_range(app, buffer, Ii64(pos), s);
-}
-
-CUSTOM_COMMAND_SIG(delete_line)
-CUSTOM_DOC("Delete the line the on which the cursor sits.")
-{
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = view_get_cursor_pos(app, view);
-    i64 line = get_line_number_from_pos(app, buffer, pos);
-    Range_i64 range = get_line_pos_range(app, buffer, line);
-    range.end += 1;
-    i32 size = (i32)buffer_get_size(app, buffer);
-    range.end = clamp_top(range.end, size);
-    if (range_size(range) == 0 ||
-        buffer_get_char(app, buffer, range.end - 1) != '\n'){
-        range.start -= 1;
-        range.first = clamp_bot(0, range.first);
-    }
-    buffer_replace_range(app, buffer, range, string_u8_litexpr(""));
 }
 
 ////////////////////////////////

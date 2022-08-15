@@ -37,8 +37,12 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     SelectMap(file_id);
     Bind(python_interpreter_on_comment, KeyCode_L, KeyCode_Control);
     Bind(put_new_line_below,  KeyCode_Return, KeyCode_Control);
-    Bind(move_lines_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
-    Bind(move_lines_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
+    Bind(move_line_up, KeyCode_Up, KeyCode_Alt);
+    Bind(move_line_down, KeyCode_Down, KeyCode_Alt);
+    Bind(duplicate_line_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
+    Bind(duplicate_line_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
+
+
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);
     Bind(move_up,                KeyCode_Up);

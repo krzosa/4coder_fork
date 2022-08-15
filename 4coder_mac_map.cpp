@@ -72,7 +72,8 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Bind(list_all_locations_of_selection,  KeyCode_G, KeyCode_Command, KeyCode_Shift);
     Bind(snippet_lister,              KeyCode_J, KeyCode_Command);
     Bind(kill_buffer,                 KeyCode_K, KeyCode_Command, KeyCode_Shift);
-    Bind(duplicate_line,              KeyCode_L, KeyCode_Command);
+    Bind(duplicate_line_up,              KeyCode_Up, KeyCode_Command, KeyCode_Shift);
+    Bind(duplicate_line_down,              KeyCode_Down, KeyCode_Command, KeyCode_Shift);
     Bind(cursor_mark_swap,            KeyCode_M, KeyCode_Command);
     Bind(reopen,                      KeyCode_O, KeyCode_Command, KeyCode_Shift);
     Bind(query_replace,               KeyCode_Q, KeyCode_Command);

@@ -1061,54 +1061,14 @@ BUFFER_HOOK_SIG(default_new_file){
         return(0);
     }
 
-    List_String_Const_u8 guard_list = {};
-    for (u64 i = 0; i < file_name.size; ++i){
-        u8 c[2] = {};
-        u64 c_size = 1;
-        u8 ch = file_name.str[i];
-        if ('A' <= ch && ch <= 'Z'){
-            c_size = 2;
-            c[0] = '_';
-            c[1] = ch;
-        }
-        else if ('0' <= ch && ch <= '9'){
-            c[0] = ch;
-        }
-        else if ('a' <= ch && ch <= 'z'){
-            c[0] = ch - ('a' - 'A');
-        }
-        else{
-            c[0] = '_';
-        }
-        String_Const_u8 part = push_string_copy(scratch, SCu8(c, c_size));
-        string_list_push(scratch, &guard_list, part);
-    }
-    String_Const_u8 guard = string_list_flatten(scratch, guard_list);
-
-    Date_Time date_time = system_now_date_time_universal();
-    date_time = system_local_date_time_from_universal(&date_time);
-    String_Const_u8 date_string = date_time_format(scratch, "month day yyyy h:mimi ampm", &date_time);
-
     Buffer_Insertion insert = begin_buffer_insertion_at_buffered(app, buffer_id, 0, scratch, KB(16));
-    insertf(&insert,
-            "/* date = %.*s */\n"
-            "\n",
-            string_expand(date_string));
-    insertf(&insert,
-            "#ifndef %.*s\n"
-            "#define %.*s\n"
-            "\n"
-            "#endif //%.*s\n",
-            string_expand(guard),
-            string_expand(guard),
-            string_expand(guard));
+    insertf(&insert, "#pragma once\n");
     end_buffer_insertion(&insert);
 
     return(0);
 }
 
 BUFFER_HOOK_SIG(default_file_save){
-    // buffer_id
     ProfileScope(app, "default file save");
 
     b32 auto_indent = debug_config_automatically_indent_text_on_save;
@@ -1280,8 +1240,7 @@ set_all_default_hooks(App *app){
     set_custom_hook(app, HookID_WholeScreenRenderCaller, default_whole_screen_render_caller);
 
     set_custom_hook(app, HookID_DeltaRule, fixed_time_cubic_delta);
-    set_custom_hook_memory_size(app, HookID_DeltaRule,
-                                delta_ctx_size(fixed_time_cubic_delta_memory_size));
+    set_custom_hook_memory_size(app, HookID_DeltaRule, delta_ctx_size(fixed_time_cubic_delta_memory_size));
 
     set_custom_hook(app, HookID_BufferNameResolver, default_buffer_name_resolution);
 
