@@ -881,7 +881,7 @@ isearch__update_highlight(App *app, View_ID view, Range_i64 range){
 }
 
 function void
-quick_command_push(Quick_Command_Kind kind, String8 search, String8 replace){
+quick_command_push(Quick_Command_Kind kind, String8 search, String8 replace = {}){
     Quick_Command *c = global_last_quick_commands;
     block_copy(c+1, c, sizeof(*c));
 
@@ -915,9 +915,15 @@ execute_quick_command(App *app, i32 command_index, bool forward){
         Case(QuickCommandKind_Search){
             view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
         } Break;
-        Case(QuickCommandKind_QueryReplace){
+        Case(QuickCommandKind_ReplaceItem){
             view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
             buffer_replace_range(app, buffer, Ii64_size(pos, search.size), replace);
+        } Break;
+        Case(QuickCommandKind_ReplaceRange){
+            replace_in_range(app, buffer, get_view_range(app, view), search, replace);
+        } Break;
+        Case(QuickCommandKind_ReplaceBuffer){
+            replace_in_range(app, buffer, buffer_range(app, buffer), search, replace);
         } Break;
         default:{}
     }
@@ -1199,32 +1205,36 @@ query_user_replace_pair(App *app, Arena *arena){
 
 // NOTE(allen): This is a bit of a hacky setup because of Query_Bar lifetimes.  This must be
 // called as the last operation of a command.
-internal void
-replace_in_range_query_user(App *app, Buffer_ID buffer, Range_i64 range){
-    Scratch_Block scratch(app);
+internal String_Pair
+replace_in_range_query_user(App *app, Arena *scratch, Buffer_ID buffer, Range_i64 range){
     Query_Bar_Group group(app);
     String_Pair pair = query_user_replace_pair(app, scratch);
     if (pair.valid){
         replace_in_range(app, buffer, range, pair.a, pair.b);
     }
+    return pair;
 }
 
 CUSTOM_COMMAND_SIG(replace_in_range)
 CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of needle with string in the range between cursor and the mark in the active buffer.")
 {
+    Scratch_Block scratch(app);
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     Range_i64 range = get_view_range(app, view);
-    replace_in_range_query_user(app, buffer, range);
+    String_Pair strings = replace_in_range_query_user(app, scratch, buffer, range);
+    if(strings.valid) quick_command_push(QuickCommandKind_ReplaceRange, strings.a, strings.b);
 }
 
 CUSTOM_COMMAND_SIG(replace_in_buffer)
 CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of needle with string in the active buffer.")
 {
+    Scratch_Block scratch(app);
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     Range_i64 range = buffer_range(app, buffer);
-    replace_in_range_query_user(app, buffer, range);
+    String_Pair strings = replace_in_range_query_user(app, scratch, buffer, range);
+    if(strings.valid) quick_command_push(QuickCommandKind_ReplaceBuffer, strings.a, strings.b);
 }
 
 CUSTOM_COMMAND_SIG(replace_in_all_buffers)
@@ -1266,7 +1276,7 @@ CUSTOM_DOC("Queries the user for two strings, and incrementally replaces every o
                 with.string_capacity = sizeof(with_space);
 
                 if (query_user_string(app, &with)){
-                    quick_command_push(QuickCommandKind_QueryReplace, replace.string, with.string);
+                    quick_command_push(QuickCommandKind_ReplaceItem, replace.string, with.string);
                 }
 
             }
@@ -1293,7 +1303,7 @@ CUSTOM_DOC("Queries the user for a string, and incrementally replace every occur
             with.string_capacity = sizeof(with_space);
 
             if (query_user_string(app, &with)){
-                quick_command_push(QuickCommandKind_QueryReplace, replace, with.string);
+                quick_command_push(QuickCommandKind_ReplaceItem, replace, with.string);
             }
 
         }

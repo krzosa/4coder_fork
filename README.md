@@ -24,18 +24,8 @@ In this readme you will find:
 
 # Build Instructions
 
-1. Create an empty folder named "4ed" to contain the codebase.
-2. Clone the repository
-3. Rename the folder containing the repository to "code"
-4. At the same level as the "4ed" folder, clone the "4coder-non-source" repository
-5. A. On windows setup the visual studio command line magic sauce so that "cl" works
-   B. On linux setup g++
-   C. On mac setup clang
-6. Navigate to the "4ed/code" folder.
-7. A. On windows run "bin\build.bat"
-   B. On linux run "bin\build-linux.sh"
-   C. On linux run "bin\build-mac.sh"
-
+1. Clang and Visual Studio required
+2. Run the build.bat
 
 # Notes on Major Issues
 
@@ -55,15 +45,16 @@ In this readme you will find:
 
 * list_all_locations should happen when you press control + Enter inside search instead of enter
 * Commenting with mark at line:1 and cursor at line:2 should comment both lines
+* Fix control+N fix which goes to second error first
+
+# TODO Listers
+
+* Add Control + Backspace to listers
+* I would love if query replace etc. had auto complete and stuff, better text handling
+* Simplify the lister design and API
 
 # Todo
 
-// rem fix control+N fix which goes to second error first
-
-
-
-* Query replace, search replacement idea: Store the result of query and have a key that allows you to apply the query reapetedly like in VIM
-* I would love if query replace etc. had auto complete and stuff, better text handling
 * Improve hiperlink functionality as much as possible, stuff you can click should be highlighted underlined and satisfying to click, all clickable stuff in source files should be emphesized, as much stuff should be clickable.
    * Control Shift other panel
    * Color includes

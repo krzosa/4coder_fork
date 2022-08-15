@@ -91,7 +91,9 @@ global b32 def_enable_virtual_whitespace = false;
 ////////////////////////////////
 enum Quick_Command_Kind{QuickCommandKind_Invalid,
     QuickCommandKind_Search,
-    QuickCommandKind_QueryReplace,
+    QuickCommandKind_ReplaceItem,
+    QuickCommandKind_ReplaceRange,
+    QuickCommandKind_ReplaceBuffer,
 };
 struct Quick_Command{
     Quick_Command_Kind kind;
