@@ -1,7 +1,7 @@
 @echo off
 
 rem todo last flags should be fixed
-set W=-Wno-writable-strings -Wno-deprecated-declarations
+set W=-Wall -Wno-missing-braces -Wno-unused-function -Wno-writable-strings -Wno-deprecated-declarations
 set L=-luser32.lib -lwinmm.lib -lgdi32.lib -lopengl32.lib -lcomdlg32.lib -luserenv.lib -ldependencies/x64/freetype.lib
 set I=-I"dependencies/freetype2" -I"."
 set N=-o 4ed

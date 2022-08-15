@@ -387,7 +387,7 @@ system_set_key_mode_sig(){
 // NOTE(allen): Clipboard
 
 internal String_Const_u8
-    win32_read_clipboard_contents(Thread_Context *tctx, Arena *arena){
+win32_read_clipboard_contents(Thread_Context *tctx, Arena *arena){
     Scratch_Block scratch(tctx, arena);
 
     String_Const_u8 result = {};
@@ -1388,7 +1388,7 @@ win32_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
         {
             win32vars.got_useful_event = true;
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
+            BeginPaint(hwnd, &ps);
             // NOTE(allen): Do nothing?
             EndPaint(hwnd, &ps);
         }break;

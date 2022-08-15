@@ -194,7 +194,6 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, 
 
     String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
 
-    Heap *heap = &global_heap;
     Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
     py->range_to_modify = mod_range;
     py->buffer_to_modify = buffer;

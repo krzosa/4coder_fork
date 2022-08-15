@@ -49,8 +49,8 @@ code_index_note_from_string(String_Const_u8 string){
     Code_Index_Note_List *list = code_index__list_from_string(string);
     Code_Index_Note *result = 0;
     for (Code_Index_Note *node = list->first;
-       node != 0;
-       node = node->next_in_hash){
+         node != 0;
+         node = node->next_in_hash){
         if (string_match(string, node->text)){
             result = node;
             break;
@@ -99,28 +99,28 @@ code_index_push_nest(Code_Index_Nest_List *list, Code_Index_Nest *nest){
 
 function Code_Index_Nest_Ptr_Array
 code_index_nest_ptr_array_from_list(Arena *arena, Code_Index_Nest_List *list) {
-  Code_Index_Nest_Ptr_Array array = {};
-  array.ptrs  = push_array_zero(arena, Code_Index_Nest *, list->count);
-  array.count = list->count;
-  i32 counter = 0;
-  for (Code_Index_Nest *node = list->first; node != 0; node = node->next) {
-    array.ptrs[counter] = node;
-    counter += 1;
-  }
-  return (array);
+    Code_Index_Nest_Ptr_Array array = {};
+    array.ptrs  = push_array_zero(arena, Code_Index_Nest *, list->count);
+    array.count = list->count;
+    i32 counter = 0;
+    for (Code_Index_Nest *node = list->first; node != 0; node = node->next) {
+        array.ptrs[counter] = node;
+        counter += 1;
+    }
+    return (array);
 }
 
 function Code_Index_Note_Ptr_Array
 code_index_note_ptr_array_from_list(Arena *arena, Code_Index_Note_List *list) {
-  Code_Index_Note_Ptr_Array array = {};
-  array.ptrs  = push_array_zero(arena, Code_Index_Note *, list->count);
-  array.count = list->count;
-  i32 counter = 0;
-  for (Code_Index_Note *node = list->first; node != 0; node = node->next) {
-    array.ptrs[counter] = node;
-    counter += 1;
-  }
-  return (array);
+    Code_Index_Note_Ptr_Array array = {};
+    array.ptrs  = push_array_zero(arena, Code_Index_Note *, list->count);
+    array.count = list->count;
+    i32 counter = 0;
+    for (Code_Index_Note *node = list->first; node != 0; node = node->next) {
+        array.ptrs[counter] = node;
+        counter += 1;
+    }
+    return (array);
 }
 
 function void
@@ -214,7 +214,7 @@ index_shift(i64 *ptr, Range_i64 old_range, u64 new_size){
 
 function void
 code_index_shift(Code_Index_Nest_Ptr_Array *array,
-   Range_i64 old_range, u64 new_size){
+                 Range_i64 old_range, u64 new_size){
     i32 count = array->count;
     Code_Index_Nest **nest_ptr = array->ptrs;
     for (i32 i = 0; i < count; i += 1, nest_ptr += 1){
@@ -259,8 +259,8 @@ generic_parse_skip_soft_tokens(Code_Index_File *index, Generic_Parse_State *stat
             Range_i64 range = Ii64(token);
             u8 *ptr = state->contents.str + range.one_past_last - 1;
             for (i64 i = range.one_past_last - 1;
-               i >= range.first;
-               i -= 1, ptr -= 1){
+                 i >= range.first;
+                 i -= 1, ptr -= 1){
                 if (*ptr == '\n'){
                     state->prev_line_start = ptr + 1;
                     break;
@@ -359,7 +359,7 @@ cpp_parse_type_structure(Code_Index_File *index, Generic_Parse_State *state, Cod
 
     if (token != 0 && token->kind == TokenBaseKind_Identifier) {
         Token *peek = next_token(index, state);
-        if (peek != 0 && peek->kind == TokenBaseKind_StatementClose || peek->kind == TokenBaseKind_ScopeOpen) {
+        if (peek != 0 && (peek->kind == TokenBaseKind_StatementClose || peek->kind == TokenBaseKind_ScopeOpen)) {
             index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
         }
         token = peek;
@@ -424,7 +424,7 @@ cpp_parse_type_def(Code_Index_File *index, Generic_Parse_State *state, Code_Inde
             generic_parse_skip_soft_tokens(index, state);
             did_advance = true;
             Token *peek = token_it_read(&state->it);
-            if (peek != 0 && peek->kind == TokenBaseKind_StatementClose || peek->kind == TokenBaseKind_ParentheticalOpen) {
+            if (peek != 0 && (peek->kind == TokenBaseKind_StatementClose || peek->kind == TokenBaseKind_ParentheticalOpen)) {
                 index_new_note(index, state, Ii64(token), CodeIndexNote_Type, parent);
                 break;
             }
@@ -479,7 +479,7 @@ function void cpp_parse_function(Code_Index_File *index, Generic_Parse_State *st
             generic_parse_inc(state);
             generic_parse_skip_soft_tokens(index, state);
             peek = token_it_read(&state->it);
-            if (peek != 0 && peek->kind == TokenBaseKind_ScopeOpen || peek->kind == TokenBaseKind_StatementClose) {
+            if (peek != 0 && (peek->kind == TokenBaseKind_ScopeOpen || peek->kind == TokenBaseKind_StatementClose)) {
                 index_new_note(index, state, Ii64(token), CodeIndexNote_Function, parent);
             }
         }
@@ -663,8 +663,8 @@ generic_parse_scope(Code_Index_File *index, Generic_Parse_State *state){
             nest->parent = result;
             code_index_push_nest(&result->nest_list, nest);
 
-    // NOTE(allen): after a parenthetical group we consider ourselves immediately
-    // transitioning into a statement
+            // NOTE(allen): after a parenthetical group we consider ourselves immediately
+            // transitioning into a statement
             nest = generic_parse_statement(index, state);
             nest->parent = result;
             code_index_push_nest(&result->nest_list, nest);
@@ -884,25 +884,25 @@ layout_index_x_shift(App *app, Layout_Reflex *reflex, Code_Index_Nest *nest, i64
     f32 result = 0.f;
     if (nest != 0) {
         switch (nest->kind) {
-        case CodeIndexNest_Scope:
-        case CodeIndexNest_Preprocessor: {
-            result = layout_index_x_shift(app, reflex, nest->parent, pos, regular_indent, unresolved_dependence);
-            if (nest->open.min < pos && nest->open.max <= pos && (!nest->is_closed || pos < nest->close.min)) {
-                result += regular_indent;
-            }
-        } break;
+            case CodeIndexNest_Scope:
+            case CodeIndexNest_Preprocessor: {
+                result = layout_index_x_shift(app, reflex, nest->parent, pos, regular_indent, unresolved_dependence);
+                if (nest->open.min < pos && nest->open.max <= pos && (!nest->is_closed || pos < nest->close.min)) {
+                    result += regular_indent;
+                }
+            } break;
 
-        case CodeIndexNest_Statement: {
-            result = layout_index_x_shift(app, reflex, nest->parent, pos, regular_indent, unresolved_dependence);
-            if (nest->open.min < pos && nest->open.max <= pos && (!nest->is_closed || pos < nest->close.min)) {
-                result += regular_indent;
-            }
-        } break;
+            case CodeIndexNest_Statement: {
+                result = layout_index_x_shift(app, reflex, nest->parent, pos, regular_indent, unresolved_dependence);
+                if (nest->open.min < pos && nest->open.max <= pos && (!nest->is_closed || pos < nest->close.min)) {
+                    result += regular_indent;
+                }
+            } break;
 
-        case CodeIndexNest_Paren: {
-            Rect_f32 box = layout_reflex_get_rect(app, reflex, nest->open.max - 1, unresolved_dependence);
-            result       = box.x1;
-        } break;
+            case CodeIndexNest_Paren: {
+                Rect_f32 box = layout_reflex_get_rect(app, reflex, nest->open.max - 1, unresolved_dependence);
+                result       = box.x1;
+            } break;
         }
     }
     return (result);
@@ -997,7 +997,7 @@ layout_index__inner(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, F
         i32 pending_wrap_token_score      = 0;
         f32 pending_wrap_accumulated_w    = 0.f;
 
-    start:
+        start:
         if (ptr == end_ptr) {
             i64 index = layout_index_from_ptr(ptr, text.str, range.first);
             f32 shift = layout_index_x_shift(app, &reflex, file, index, regular_indent);
@@ -1057,51 +1057,51 @@ layout_index__inner(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, F
             }
         }
 
-    consuming_non_whitespace : {
-        for (; ptr <= end_ptr; ptr += 1) {
-            if (ptr == end_ptr || character_is_whitespace(*ptr)) {
-                break;
-            }
-        }
-
-        // NOTE(allen): measure this word
-        newline_layout_consume_default(&newline_vars);
-        String_Const_u8 word     = SCu8(word_ptr, ptr);
-        u8 *            word_end = ptr;
-        {
-            f32 word_advance = 0.f;
-            ptr              = word.str;
-            for (; ptr < word_end;) {
-                Character_Consume_Result consume = utf8_consume(ptr, (u64)(word_end - ptr));
-                if (consume.codepoint != max_u32) {
-                    word_advance += lr_tb_advance(&pos_vars, face, consume.codepoint);
-                } else {
-                    word_advance += lr_tb_advance_byte(&pos_vars);
+        consuming_non_whitespace : {
+            for (; ptr <= end_ptr; ptr += 1) {
+                if (ptr == end_ptr || character_is_whitespace(*ptr)) {
+                    break;
                 }
-                ptr += consume.inc;
             }
-            pending_wrap_accumulated_w += word_advance;
-        }
 
-        if (!first_of_the_line && (kind == Layout_Wrapped) && lr_tb_crosses_width(&pos_vars, pending_wrap_accumulated_w)) {
-            i64 index = layout_index_from_ptr(pending_wrap_ptr, text.str, range.first);
-            lr_tb_align_rightward(&pos_vars, wrap_align_x);
-            lr_tb_write_ghost(&pos_vars, face, arena, &list, index, '\\');
+            // NOTE(allen): measure this word
+            newline_layout_consume_default(&newline_vars);
+            String_Const_u8 word     = SCu8(word_ptr, ptr);
+            u8 *            word_end = ptr;
+            {
+                f32 word_advance = 0.f;
+                ptr              = word.str;
+                for (; ptr < word_end;) {
+                    Character_Consume_Result consume = utf8_consume(ptr, (u64)(word_end - ptr));
+                    if (consume.codepoint != max_u32) {
+                        word_advance += lr_tb_advance(&pos_vars, face, consume.codepoint);
+                    } else {
+                        word_advance += lr_tb_advance_byte(&pos_vars);
+                    }
+                    ptr += consume.inc;
+                }
+                pending_wrap_accumulated_w += word_advance;
+            }
 
-            lr_tb_next_line(&pos_vars);
+            if (!first_of_the_line && (kind == Layout_Wrapped) && lr_tb_crosses_width(&pos_vars, pending_wrap_accumulated_w)) {
+                i64 index = layout_index_from_ptr(pending_wrap_ptr, text.str, range.first);
+                lr_tb_align_rightward(&pos_vars, wrap_align_x);
+                lr_tb_write_ghost(&pos_vars, face, arena, &list, index, '\\');
+
+                lr_tb_next_line(&pos_vars);
 #if 0
-f32 shift = layout_index_x_shift(app, &reflex, file, index, regular_indent);
-lr_tb_advance_x_without_item(&pos_vars, shift);
+                f32 shift = layout_index_x_shift(app, &reflex, file, index, regular_indent);
+                lr_tb_advance_x_without_item(&pos_vars, shift);
 #endif
 
-            ptr                        = pending_wrap_ptr;
-            pending_wrap_accumulated_w = 0.f;
-            first_of_the_line          = true;
-            goto start;
+                ptr                        = pending_wrap_ptr;
+                pending_wrap_accumulated_w = 0.f;
+                first_of_the_line          = true;
+                goto start;
+            }
         }
-    }
 
-    consuming_normal_whitespace:
+        consuming_normal_whitespace:
         for (; ptr < end_ptr; ptr += 1) {
             if (!character_is_whitespace(*ptr)) {
                 u8 *new_wrap_ptr = ptr;
@@ -1182,31 +1182,31 @@ lr_tb_advance_x_without_item(&pos_vars, shift);
 
             i64 index = layout_index_from_ptr(ptr, text.str, range.first);
             switch (*ptr) {
-            default: {
-                newline_layout_consume_default(&newline_vars);
-                pending_wrap_accumulated_w += lr_tb_advance(&pos_vars, face, *ptr);
-            } break;
+                default: {
+                    newline_layout_consume_default(&newline_vars);
+                    pending_wrap_accumulated_w += lr_tb_advance(&pos_vars, face, *ptr);
+                } break;
 
-            case '\r': {
-                newline_layout_consume_CR(&newline_vars, index);
-            } break;
+                case '\r': {
+                    newline_layout_consume_CR(&newline_vars, index);
+                } break;
 
-            case '\n': {
-                layout_index__emit_chunk(&pos_vars, face, arena, text.str, range.first, pending_wrap_ptr, ptr, &list);
-                pending_wrap_ptr           = ptr + 1;
-                pending_wrap_accumulated_w = 0.f;
+                case '\n': {
+                    layout_index__emit_chunk(&pos_vars, face, arena, text.str, range.first, pending_wrap_ptr, ptr, &list);
+                    pending_wrap_ptr           = ptr + 1;
+                    pending_wrap_accumulated_w = 0.f;
 
-                u64 newline_index = newline_layout_consume_LF(&newline_vars, index);
-                lr_tb_write_blank(&pos_vars, face, arena, &list, newline_index);
-                lr_tb_next_line(&pos_vars);
-                first_of_the_line = true;
-                ptr += 1;
-                goto start;
-            } break;
+                    u64 newline_index = newline_layout_consume_LF(&newline_vars, index);
+                    lr_tb_write_blank(&pos_vars, face, arena, &list, newline_index);
+                    lr_tb_next_line(&pos_vars);
+                    first_of_the_line = true;
+                    ptr += 1;
+                    goto start;
+                } break;
             }
         }
 
-    finish:
+        finish:
         if (newline_layout_consume_finish(&newline_vars)) {
             layout_index__emit_chunk(&pos_vars, face, arena, text.str, range.first, pending_wrap_ptr, ptr, &list);
             i64 index = layout_index_from_ptr(ptr, text.str, range.first);
