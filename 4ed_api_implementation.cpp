@@ -1178,6 +1178,32 @@ view_get_mark_pos(App *app, View_ID view_id){
     return(result);
 }
 
+struct Active_View_Info{
+    View_ID view;
+    Buffer_ID buffer;
+    Buffer_Cursor mark;
+    Buffer_Cursor cursor;
+};
+
+function Active_View_Info
+get_active_view_info(App *app, Access_Flag access){
+    Active_View_Info result = {};
+    Panel *panel = layout_get_active_panel(&app->cmd_context->layout);
+    Assert(panel != 0);
+    View *view = panel->view;
+    Assert(view != 0);
+    if (api_check_view(view, access)){
+        result.view = view_get_id(&app->cmd_context->view_set, view);
+        Editing_File *file = view->file;
+        if (api_check_buffer(file, access)){
+            result.buffer = file->id;
+            result.mark   = buffer_cursor_from_pos(&file->state.buffer, view->mark);
+            result.cursor = buffer_cursor_from_pos(&file->state.buffer, view->edit_pos_.cursor_pos);
+        }
+    }
+    return result;
+}
+
 function f32
 view_get_preferred_x(App *app, View_ID view_id){
     Models *models = (Models*)app->cmd_context;

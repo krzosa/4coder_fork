@@ -41,6 +41,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(move_line_down, KeyCode_Down, KeyCode_Alt);
     Bind(duplicate_line_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
     Bind(duplicate_line_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
+    Bind(redo_last_command_search, KeyCode_M, KeyCode_Control);
     Bind(redo_last_command_forward, KeyCode_Comma, KeyCode_Control);
     Bind(redo_last_command_backward, KeyCode_Comma, KeyCode_Control, KeyCode_Shift);
     Bind(redo_before_last_command_forward, KeyCode_Period, KeyCode_Control);
@@ -71,7 +72,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(copy,                        KeyCode_C, KeyCode_Control);
     Bind(delete_range,                KeyCode_X, KeyCode_Control, KeyCode_Shift);
     Bind(delete_line,                 KeyCode_K, KeyCode_Control);
-    Bind(center_view,                 KeyCode_E, KeyCode_Control);
     Bind(left_adjust_view,            KeyCode_E, KeyCode_Control, KeyCode_Shift);
     Bind(search,                      KeyCode_F, KeyCode_Control);
     Bind(list_all_locations,          KeyCode_F, KeyCode_Control, KeyCode_Shift);
@@ -80,7 +80,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(list_all_locations_of_selection,  KeyCode_G, KeyCode_Control, KeyCode_Shift);
     Bind(snippet_lister,              KeyCode_J, KeyCode_Control);
     // Bind(kill_buffer,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
-    Bind(cursor_mark_swap,            KeyCode_M, KeyCode_Control);
+    Bind(cursor_mark_swap,            KeyCode_E, KeyCode_Control);
     Bind(reopen,                      KeyCode_O, KeyCode_Control, KeyCode_Shift);
 
     Bind(query_replace,               KeyCode_R, KeyCode_Control);

@@ -895,40 +895,41 @@ quick_command_push(Quick_Command_Kind kind, String8 search, String8 replace = {}
 }
 
 function void
-execute_quick_command(App *app, i32 command_index, bool forward){
+execute_quick_command(App *app, i32 command_index, bool forward, Quick_Command_Kind kind_override = QuickCommandKind_Invalid){
     Quick_Command *c = global_last_quick_commands + command_index;
-    View_ID view = get_active_view(app, Access_ReadVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
-    i64 pos = view_get_cursor_pos(app, view);
+    Active_View_Info a = get_active_view_info(app, Access_ReadVisible);
 
     String8 search = {c->search, (u64)c->search_size};
     String8 replace = {c->replace, (u64)c->replace_size};
 
-    if(forward) seek_string_insensitive_forward(app, buffer, pos, 0, search, &pos);
-    else  seek_string_insensitive_backward(app, buffer, pos, 0, search, &pos);
+    if(forward) seek_string_insensitive_forward(app, a.buffer, a.cursor.pos, 0, search, &a.cursor.pos);
+    else  seek_string_insensitive_backward(app, a.buffer, a.cursor.pos, 0, search, &a.cursor.pos);
 
-    i64 buffer_size = buffer_get_size(app, buffer);
+    i64 buffer_size = buffer_get_size(app, a.buffer);
 
-    b32 found = pos != -1 && pos != buffer_size;
+    b32 found = a.cursor.pos != -1 && a.cursor.pos != buffer_size;
     if(!found) return;
-    switch(c->kind){
+    Quick_Command_Kind kind = c->kind;
+    if(kind_override) kind = kind_override;
+    switch(kind){
         Case(QuickCommandKind_Search){
-            view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
+            view_set_cursor_and_preferred_x(app, a.view, seek_pos(a.cursor.pos));
         } Break;
         Case(QuickCommandKind_ReplaceItem){
-            view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
-            buffer_replace_range(app, buffer, Ii64_size(pos, search.size), replace);
+            view_set_cursor_and_preferred_x(app, a.view, seek_pos(a.cursor.pos));
+            buffer_replace_range(app, a.buffer, Ii64_size(a.cursor.pos, search.size), replace);
         } Break;
         Case(QuickCommandKind_ReplaceRange){
-            replace_in_range(app, buffer, get_view_range(app, view), search, replace);
+            replace_in_range(app, a.buffer, get_view_range(app, a.view), search, replace);
         } Break;
         Case(QuickCommandKind_ReplaceBuffer){
-            replace_in_range(app, buffer, buffer_range(app, buffer), search, replace);
+            replace_in_range(app, a.buffer, buffer_range(app, a.buffer), search, replace);
         } Break;
         default:{}
     }
 }
 
+CUSTOM_COMMAND_SIG(redo_last_command_search)CUSTOM_DOC("Use search item of last quick command"){execute_quick_command(app, 0, true, QuickCommandKind_Search);}
 CUSTOM_COMMAND_SIG(redo_last_command_forward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 0, true);}
 CUSTOM_COMMAND_SIG(redo_last_command_backward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 0, false);}
 CUSTOM_COMMAND_SIG(redo_before_last_command_forward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 1, true);}
