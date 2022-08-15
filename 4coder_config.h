@@ -77,7 +77,7 @@ String8 debug_config_default_theme_name = string_u8_litexpr("4coder");
 
 // Font
 String8 debug_config_default_font_name = string_u8_litexpr("liberation-mono.ttf");
-i64 debug_config_default_font_size = 16;
+i64 debug_config_default_font_size = 12;
 b32 debug_config_default_font_hinting = false;
 
 // aa modes:

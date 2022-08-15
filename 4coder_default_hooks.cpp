@@ -1117,6 +1117,7 @@ BUFFER_HOOK_SIG(default_file_save){
         auto_indent_buffer(app, buffer_id, buffer_range(app, buffer_id));
     }
 
+    clean_all_lines_buffer(app, buffer_id, CleanAllLinesMode_RemoveBlankLines);
     Managed_Scope scope = buffer_get_managed_scope(app, buffer_id);
     Line_Ending_Kind *eol = scope_attachment(app, scope, buffer_eol_setting, Line_Ending_Kind);
     switch (*eol){
