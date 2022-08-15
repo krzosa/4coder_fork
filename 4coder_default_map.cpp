@@ -41,7 +41,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(move_line_down, KeyCode_Down, KeyCode_Alt);
     Bind(duplicate_line_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
     Bind(duplicate_line_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
-
+    Bind(redo_last_command_forward, KeyCode_Period, KeyCode_Control);
+    Bind(redo_last_command_backward, KeyCode_Period, KeyCode_Control, KeyCode_Shift);
 
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);
@@ -95,7 +96,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(undo,                        KeyCode_Z, KeyCode_Control);
     // Bind(view_buffer_other_panel,     KeyCode_1, KeyCode_Control);
     // Bind(swap_panels,                 KeyCode_2, KeyCode_Control);
-    Bind(view_jump_list_with_lister,  KeyCode_Period, KeyCode_Control, KeyCode_Shift);
     Bind(jump_to_hiperlink_at_cursor, KeyCode_Q, KeyCode_Control);
     Bind(jump_to_hiperlink_at_cursor_other_panel, KeyCode_Q, KeyCode_Control, KeyCode_Shift);
     BindMouse(jump_to_hiperlink_at_cursor, MouseCode_Left, KeyCode_Control);

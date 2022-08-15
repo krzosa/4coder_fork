@@ -881,6 +881,58 @@ isearch__update_highlight(App *app, View_ID view, Range_i64 range){
 }
 
 function void
+quick_command_push(Quick_Command_Kind kind, String8 search, String8 replace){
+    Quick_Command *c = global_last_quick_commands;
+    block_copy(c + 1, c, sizeof(c[0]));
+
+    i64 max_chars = sizeof(c[0].string_buffer)/2 - 1;
+    c[0].kind = kind;
+    {
+        i64 size = clamp_top(search.size, max_chars);
+        block_copy(c[0].string_buffer, search.str, size);
+        c[0].search.str = c[0].string_buffer;
+        c[0].search.size = size;
+        c[0].search.str[size] = 0;
+    }
+
+    {
+        u8 *buffer_begin = c[0].string_buffer + search.size + 1;
+        i64 size = clamp_top(replace.size, max_chars);
+        block_copy(buffer_begin, replace.str, size);
+
+        c[0].replace.str = buffer_begin;
+        c[0].replace.size = size;
+        c[0].replace.str[size] = 0;
+    }
+}
+
+function void
+execute_quick_command(App *app, bool forward){
+    Quick_Command *c = global_last_quick_commands;
+    View_ID view = get_active_view(app, Access_ReadVisible);
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadVisible);
+    i64 pos = view_get_cursor_pos(app, view);
+    switch(c->kind){
+        Case(QuickCommandKind_Search){
+            if(forward) seek_string_insensitive_forward(app, buffer, pos, 0, c->search, &pos);
+            else  seek_string_insensitive_backward(app, buffer, pos, 0, c->search, &pos);
+            if(pos != -1) view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
+        } Break;
+        InvalidDefaultCase;
+    }
+}
+
+CUSTOM_COMMAND_SIG(redo_last_command_forward)
+CUSTOM_DOC("Go to last saved quick command"){
+    execute_quick_command(app, true);
+}
+
+CUSTOM_COMMAND_SIG(redo_last_command_backward)
+CUSTOM_DOC("Go to last saved quick command"){
+    execute_quick_command(app, false);
+}
+
+function void
 isearch(App *app, Scan_Direction start_scan, i64 first_pos,
         String_Const_u8 query_init){
     View_ID view = get_active_view(app, Access_ReadVisible);
@@ -939,24 +991,9 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
         String_Const_u8 string = to_writable(&in);
 
         b32 string_change = false;
-        if (match_key_code(&in, KeyCode_Return) ||
-            match_key_code(&in, KeyCode_Tab)){
-            Input_Modifier_Set *mods = &in.event.key.modifiers;
-            if (has_modifier(mods, KeyCode_Control)){
-                bar.string.size = cstring_length(previous_isearch_query);
-                block_copy(bar.string.str, previous_isearch_query, bar.string.size);
-            }
-            else{
-                // void list_all_locations__generic(App *app, String_Const_u8_Array needle, List_All_Locations_Flag flags);
-                // list_all_locations__generic(app, {&bar.string, 1}, ListAllLocationsFlag_CaseSensitive);
-                // TODO(Krzosa): Fill a recent search "record" so you can go to next occurance without search bar
-                u64 size = bar.string.size;
-                size = clamp_top(size, sizeof(previous_isearch_query) - 1);
-                block_copy(previous_isearch_query, bar.string.str, size);
-
-                previous_isearch_query[size] = 0;
-                break;
-            }
+        if (match_key_code(&in, KeyCode_Return) || match_key_code(&in, KeyCode_Tab)){
+            quick_command_push(QuickCommandKind_Search, bar.string, {});
+            break;
         }
         else if (string.str != 0 && string.size > 0){
             String_u8 bar_string = Su8(bar.string, sizeof(bar_string_space));
@@ -1079,10 +1116,7 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
     view_disable_highlight_range(app, view);
 
     if (in.abort){
-        u64 size = bar.string.size;
-        size = clamp_top(size, sizeof(previous_isearch_query) - 1);
-        block_copy(previous_isearch_query, bar.string.str, size);
-        previous_isearch_query[size] = 0;
+        quick_command_push(QuickCommandKind_Search, bar.string, {});
         view_set_cursor_and_preferred_x(app, view, seek_pos(first_pos));
     }
 

@@ -82,37 +82,39 @@ global ID_Pos_Jump_Location prev_location = {};
 
 global Arena global_permanent_arena = {};
 
-global Arena global_config_arena = {};
-
-global char previous_isearch_query[256] = {};
-
 global Mapping framework_mapping = {};
 
 global Buffer_Modified_Set global_buffer_modified_set = {};
 
 global b32 def_enable_virtual_whitespace = false;
 
+////////////////////////////////
+enum Quick_Command_Kind{QuickCommandKind_Invalid,
+    QuickCommandKind_Search,
+    QuickCommandKind_QueryReplace,
+};
+struct Quick_Command{
+    Quick_Command_Kind kind;
+    String_Const_u8 search;
+    String_Const_u8 replace;
+    u8 string_buffer[1024];
+};
+Quick_Command global_last_quick_commands[2];
+
+////////////////////////////////
+global b32 global_keyboard_macro_is_recording = false;
+global Range_i64 global_keyboard_macro_range = {};
+////////////////////////////////
 global View_ID global_compilation_view;
 global b32     global_compilation_view_maximized;
 global View_ID global_compilation_view_before_maximized_selected_view;
-
 ////////////////////////////////
-
-global b32 global_keyboard_macro_is_recording = false;
-global Range_i64 global_keyboard_macro_range = {};
-
-////////////////////////////////
-
 global Fade_Range_List buffer_fade_ranges = {};
 global Arena fade_range_arena = {};
 global Fade_Range *free_fade_ranges = 0;
-
 ////////////////////////////////
-
 global Point_Stack point_stack = {};
-
 ////////////////////////////////
-
 global Clipboard clipboard0 = {};
 
 // BOTTOM
