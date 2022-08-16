@@ -46,6 +46,8 @@ In this readme you will find:
 * list_all_locations should happen when you press control + Enter inside search instead of enter
 * Commenting with mark at line:1 and cursor at line:2 should comment both lines
 * Fix control+N fix which goes to second error first
+* Cut selected lines
+
 
 # TODO Listers
 

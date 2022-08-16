@@ -184,13 +184,12 @@ current_view_move_line(App *app, Scan_Direction direction){
 CUSTOM_COMMAND_SIG(comment_lines)
 CUSTOM_DOC("Comment out multiple lines"){
     Selected_Lines lines = get_selected_lines_for_active_view(app);
-    if(lines.min_line == lines.max_line) lines.max_line += 1;
 
     History_Group history_group = history_group_begin(app, lines.buffer);
     i64 first_line = get_pos_past_lead_whitespace_from_line_number(app, lines.buffer, lines.min_line);
     b32 comment_is_first_so_we_should_decomment = c_line_comment_starts_at_position(app, lines.buffer, first_line);
 
-    for(i64 line = lines.min_line; line < lines.max_line; line++){
+    for(i64 line = lines.min_line; line <= lines.max_line; line++){
         i64 line_start = get_pos_past_lead_whitespace_from_line_number(app, lines.buffer, line);
         b32 there_is_a_comment = c_line_comment_starts_at_position(app, lines.buffer, line_start);
         if(!comment_is_first_so_we_should_decomment && !there_is_a_comment){

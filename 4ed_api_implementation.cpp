@@ -1183,6 +1183,8 @@ struct Active_View_Info{
     Buffer_ID buffer;
     Buffer_Cursor mark;
     Buffer_Cursor cursor;
+    Buffer_Cursor *min;
+    Buffer_Cursor *max;
 };
 
 function Active_View_Info
@@ -1199,6 +1201,14 @@ get_active_view_info(App *app, Access_Flag access){
             result.buffer = file->id;
             result.mark   = buffer_cursor_from_pos(&file->state.buffer, view->mark);
             result.cursor = buffer_cursor_from_pos(&file->state.buffer, view->edit_pos_.cursor_pos);
+            if(result.cursor.pos > result.mark.pos){
+                result.max = &result.cursor;
+                result.min = &result.mark;
+            }
+            else{
+                result.max = &result.mark;
+                result.min = &result.cursor;
+            }
         }
     }
     return result;

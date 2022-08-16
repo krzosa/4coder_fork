@@ -127,6 +127,26 @@ CUSTOM_DOC("Cut the text in the range from the cursor to the mark onto the clipb
     }
 }
 
+CUSTOM_COMMAND_SIG(cut_lines)
+CUSTOM_DOC("Cut selected lines of text")
+{
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+
+    Range_i64 range = {get_line_start_pos(app, a.buffer, a.min->line),get_line_end_pos(app, a.buffer, a.max->line)};
+
+    if (clipboard_post_buffer_range(app, 0, a.buffer, range)){
+        buffer_replace_range(app, a.buffer, range, string_u8_empty);
+    }
+}
+
+CUSTOM_COMMAND_SIG(delete_lines)
+CUSTOM_DOC("Cut selected lines of text")
+{
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    Range_i64 range = {get_line_start_pos(app, a.buffer, a.min->line), get_line_end_pos(app, a.buffer, a.max->line)};
+    buffer_replace_range(app, a.buffer, range, string_u8_empty);
+}
+
 CUSTOM_COMMAND_SIG(paste)
 CUSTOM_DOC("At the cursor, insert the text at the top of the clipboard.")
 {

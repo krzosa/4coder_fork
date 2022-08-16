@@ -72,7 +72,9 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(replace_in_range,            KeyCode_A, KeyCode_Control);
     Bind(copy,                        KeyCode_C, KeyCode_Control);
     Bind(delete_range,                KeyCode_X, KeyCode_Control, KeyCode_Shift);
-    Bind(delete_line,                 KeyCode_K, KeyCode_Control);
+    Bind(cut_lines,                 KeyCode_K, KeyCode_Control);
+    Bind(delete_lines,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
+
     Bind(left_adjust_view,            KeyCode_E, KeyCode_Control, KeyCode_Shift);
     Bind(search,                      KeyCode_F, KeyCode_Control);
     Bind(list_all_locations,          KeyCode_F, KeyCode_Control, KeyCode_Shift);

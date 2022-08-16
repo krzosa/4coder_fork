@@ -38,36 +38,49 @@ get_current_input_is_virtual(App *app){
 
 ////////////////////////////////
 
+function void
+macro_begin_recording(App *app, Range_i64 *range){
+    Buffer_ID buffer                          = get_keyboard_log_buffer(app);
+    i64           end                         = buffer_get_size(app, buffer);
+    Buffer_Cursor cursor                      = buffer_compute_cursor(app, buffer, seek_pos(end));
+    Buffer_Cursor back_cursor                 = buffer_compute_cursor(app, buffer, seek_line_col(cursor.line - 1, 1));
+    range->one_past_last = back_cursor.pos;
+}
+
+function void
+macro_end_recording(App *app, Range_i64 *range){
+    Buffer_ID buffer = get_keyboard_log_buffer(app);
+    range->first     = buffer_get_size(app, buffer);
+}
+
+function void
+macro_play_recording(App *app, Range_i64 range){
+    Buffer_ID buffer = get_keyboard_log_buffer(app);
+    Scratch_Block scratch(app);
+    String_Const_u8 macro = push_buffer_range(app, scratch, buffer, range);
+    keyboard_macro_play(app, macro);
+}
+
 CUSTOM_COMMAND_SIG(keyboard_macro_switch_recording)
 CUSTOM_DOC("Record a key sequence for later playback") {
     if (get_current_input_is_virtual(app))
         return;
     if (global_keyboard_macro_is_recording) {
-        Buffer_ID buffer                          = get_keyboard_log_buffer(app);
-        global_keyboard_macro_is_recording        = false;
-        i64           end                         = buffer_get_size(app, buffer);
-        Buffer_Cursor cursor                      = buffer_compute_cursor(app, buffer, seek_pos(end));
-        Buffer_Cursor back_cursor                 = buffer_compute_cursor(app, buffer, seek_line_col(cursor.line - 1, 1));
-        global_keyboard_macro_range.one_past_last = back_cursor.pos;
+        global_keyboard_macro_is_recording = false;
+        macro_begin_recording(app, &global_keyboard_macro_range);
     } else {
-        Buffer_ID buffer                   = get_keyboard_log_buffer(app);
         global_keyboard_macro_is_recording = true;
-        global_keyboard_macro_range.first  = buffer_get_size(app, buffer);
+        macro_end_recording(app, &global_keyboard_macro_range);
     }
 }
 
 CUSTOM_COMMAND_SIG(keyboard_macro_replay)
 CUSTOM_DOC("Playback a recorded key sequence")
 {
-    if (global_keyboard_macro_is_recording ||
-        get_current_input_is_virtual(app)){
+    if (global_keyboard_macro_is_recording || get_current_input_is_virtual(app)){
         return;
     }
-
-    Buffer_ID buffer = get_keyboard_log_buffer(app);
-    Scratch_Block scratch(app);
-    String_Const_u8 macro = push_buffer_range(app, scratch, buffer, global_keyboard_macro_range);
-    keyboard_macro_play(app, macro);
+    macro_play_recording(app, global_keyboard_macro_range);
 }
 
 // BOTTOM
