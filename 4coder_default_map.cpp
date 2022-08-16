@@ -115,7 +115,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(word_complete,              KeyCode_Tab);
     // Bind(auto_indent_range,          KeyCode_Tab, KeyCode_Control);
     Bind(auto_indent_line_at_cursor, KeyCode_Tab, KeyCode_Shift);
-    Bind(word_complete_drop_down,    KeyCode_Tab, KeyCode_Shift, KeyCode_Control);
     Bind(write_block,                KeyCode_R, KeyCode_Alt);
     Bind(write_todo,                 KeyCode_T, KeyCode_Alt);
     Bind(write_note,                 KeyCode_Y, KeyCode_Alt);

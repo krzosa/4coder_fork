@@ -35,6 +35,11 @@ struct Word_Complete_Menu{
     i32 count;
 };
 
+function Word_Complete_Iterator*word_complete_get_shared_iter(App *app);
+internal Range_i64 get_word_complete_needle_range(App *app, Buffer_ID buffer, i64 pos);
+function void word_complete_iter_init(Buffer_ID buffer, Range_i64 range, Word_Complete_Iterator *iter);
+function void word_complete_iter_next(Word_Complete_Iterator *it);
+function String_Const_u8 word_complete_iter_read(Word_Complete_Iterator *it);
 #endif
 
 // BOTOTM

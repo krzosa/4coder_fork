@@ -535,7 +535,6 @@ run_lister(App *app, Lister *lister){
             {
                 switch (in.event.key.code){
                     case KeyCode_Return:
-                    case KeyCode_Tab:
                     {
                         void *user_data = 0;
                         if (0 <= lister->raw_item_index &&
@@ -544,6 +543,10 @@ run_lister(App *app, Lister *lister){
                         }
                         lister_activate(app, lister, user_data, false);
                         result = ListerActivation_Finished;
+                    }break;
+                    case KeyCode_Tab:
+                    {
+                        // TODO(Krzosa): Word complete
                     }break;
 
                     case KeyCode_Backspace:
@@ -800,6 +803,7 @@ lister__backspace_text_field__default(App *app){
             lister->item_index = 0;
             lister->text_field.size = 0;
             lister->key_string.size = 0;
+
         }
         else{
             lister->text_field.string = backspace_utf8(lister->text_field.string);
