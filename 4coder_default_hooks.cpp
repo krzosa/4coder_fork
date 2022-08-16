@@ -382,15 +382,11 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     i64 cursor_pos = view_correct_cursor(app, view_id);
     view_correct_mark(app, view_id);
 
-
     Mouse_State mouse_state = get_mouse_state(app);
     Vec2_f32 mouse_screen_pos = {(f32)mouse_state.x, (f32)mouse_state.y};
     i64 mouse_view_pos = view_pos_from_xy(app, active_view, mouse_screen_pos);
     Rect_f32 view_rect = view_get_screen_rect(app, active_view);
     b32 mouse_is_on_active_view = rect_contains_point(view_rect, mouse_screen_pos);
-
-
-    String_Const_u8 deffered_button_render = {};
 
 
     // NOTE(allen): Line highlight
@@ -444,12 +440,6 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
                 paint_text_color(app, text_layout_id, range, argb);
                 b32 is_definition_of_note = (note->file->buffer == buffer && range_contains(range, note->pos.min));
-
-                if(!is_definition_of_note && (mouse_is_over_token || cursor_is_over_token)){
-                    Range_i64 line_range = get_line_pos_range_from_pos(app, note->file->buffer, note->pos.max);
-                    deffered_button_render = push_buffer_range(app, scratch, note->file->buffer, line_range);
-                    deffered_button_render = string_skip_whitespace(deffered_button_render);
-                }
 
                 // Outline when token is clickable, avoid a case where we outline a definition
                 underline_token = !is_definition_of_note;
@@ -576,6 +566,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
     draw_set_clip(app, prev_clip);
 
+#if 0
     if(deffered_button_render.size){
         String_Const_u8 text = deffered_button_render;
         Fancy_String *fancy = push_fancy_string(scratch, 0, face_id, fcolor_id(defcolor_text_default), text);
@@ -600,6 +591,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         Vec2_f32 p = (button_rect.p0 + button_rect.p1 - dim)*0.5f;
         draw_fancy_string(app, fancy, p);
     }
+#endif
 }
 
 function Rect_f32

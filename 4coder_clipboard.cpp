@@ -8,8 +8,7 @@ CUSTOM_COMMAND_SIG(clipboard_record_clip)
 CUSTOM_DOC("In response to a new clipboard contents events, saves the new clip onto the clipboard history")
 {
     User_Input in = get_current_input(app);
-    if (in.event.kind == InputEventKind_Core &&
-        in.event.core.code == CoreCode_NewClipboardContents){
+    if (in.event.kind == InputEventKind_Core && in.event.core.code == CoreCode_NewClipboardContents){
         clipboard_post_internal_only(0, in.event.core.string);
     }
 }
@@ -131,11 +130,8 @@ CUSTOM_COMMAND_SIG(cut_lines)
 CUSTOM_DOC("Cut selected lines of text")
 {
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
-
-    Range_i64 range = {get_line_start_pos(app, a.buffer, a.min->line),get_line_end_pos(app, a.buffer, a.max->line)};
-
-    if (clipboard_post_buffer_range(app, 0, a.buffer, range)){
-        buffer_replace_range(app, a.buffer, range, string_u8_empty);
+    if (clipboard_post_buffer_range(app, 0, a.buffer, a.cursor_to_mark_lines_pos_range)){
+        buffer_replace_range(app, a.buffer, a.cursor_to_mark_lines_pos_range, string_u8_empty);
     }
 }
 
@@ -143,8 +139,7 @@ CUSTOM_COMMAND_SIG(delete_lines)
 CUSTOM_DOC("Cut selected lines of text")
 {
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
-    Range_i64 range = {get_line_start_pos(app, a.buffer, a.min->line), get_line_end_pos(app, a.buffer, a.max->line)};
-    buffer_replace_range(app, a.buffer, range, string_u8_empty);
+    buffer_replace_range(app, a.buffer, a.cursor_to_mark_lines_pos_range, string_u8_empty);
 }
 
 CUSTOM_COMMAND_SIG(paste)

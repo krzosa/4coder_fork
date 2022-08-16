@@ -21,7 +21,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(goto_prev_jump,                KeyCode_N, KeyCode_Control, KeyCode_Shift);
     Bind(save_all_dirty_buffers,        KeyCode_S, KeyCode_Control, KeyCode_Shift);
     Bind(quick_swap_buffer,             KeyCode_Tab, KeyCode_Control);
-    Bind(list_all_functions_all_buffers_lister, KeyCode_I, KeyCode_Control);
+    Bind(jump_to_definition, KeyCode_I, KeyCode_Control);
 
     // TODO(Krzosa): We want to move this into Fkey bindings as default
     Bind(build_in_build_panel,          KeyCode_F1);

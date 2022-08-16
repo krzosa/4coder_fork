@@ -175,7 +175,7 @@ CUSTOM_DOC("Create a copy of the line on which the cursor sits.")
     i64 pos = get_line_side_pos(app, a.buffer, a.cursor.line, Side_Min);
     buffer_replace_range(app, a.buffer, Ii64(pos), s);
     Buffer_Seek seek = {buffer_seek_line_col, {a.cursor.line+1}};
-    seek.col = 1;
+    seek.col = a.cursor.col;
     view_set_cursor_and_preferred_x(app, a.view, seek);
 }
 
@@ -196,7 +196,6 @@ CUSTOM_DOC("Delete the line the on which the cursor sits.")
 {
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
     Range_i64 range = a.cursor_line_pos_range;
-    range.end += 1;
     i32 size = (i32)buffer_get_size(app, a.buffer);
     range.end = clamp_top(range.end, size);
 
@@ -213,7 +212,7 @@ CUSTOM_DOC("Pust a new line bellow cursor line")
     Scratch_Block scratch(app);
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
     String_Const_u8 s = push_buffer_line(app, scratch, a.buffer, a.cursor.line);
-    s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
+    s = push_u8_stringf(scratch, "%.*s\n\n", string_expand(s));
     buffer_replace_range(app, a.buffer, a.cursor_line_pos_range, s);
     view_set_cursor_and_preferred_x(app, a.view, seek_line_col(a.cursor.line+1, 0));
 }
@@ -307,4 +306,3 @@ CUSTOM_DOC("Opens a snippet lister for inserting whole pre-written snippets of t
 }
 
 // BOTTOM
-

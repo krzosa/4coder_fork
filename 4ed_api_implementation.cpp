@@ -1189,12 +1189,13 @@ struct Active_View_Info{
     Buffer_Cursor *max;
 
     // Ranges of lines cursor and mark are on
+    // Lines INCLUDE the NEW LINE !!!
     Range_i64 mark_line_pos_range;
     Range_i64 cursor_line_pos_range;
 
     // Positions from beginning of lower line to end of higher line
     Range_i64 cursor_to_mark_lines_pos_range;
-    // Range from higher line to lower line
+    // Selection range
     Range_i64 selected_pos_range;
 };
 function Active_View_Info

@@ -916,7 +916,7 @@ execute_quick_command(App *app, i32 command_index, Buffer_Seek_String_Flags sear
             }
         } Break;
         Case(QuickCommandKind_ReplaceRange){
-            replace_in_range(app, a.buffer, get_view_range(app, a.view), search, replace);
+            replace_in_range(app, a.buffer, a.selected_pos_range, search, replace);
         } Break;
         Case(QuickCommandKind_ReplaceBuffer){
             replace_in_range(app, a.buffer, buffer_range(app, a.buffer), search, replace);
