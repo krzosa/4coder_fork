@@ -79,6 +79,7 @@ In this readme you will find:
 
 * RemedyBG integration
 * Optional python interpreter comment evaluator
+ * Evaluate python file and copy to clipboard?
 
 # TODO New config, project files, themes design
 

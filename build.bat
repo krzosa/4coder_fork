@@ -1,12 +1,13 @@
 @echo off
 
-rem todo last flags should be fixed
-set W=-Wall -Wno-missing-braces -Wno-unused-function -Wno-writable-strings -Wno-deprecated-declarations
+set W=-Wall -Wno-missing-braces -Wno-writable-strings -Wno-deprecated-declarations  -Wno-unused-function
 set L=-luser32.lib -lwinmm.lib -lgdi32.lib -lopengl32.lib -lcomdlg32.lib -luserenv.lib -ldependencies/x64/freetype.lib
 set I=-I"dependencies/freetype2" -I"."
 set N=-o 4ed
 set F=-g -fno-exceptions -fdiagnostics-absolute-paths -DOS_WINDOWS=1 -DOS_LINUX=0 -DOS_MAC=0
-set R=-O2 -DSHIP_MODE
+set R=-O2
+rem -DSHIP_MODE
+
 
 pushd %~dp0
 

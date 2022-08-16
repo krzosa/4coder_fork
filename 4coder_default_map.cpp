@@ -41,7 +41,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(move_line_down, KeyCode_Down, KeyCode_Alt);
     Bind(duplicate_line_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
     Bind(duplicate_line_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
-    Bind(redo_last_command_search, KeyCode_M, KeyCode_Control);
+    Bind(redo_last_command_search_backward, KeyCode_M, KeyCode_Control, KeyCode_Shift);
+    Bind(redo_last_command_search_forward, KeyCode_M, KeyCode_Control);
     Bind(redo_last_command_forward, KeyCode_Comma, KeyCode_Control);
     Bind(redo_last_command_backward, KeyCode_Comma, KeyCode_Control, KeyCode_Shift);
     Bind(redo_before_last_command_forward, KeyCode_Period, KeyCode_Control);
