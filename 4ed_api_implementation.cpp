@@ -1181,14 +1181,26 @@ view_get_mark_pos(App *app, View_ID view_id){
 struct Active_View_Info{
     View_ID view;
     Buffer_ID buffer;
+
     Buffer_Cursor mark;
     Buffer_Cursor cursor;
+
     Buffer_Cursor *min;
     Buffer_Cursor *max;
-};
 
+    // Ranges of lines cursor and mark are on
+    Range_i64 mark_line_pos_range;
+    Range_i64 cursor_line_pos_range;
+
+    // Positions from beginning of lower line to end of higher line
+    Range_i64 cursor_to_mark_lines_pos_range;
+    // Range from higher line to lower line
+    Range_i64 selected_pos_range;
+};
 function Active_View_Info
 get_active_view_info(App *app, Access_Flag access){
+    ProfileScope(app, "get_active_view_info");
+
     Active_View_Info result = {};
     Panel *panel = layout_get_active_panel(&app->cmd_context->layout);
     Assert(panel != 0);
@@ -1201,14 +1213,19 @@ get_active_view_info(App *app, Access_Flag access){
             result.buffer = file->id;
             result.mark   = buffer_cursor_from_pos(&file->state.buffer, view->mark);
             result.cursor = buffer_cursor_from_pos(&file->state.buffer, view->edit_pos_.cursor_pos);
+            result.mark_line_pos_range = buffer_get_pos_range_from_line_number(&file->state.buffer, result.mark.line);
+            result.cursor_line_pos_range = buffer_get_pos_range_from_line_number(&file->state.buffer, result.cursor.line);
             if(result.cursor.pos > result.mark.pos){
-                result.max = &result.cursor;
+                result.cursor_to_mark_lines_pos_range = {result.mark_line_pos_range.min, result.cursor_line_pos_range.max};
                 result.min = &result.mark;
+                result.max = &result.cursor;
             }
             else{
-                result.max = &result.mark;
+                result.cursor_to_mark_lines_pos_range = {result.cursor_line_pos_range.min, result.mark_line_pos_range.max};
                 result.min = &result.cursor;
+                result.max = &result.mark;
             }
+            result.selected_pos_range = {result.min->pos, result.max->pos};
         }
     }
     return result;

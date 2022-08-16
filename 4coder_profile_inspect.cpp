@@ -443,7 +443,9 @@ profile_draw_node(App *app, View_ID view, Face_ID face_id,
 
             String_Const_u8 child_name = profile_node_name(child);
             Fancy_Line line = {};
-            push_fancy_string_trunc(scratch, &line, child_name, 20);
+            // push_fancy_string_trunc(scratch, &line, child_name, 20);
+            push_fancy_stringf(scratch, &line, fcolor_id(defcolor_text_default), 0.5f, 0.f,
+                               "%.*s", string_expand(child_name));
             push_fancy_stringf(scratch, &line, fcolor_id(defcolor_text_default), 0.5f, 0.f,
                                "#%4llu", child->unique_counter);
             push_fancy_stringf(scratch, &line, fcolor_id(defcolor_pop2),

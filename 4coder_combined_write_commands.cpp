@@ -124,80 +124,29 @@ c_line_comment_starts_at_position(App *app, Buffer_ID buffer, i64 pos){
 
 ////////////////////////////////
 
-struct Selected_Lines {
-    Buffer_ID buffer;
-    View_ID view;
-
-    i64 cursor_pos;
-    i64 mark_pos;
-    i64 cursor_line;
-    i64 mark_line;
-    i64 min_pos;
-    i64 max_pos;
-    i64 min_line;
-    i64 max_line;
-
-    // WHOLE selected lines
-    Range_i64 entire_selected_lines_pos;
-};
-
-function Selected_Lines
-get_selected_lines_for_active_view(App *app) {
-    Selected_Lines result = {};
-
-    View_ID   view   = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    result.view = view;
-    result.buffer = buffer;
-
-    result.cursor_pos = view_get_cursor_pos(app, view);
-    result.mark_pos   = view_get_mark_pos(app, view);
-
-    result.cursor_line = get_line_number_from_pos(app, buffer, result.cursor_pos);
-    result.mark_line = get_line_number_from_pos(app, buffer, result.mark_pos);
-
-    result.min_pos = Min(result.cursor_pos, result.mark_pos);
-    result.max_pos = Max(result.cursor_pos, result.mark_pos);
-
-    result.min_line = Min(result.cursor_line, result.mark_line);
-    result.max_line = Max(result.cursor_line, result.mark_line);
-
-    i64 min_line = get_line_side_pos(app, buffer, result.min_line, Side_Min);
-    i64 max_line = get_line_side_pos(app, buffer, result.max_line, Side_Max);
-
-    result.entire_selected_lines_pos.min = min_line;
-    result.entire_selected_lines_pos.max = max_line;
-
-    return result;
-}
-
 internal void
 current_view_move_line(App *app, Scan_Direction direction){
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = view_get_cursor_pos(app, view);
-    i64 line_number = get_line_number_from_pos(app, buffer, pos);
-    pos = move_line(app, buffer, line_number, direction);
-    view_set_cursor_and_preferred_x(app, view, seek_pos(pos));
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    i64 pos = move_line(app, a.buffer, a.cursor.line, direction);
+    view_set_cursor_and_preferred_x(app, a.view, seek_pos(pos));
 }
 
 CUSTOM_COMMAND_SIG(comment_lines)
 CUSTOM_DOC("Comment out multiple lines"){
-    Selected_Lines lines = get_selected_lines_for_active_view(app);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    History_Group history_group = history_group_begin(app, a.buffer);
+    i64 first_line = get_pos_past_lead_whitespace_from_line_number(app, a.buffer, a.min->line);
+    b32 comment_is_first_so_we_should_decomment = c_line_comment_starts_at_position(app, a.buffer, first_line);
 
-    History_Group history_group = history_group_begin(app, lines.buffer);
-    i64 first_line = get_pos_past_lead_whitespace_from_line_number(app, lines.buffer, lines.min_line);
-    b32 comment_is_first_so_we_should_decomment = c_line_comment_starts_at_position(app, lines.buffer, first_line);
-
-    for(i64 line = lines.min_line; line <= lines.max_line; line++){
-        i64 line_start = get_pos_past_lead_whitespace_from_line_number(app, lines.buffer, line);
-        b32 there_is_a_comment = c_line_comment_starts_at_position(app, lines.buffer, line_start);
+    for(i64 line = a.min->line; line <= a.max->line; line++){
+        i64 line_start = get_pos_past_lead_whitespace_from_line_number(app, a.buffer, line);
+        b32 there_is_a_comment = c_line_comment_starts_at_position(app, a.buffer, line_start);
         if(!comment_is_first_so_we_should_decomment && !there_is_a_comment){
-            buffer_replace_range(app, lines.buffer, Ii64(line_start), string_u8_litexpr("// "));
-            buffer_post_fade(app, lines.buffer, 0.667f, Ii64_size(line_start,3), finalize_color(defcolor_paste, 0));
+            buffer_replace_range(app, a.buffer, Ii64(line_start), string_u8_litexpr("// "));
+            buffer_post_fade(app, a.buffer, 0.667f, Ii64_size(line_start,3), finalize_color(defcolor_paste, 0));
         }
         if(comment_is_first_so_we_should_decomment && there_is_a_comment){
-            buffer_replace_range(app, lines.buffer, Ii64_size(line_start,2), string_u8_empty);
+            buffer_replace_range(app, a.buffer, Ii64_size(line_start,2), string_u8_empty);
         }
     }
     history_group_end(history_group);
@@ -218,57 +167,55 @@ CUSTOM_DOC("Swaps the line under the cursor with the line below it, and moves th
 CUSTOM_COMMAND_SIG(duplicate_line_down)
 CUSTOM_DOC("Create a copy of the line on which the cursor sits.")
 {
-    Selected_Lines sl = get_selected_lines_for_active_view(app);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
 
     Scratch_Block scratch(app);
-    String_Const_u8 s = push_buffer_line(app, scratch, sl.buffer, sl.cursor_line);
+    String_Const_u8 s = push_buffer_line(app, scratch, a.buffer, a.cursor.line);
     s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
-    i64 pos = get_line_side_pos(app, sl.buffer, sl.cursor_line, Side_Min);
-    buffer_replace_range(app, sl.buffer, Ii64(pos), s);
-    Buffer_Seek seek = {buffer_seek_line_col, {sl.cursor_line+1}};
+    i64 pos = get_line_side_pos(app, a.buffer, a.cursor.line, Side_Min);
+    buffer_replace_range(app, a.buffer, Ii64(pos), s);
+    Buffer_Seek seek = {buffer_seek_line_col, {a.cursor.line+1}};
     seek.col = 1;
-    view_set_cursor_and_preferred_x(app, sl.view, seek);
+    view_set_cursor_and_preferred_x(app, a.view, seek);
 }
 
 CUSTOM_COMMAND_SIG(duplicate_line_up)
 CUSTOM_DOC("Create a copy of the line on which the cursor sits.")
 {
     Scratch_Block scratch(app);
-    Selected_Lines sl = get_selected_lines_for_active_view(app);
-    String_Const_u8 s = push_buffer_line(app, scratch, sl.buffer, sl.cursor_line);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+
+    String_Const_u8 s = push_buffer_line(app, scratch, a.buffer, a.cursor.line);
     s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
-    i64 pos = get_line_side_pos(app, sl.buffer, sl.cursor_line, Side_Min);
-    buffer_replace_range(app, sl.buffer, Ii64(pos), s);
+    i64 pos = get_line_side_pos(app, a.buffer, a.cursor.line, Side_Min);
+    buffer_replace_range(app, a.buffer, Ii64(pos), s);
 }
 
 CUSTOM_COMMAND_SIG(delete_line)
 CUSTOM_DOC("Delete the line the on which the cursor sits.")
 {
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    i64 pos = view_get_cursor_pos(app, view);
-    i64 line = get_line_number_from_pos(app, buffer, pos);
-    Range_i64 range = get_line_pos_range(app, buffer, line);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    Range_i64 range = a.cursor_line_pos_range;
     range.end += 1;
-    i32 size = (i32)buffer_get_size(app, buffer);
+    i32 size = (i32)buffer_get_size(app, a.buffer);
     range.end = clamp_top(range.end, size);
-    if (range_size(range) == 0 || buffer_get_char(app, buffer, range.end - 1) != '\n'){
+
+    if (range_size(range) == 0 || buffer_get_char(app, a.buffer, range.end - 1) != '\n'){
         range.start -= 1;
         range.first = clamp_bot(0, range.first);
     }
-    buffer_replace_range(app, buffer, range, string_u8_litexpr(""));
+    buffer_replace_range(app, a.buffer, range, string_u8_litexpr(""));
 }
 
 CUSTOM_COMMAND_SIG(put_new_line_below)
 CUSTOM_DOC("Pust a new line bellow cursor line")
 {
     Scratch_Block scratch(app);
-    Selected_Lines sl = get_selected_lines_for_active_view(app);
-
-    String_Const_u8 s = push_buffer_line(app, scratch, sl.buffer, sl.cursor_line);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    String_Const_u8 s = push_buffer_line(app, scratch, a.buffer, a.cursor.line);
     s = push_u8_stringf(scratch, "%.*s\n", string_expand(s));
-    buffer_replace_range(app, sl.buffer, get_line_pos_range(app, sl.buffer, sl.cursor_line), s);
-    view_set_cursor_and_preferred_x(app, sl.view, seek_line_col(sl.cursor_line+1, 0));
+    buffer_replace_range(app, a.buffer, a.cursor_line_pos_range, s);
+    view_set_cursor_and_preferred_x(app, a.view, seek_line_col(a.cursor.line+1, 0));
 }
 
 ////////////////////////////////
