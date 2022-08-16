@@ -86,10 +86,8 @@
 #include "4coder_combined_write_commands.cpp"
 #include "4coder_profile_inspect.cpp"
 #include "4coder_variables.cpp"
-
-#include "4coder_examples.cpp"
-
 #include "4coder_default_hooks.cpp"
+#include "4coder_remedybg_driver.cpp"
 
 #endif
 

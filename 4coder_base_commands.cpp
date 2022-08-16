@@ -894,13 +894,6 @@ quick_command_push(Quick_Command_Kind kind, String8 search, String8 replace = {}
     block_copy(c[0].replace, replace.str, c[0].replace_size);
 }
 
-function b32
-seek_string_check_is_found_max0(App *app, Buffer_ID buffer, i64 pos){
-    i64 buffer_size = buffer_get_size(app, buffer);
-    b32 found = pos != -1 && pos != buffer_size;
-    return found;
-}
-
 function void
 execute_quick_command(App *app, i32 command_index, Buffer_Seek_String_Flags search_flags, Quick_Command_Kind kind_override = QuickCommandKind_Invalid){
     Quick_Command *c = global_last_quick_commands + command_index;
@@ -912,21 +905,13 @@ execute_quick_command(App *app, i32 command_index, Buffer_Seek_String_Flags sear
     Quick_Command_Kind kind = kind_override ? kind_override : c->kind;
     switch(kind){
         Case(QuickCommandKind_Search){
-            seek_string(app, a.buffer, a.cursor.pos, 0, 0, search, &a.cursor.pos, search_flags);
-            if(seek_string_check_is_found_max0(app, a.buffer, a.cursor.pos)){
-                view_set_cursor_and_preferred_x(app, a.view, seek_pos(a.cursor.pos));
-            }
+            seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, search);
         } Break;
         Case(QuickCommandKind_ReplaceItem){
             i64 replace_pos = -1;
             seek_string(app, a.buffer, a.cursor.pos-1, 0, 0, search, &replace_pos, search_flags);
             if(seek_string_check_is_found_max0(app, a.buffer, replace_pos)){
-                i64 new_pos = -1;
-                seek_string(app, a.buffer, a.cursor.pos, 0, 0, search, &new_pos, search_flags);
-                if(seek_string_check_is_found_max0(app, a.buffer, new_pos)){
-                    view_set_cursor_and_preferred_x(app, a.view, seek_pos(new_pos));
-                }
-
+                seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, search);
                 buffer_replace_range(app, a.buffer, Ii64_size(replace_pos, search.size), replace);
             }
         } Break;
@@ -1290,6 +1275,7 @@ CUSTOM_DOC("Queries the user for two strings, and incrementally replaces every o
 
                 if (query_user_string(app, &with)){
                     quick_command_push(QuickCommandKind_ReplaceItem, replace.string, with.string);
+                    seek_string_set_cursor_to_the_next_occurence(app, view, buffer, replace.string);
                 }
 
             }
@@ -1317,8 +1303,8 @@ CUSTOM_DOC("Queries the user for a string, and incrementally replace every occur
 
             if (query_user_string(app, &with)){
                 quick_command_push(QuickCommandKind_ReplaceItem, replace, with.string);
+                seek_string_set_cursor_to_the_next_occurence(app, view, buffer, replace);
             }
-
         }
     }
 }

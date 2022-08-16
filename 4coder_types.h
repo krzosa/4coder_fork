@@ -12,6 +12,7 @@ struct App{
     Thread_Context *tctx;
     Models *cmd_context;
 };
+typedef App Application_Links;
 
 ////////////////////////////////
 
@@ -619,8 +620,8 @@ struct Record_Info{
 #endif
 
 #if !defined(META_PASS)
-#define CUSTOM_COMMAND_SIG(name) export void name(struct App *app)
-#define CUSTOM_UI_COMMAND_SIG(name) export void name(struct App *app)
+#define CUSTOM_COMMAND_SIG(name) internal void name(struct App *app)
+#define CUSTOM_UI_COMMAND_SIG(name) internal void name(struct App *app)
 #define CUSTOM_DOC(str)
 #define CUSTOM_ID(group, name) global Managed_ID name;
 #else

@@ -795,6 +795,22 @@ seek_string(App *app, Buffer_ID buffer_id, i64 pos, i64 end, i64 min, String_Con
     }
 }
 
+function b32
+seek_string_check_is_found_max0(App *app, Buffer_ID buffer, i64 pos){
+    i64 buffer_size = buffer_get_size(app, buffer);
+    b32 found = pos != -1 && pos != buffer_size;
+    return found;
+}
+
+function void
+seek_string_set_cursor_to_the_next_occurence(App *app, View_ID view, Buffer_ID buffer, String8 string){
+    i64 cursor_pos = view_get_cursor_pos(app, view);
+    seek_string(app, buffer, cursor_pos, 0, 0, string, &cursor_pos, 0);
+    if(seek_string_check_is_found_max0(app, buffer, cursor_pos)){
+        view_set_cursor_and_preferred_x(app, view, seek_pos(cursor_pos));
+    }
+}
+
 ////////////////////////////////
 
 function Range_i64
