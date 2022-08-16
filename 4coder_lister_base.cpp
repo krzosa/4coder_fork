@@ -795,11 +795,19 @@ lister__backspace_text_field__default(App *app){
     View_ID view = get_active_view(app, Access_Always);
     Lister *lister = view_get_lister(app, view);
     if (lister != 0){
-        lister->text_field.string = backspace_utf8(lister->text_field.string);
-        lister->key_string.string = backspace_utf8(lister->key_string.string);
-        lister->item_index = 0;
-        lister_zero_scroll(lister);
-        lister_update_filtered_list(app, lister);
+        User_Input in = get_current_input(app);
+        if (has_modifier(&in.event.key.modifiers, KeyCode_Control)){
+            lister->item_index = 0;
+            lister->text_field.size = 0;
+            lister->key_string.size = 0;
+        }
+        else{
+            lister->text_field.string = backspace_utf8(lister->text_field.string);
+            lister->key_string.string = backspace_utf8(lister->key_string.string);
+            lister->item_index = 0;
+            lister_zero_scroll(lister);
+            lister_update_filtered_list(app, lister);
+        }
     }
 }
 
