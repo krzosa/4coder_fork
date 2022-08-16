@@ -15,7 +15,7 @@ CUSTOM_DOC("Default command for responding to a startup event")
         // load_themes_default_folder(app);
 
 
-         Scratch_Block scratch(app);
+        Scratch_Block scratch(app);
 
         //
         // Apply config
@@ -78,14 +78,6 @@ CUSTOM_DOC("Default command for responding to a startup event")
             open_code_files_in_current_directory(app);
         }
 
-
-        print_message(app, string_u8_litexpr(R"==(Available command line options:
---open_code :: opens all code in current directory
--w 1280 720 :: sets window size
--p 100  100 :: sets window position
--f 12       :: sets font size
--F          :: start in fullscreen
-        )=="));
 
         //
         // Set panel layout
@@ -390,7 +382,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     i64 cursor_pos = view_correct_cursor(app, view_id);
     view_correct_mark(app, view_id);
 
-<<<<<<< Updated upstream:4coder_default_hooks.cpp
+
     Mouse_State mouse_state = get_mouse_state(app);
     Vec2_f32 mouse_screen_pos = {(f32)mouse_state.x, (f32)mouse_state.y};
     i64 mouse_view_pos = view_pos_from_xy(app, active_view, mouse_screen_pos);
@@ -401,8 +393,6 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     String_Const_u8 deffered_button_render = {};
 
 
-=======
->>>>>>> Stashed changes:custom/4coder_default_hooks.cpp
     // NOTE(allen): Line highlight
     b32 highlight_line_at_cursor = debug_config_highlight_line_at_cursor;
     if (highlight_line_at_cursor && is_active_view){
@@ -425,15 +415,11 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
             draw_comment_highlights(app, buffer, text_layout_id, &token_array, pairs, ArrayCount(pairs));
         }
 
-<<<<<<< Updated upstream:4coder_default_hooks.cpp
-        // TODO(allen): Put in 4coder_draw.cpp
-        // NOTE(allen): Color functions
-=======
-#if 1
+
         // TODO(allen): Put in 4coder_draw.cpp
         // NOTE(allen): Color functions
         Scratch_Block scratch(app);
->>>>>>> Stashed changes:custom/4coder_default_hooks.cpp
+
         ARGB_Color argb = 0xFFFF00FF;
         Token_Iterator_Array it = token_iterator_pos(0, &token_array, visible_range.first);
         for (;;){
@@ -457,7 +443,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                 } else if(note->note_kind == CodeIndexNote_Macro){
                     argb = finalize_color(defcolor_macro, 0);
                 }
-<<<<<<< Updated upstream:4coder_default_hooks.cpp
+
                 paint_text_color(app, text_layout_id, range, argb);
                 b32 is_definition_of_note = (note->file->buffer == buffer && range_contains(range, note->pos.min));
 
@@ -513,7 +499,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                 total_range_rect.y1 += scale;
 
                 draw_rectangle(app, total_range_rect, 4.f, argb);
-=======
+
                 Range_i64 range = Ii64_size(token->pos, token->size);
                 paint_text_color(app, text_layout_id, range, argb);
 
@@ -538,7 +524,6 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
                     draw_rectangle(app, total_range_rect, 4.f, argb);
                 }
->>>>>>> Stashed changes:custom/4coder_default_hooks.cpp
             }
         }
     }
@@ -546,14 +531,11 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         paint_text_color_fcolor(app, text_layout_id, visible_range, fcolor_id(defcolor_text_default));
     }
 
-<<<<<<< Updated upstream:4coder_default_hooks.cpp
 
     // NOTE(Krzosa): Color tokens based on the scope
     Code_Index_File *code_index_file = code_index_get_file(buffer);
     if(code_index_file) recursive_nest_highlight(app, text_layout_id, visible_range, code_index_file);
 
-=======
->>>>>>> Stashed changes:custom/4coder_default_hooks.cpp
     // NOTE(allen): Scope highlight
     b32 use_scope_highlight = debug_config_use_scope_highlight;
     if (use_scope_highlight){
