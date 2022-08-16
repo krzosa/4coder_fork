@@ -117,12 +117,17 @@ set_default_color_scheme(App *app){
 
     u32 caret=0xffDCDCDC;
     u32 foreground=0xffDCDCDC;
+<<<<<<< Updated upstream:4coder_default_colors.cpp
     // u32 invisibles=0xFFFFFF40;
+=======
+    u32 invisibles=0xFFFFFF40;
+>>>>>>> Stashed changes:custom/4coder_default_colors.cpp
     u32 line_highlight=0xFF0F0F0F;
     u32 selection=0xFF264F78;
     u32 comment=0xFF608B4E;
     // u32 variable=0xFFDCDCDC;
     u32 keyword=0xFF569CD6;
+    u32 test=0xFFd6c556;
 
     // u32 vs_bar=0xFF0E70C0;
     u32 border=0xFF333337;

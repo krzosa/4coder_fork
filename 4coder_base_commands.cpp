@@ -993,6 +993,11 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
         b32 string_change = false;
         if (match_key_code(&in, KeyCode_Return) || match_key_code(&in, KeyCode_Tab)){
             quick_command_push(QuickCommandKind_Search, bar.string, {});
+
+            if (has_modifier(&in.event.key.modifiers, KeyCode_Control)){
+                list_all_locations__generic(app, {&bar.string, 1}, 0);
+            }
+
             break;
         }
         else if (string.str != 0 && string.size > 0){

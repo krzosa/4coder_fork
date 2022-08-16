@@ -43,14 +43,12 @@ In this readme you will find:
 
 # TODO Small
 
-* list_all_locations should happen when you press control + Enter inside search instead of enter
 * Fix control+N fix which goes to second error first
 
 
 # TODO Listers
 
-* Add Control + Backspace to listers
-* I would love if query replace etc. had auto complete and stuff, better text handling
+* I would love if query replace etc. had auto complete and stuff, better text handling, listers too
 * Simplify the lister design and API
 
 # Todo

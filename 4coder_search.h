@@ -12,6 +12,7 @@ enum{
     ListAllLocationsFlag_CaseSensitive = 1,
     ListAllLocationsFlag_MatchSubstring = 2,
 };
+internal void list_all_locations__generic(App *app, String_Const_u8_Array needle, List_All_Locations_Flag flags);
 
 struct Word_Complete_Iterator{
     App *app;
@@ -26,13 +27,6 @@ struct Word_Complete_Iterator{
     List_String_Const_u8 list;
     Node_String_Const_u8 *node;
     Table_Data_u64 already_used_table;
-};
-
-struct Word_Complete_Menu{
-    Render_Caller_Function *prev_render_caller;
-    Word_Complete_Iterator *it;
-    String_Const_u8 options[8];
-    i32 count;
 };
 
 function Word_Complete_Iterator*word_complete_get_shared_iter(App *app);

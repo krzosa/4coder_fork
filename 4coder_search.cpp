@@ -341,11 +341,6 @@ word_complete_iter_init(String_Const_u8 needle, Word_Complete_Iterator *iter){
 }
 
 function void
-word_complete_iter_stop_on_this_buffer(Word_Complete_Iterator *iter){
-    iter->scan_all_buffers = false;
-}
-
-function void
 word_complete_iter_next(Word_Complete_Iterator *it){
     for (;;){
         if (it->node == 0){
@@ -410,6 +405,34 @@ word_complete_get_shared_iter(App *app){
     it.arena = &completion_arena;
     return(&it);
 }
+
+#if 0
+
+Ideal word complete
+
+Memes(word_complete)
+{
+    // API 1
+
+    It it = begin_word_complete();
+    for(;;){
+        // We detect if needle changed
+        String8 result = get_next_word_complete(it, needle, strings);
+    }
+    end_word_complete(it);
+
+
+    // API 2
+    Command{
+        static It it;
+        String8 result = next_word_complete_in_buffer(it, buffer, needle, buffer_got_updated());
+    }
+
+
+}
+
+
+#endif
 
 CUSTOM_COMMAND_SIG(word_complete)
 CUSTOM_DOC("Iteratively tries completing the word to the left of the cursor with other words in open buffers that have the same prefix string.")
