@@ -448,10 +448,7 @@ enum{
 
 
 typedef u64 Managed_ID;
-
-
 typedef u64 Managed_Scope;
-
 typedef u64 Managed_Object;
 
 

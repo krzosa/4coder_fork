@@ -872,7 +872,6 @@ CUSTOM_DOC("Queries the user for a number, and jumps the cursor to the correspon
 }
 
 CUSTOM_COMMAND_SIG(search);
-CUSTOM_COMMAND_SIG(reverse_search);
 
 function void
 isearch__update_highlight(App *app, View_ID view, Range_i64 range){
@@ -1045,10 +1044,6 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
                         change_scan = Scan_Forward;
                         do_scan_action = true;
                     }
-                    else if (binding.custom == reverse_search){
-                        change_scan = Scan_Backward;
-                        do_scan_action = true;
-                    }
                     else{
                         Command_Metadata *metadata = get_command_metadata(binding.custom);
                         if (metadata != 0){
@@ -1136,13 +1131,6 @@ isearch(App *app, Scan_Direction start_scan, String_Const_u8 query_init){
 }
 
 function void
-isearch(App *app, Scan_Direction start_scan){
-    View_ID view = get_active_view(app, Access_ReadVisible);
-    i64 pos = view_get_cursor_pos(app, view);;
-    isearch(app, start_scan, pos, SCu8());
-}
-
-function void
 isearch_identifier(App *app, Scan_Direction scan){
     View_ID view = get_active_view(app, Access_ReadVisible);
     Buffer_ID buffer_id = view_get_buffer(app, view, Access_ReadVisible);
@@ -1156,25 +1144,21 @@ isearch_identifier(App *app, Scan_Direction scan){
 CUSTOM_COMMAND_SIG(search)
 CUSTOM_DOC("Begins an incremental search down through the current buffer for a user specified string.")
 {
-    isearch(app, Scan_Forward);
-}
+    Active_View_Info a = get_active_view_info(app, Access_ReadVisible);
+    String8 starting_string = SCu8();
 
-CUSTOM_COMMAND_SIG(reverse_search)
-CUSTOM_DOC("Begins an incremental search up through the current buffer for a user specified string.")
-{
-    isearch(app, Scan_Backward);
+    Scratch_Block scratch(app);
+    if(a.cursor.line == a.mark.line){
+        starting_string = push_buffer_range(app, scratch, a.buffer, a.selected_pos_range);
+    }
+
+    isearch(app, Scan_Forward, a.cursor.pos, starting_string);
 }
 
 CUSTOM_COMMAND_SIG(search_identifier)
 CUSTOM_DOC("Begins an incremental search down through the current buffer for the word or token under the cursor.")
 {
     isearch_identifier(app, Scan_Forward);
-}
-
-CUSTOM_COMMAND_SIG(reverse_search_identifier)
-CUSTOM_DOC("Begins an incremental search up through the current buffer for the word or token under the cursor.")
-{
-    isearch_identifier(app, Scan_Backward);
 }
 
 struct String_Pair{
