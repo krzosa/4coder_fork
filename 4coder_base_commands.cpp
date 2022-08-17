@@ -1300,6 +1300,7 @@ CUSTOM_DOC("Queries the user for a string, and incrementally replace every occur
         Range_i64 range = enclose_pos_alpha_numeric_underscore(app, buffer, pos);
         String_Const_u8 replace = push_buffer_range(app, scratch, buffer, range);
         if (replace.size != 0){
+            Query_Bar_Group group(app);
             Query_Bar with = {};
             u8 with_space[1024];
             with.prompt = string_u8_litexpr("With: ");
