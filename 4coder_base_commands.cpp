@@ -1145,8 +1145,8 @@ CUSTOM_COMMAND_SIG(search)
 CUSTOM_DOC("Begins an incremental search down through the current buffer for a user specified string.")
 {
     Active_View_Info a = get_active_view_info(app, Access_ReadVisible);
-    String8 starting_string = SCu8();
 
+    String8 starting_string = SCu8();
     Scratch_Block scratch(app);
     if(a.cursor.line == a.mark.line){
         starting_string = push_buffer_range(app, scratch, a.buffer, a.selected_pos_range);
@@ -1168,10 +1168,10 @@ struct String_Pair{
 };
 
 internal String_Pair
-query_user_replace_pair(App *app, Arena *arena){
+query_user_replace_pair(App *app, Arena *arena, String8 prompt = string_u8_litexpr("Replace: ")){
     Query_Bar *replace = push_array(arena, Query_Bar, 1);
     u8 *replace_space = push_array(arena, u8, KB(1));
-    replace->prompt = string_u8_litexpr("Replace: ");
+    replace->prompt = prompt;
     replace->string = SCu8(replace_space, (u64)0);
     replace->string_capacity = KB(1);
 
@@ -1231,7 +1231,7 @@ CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of
 
     Scratch_Block scratch(app);
     Query_Bar_Group group(app);
-    String_Pair pair = query_user_replace_pair(app, scratch);
+    String_Pair pair = query_user_replace_pair(app, scratch, string_u8_litexpr("Replace in all buffers: "));
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_ReadWriteVisible);
          buffer != 0;
          buffer = get_buffer_next(app, buffer, Access_ReadWriteVisible)){
@@ -1245,16 +1245,22 @@ CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of
 CUSTOM_COMMAND_SIG(query_replace)
 CUSTOM_DOC("Queries the user for two strings, and incrementally replaces every occurence of the first string with the second string.")
 {
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    if (buffer != 0){
+    Active_View_Info a = get_active_view_info(app, Access_ReadVisible);
+
+    String8 starting_string = SCu8();
+    Scratch_Block scratch(app);
+    if(a.cursor.line == a.mark.line){
+        starting_string = push_buffer_range(app, scratch, a.buffer, a.selected_pos_range);
+    }
+
+    if (a.buffer != 0){
         Query_Bar_Group group(app);
         Query_Bar replace = {};
         u8 replace_space[1024];
         replace.prompt = string_u8_litexpr("Replace: ");
         replace.string = SCu8(replace_space, (u64)0);
         replace.string_capacity = sizeof(replace_space);
-        if (query_user_string(app, &replace)){
+        if (query_user_general(app, &replace, false, starting_string)){
             if (replace.string.size > 0){
                 Query_Bar with = {};
                 u8 with_space[1024];
@@ -1264,7 +1270,7 @@ CUSTOM_DOC("Queries the user for two strings, and incrementally replaces every o
 
                 if (query_user_string(app, &with)){
                     quick_command_push(QuickCommandKind_ReplaceItem, replace.string, with.string);
-                    seek_string_set_cursor_to_the_next_occurence(app, view, buffer, replace.string);
+                    seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, replace.string);
                 }
 
             }

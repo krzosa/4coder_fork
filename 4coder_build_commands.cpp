@@ -173,19 +173,17 @@ CUSTOM_COMMAND_SIG(python_interpreter_on_comment)
 CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, result ends up in clipboard")
 {
     Scratch_Block scratch(app);
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
 
     Range_i64 range = {};
-    i64 cursor = view_get_cursor_pos(app, view);
-    seek_string_backward(app, buffer, cursor, 0, string_u8_litexpr("/*"), &range.min);
-    seek_string_forward(app, buffer, cursor, 0, string_u8_litexpr("*/"), &range.max);
+    seek_string_backward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("/*"), &range.min);
+    seek_string_forward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("*/"), &range.max);
     range.min += 2;
-    String_Const_u8 string = push_buffer_range(app, scratch, buffer, range);
+    String_Const_u8 string = push_buffer_range(app, scratch, a.buffer, range);
 
     Range_i64 mod_range = {range.max+2};
-    seek_string_forward(app, buffer, cursor, 0, string_u8_litexpr("/*END*/"), &mod_range.max);
-    if(mod_range.max >= buffer_get_size(app, buffer)) mod_range.max = mod_range.min;
+    seek_string_forward(app, a.buffer, range.max, 0, string_u8_litexpr("/*END*/"), &mod_range.max);
+    if(mod_range.max >= buffer_get_size(app, a.buffer)) mod_range.max = mod_range.min;
 
 
     String8 dir = push_hot_directory(app, scratch);//get_hot_dsystem_get_path(scratch, SystemPath_UserDirectory);
@@ -196,7 +194,7 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, 
 
     Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
     py->range_to_modify = mod_range;
-    py->buffer_to_modify = buffer;
+    py->buffer_to_modify = a.buffer;
     Child_Process_ID child_process_id = create_child_process(app, dir, cmd, python_eval_callback, py);
     if (child_process_id != 0){
         Buffer_ID buffer = buffer_identifier_to_id_create_out_buffer(app, standard_build_buffer_identifier);
@@ -207,6 +205,61 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, 
         }
     }
 }
+
+
+
+Child_Process_End_Sig(clang_callback){
+    Python_Eval_Data *py = (Python_Eval_Data *)data;
+
+
+    Scratch_Block scratch(app);
+    String_Const_u8 string = push_whole_buffer(app, scratch, buffer);
+
+
+    if(py->range_to_modify.max == py->range_to_modify.min){
+        buffer_replace_range(app, py->buffer_to_modify, Ii64(py->range_to_modify.min), string_u8_litexpr("/*END*/"));
+    }
+
+    buffer_replace_range(app, py->buffer_to_modify, py->range_to_modify, string);
+    heap_free(&global_heap, data);
+}
+CUSTOM_COMMAND_SIG(compile_and_run_comment)
+CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, result ends up in clipboard")
+{
+    Scratch_Block scratch(app);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+
+    Range_i64 range = {};
+    seek_string_backward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("/*"), &range.min);
+    seek_string_forward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("*/"), &range.max);
+    range.min += 2;
+    String_Const_u8 string = push_buffer_range(app, scratch, a.buffer, range);
+
+    Range_i64 mod_range = {range.max+2};
+    seek_string_forward(app, a.buffer, range.max, 0, string_u8_litexpr("/*END*/"), &mod_range.max);
+    if(mod_range.max >= buffer_get_size(app, a.buffer)) mod_range.max = mod_range.min;
+
+
+    String8 dir = push_hot_directory(app, scratch);//get_hot_dsystem_get_path(scratch, SystemPath_UserDirectory);
+    String8 file = push_stringf(scratch, "%.*s/%s\0", string_expand(dir), "__gen.cpp");
+    system_save_file(scratch, (char *)file.str, string);
+
+    String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -o __gen.exe && __gen.exe\0", string_expand(file));
+
+    Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
+    py->range_to_modify = mod_range;
+    py->buffer_to_modify = a.buffer;
+    Child_Process_ID child_process_id = create_child_process(app, dir, cmd, clang_callback, py);
+    if (child_process_id != 0){
+        Buffer_ID buffer = buffer_identifier_to_id_create_out_buffer(app, standard_build_buffer_identifier);
+        if (buffer != 0){
+            if (set_buffer_system_command(app, child_process_id, buffer, standard_build_exec_flags)){
+                view_set_buffer(app, global_compilation_view, buffer, 0);
+            }
+        }
+    }
+}
+
 
 // BOTTOM
 
