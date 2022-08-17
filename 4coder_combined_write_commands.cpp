@@ -191,6 +191,17 @@ CUSTOM_DOC("Create a copy of the line on which the cursor sits.")
     buffer_replace_range(app, a.buffer, Ii64(pos), s);
 }
 
+CUSTOM_COMMAND_SIG(put_new_line_below)
+CUSTOM_DOC("Pust a new line bellow cursor line")
+{
+    Scratch_Block scratch(app);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    String_Const_u8 s = push_buffer_line(app, scratch, a.buffer, a.cursor.line);
+    s = push_u8_stringf(scratch, "%.*s\n\n", string_expand(s));
+    buffer_replace_range(app, a.buffer, a.cursor_line_pos_range, s);
+    view_set_cursor_and_preferred_x(app, a.view, seek_line_col(a.cursor.line+1, 0));
+}
+
 CUSTOM_COMMAND_SIG(delete_line)
 CUSTOM_DOC("Delete the line the on which the cursor sits.")
 {
@@ -203,18 +214,8 @@ CUSTOM_DOC("Delete the line the on which the cursor sits.")
         range.start -= 1;
         range.first = clamp_bot(0, range.first);
     }
-    buffer_replace_range(app, a.buffer, range, string_u8_litexpr(""));
-}
 
-CUSTOM_COMMAND_SIG(put_new_line_below)
-CUSTOM_DOC("Pust a new line bellow cursor line")
-{
-    Scratch_Block scratch(app);
-    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
-    String_Const_u8 s = push_buffer_line(app, scratch, a.buffer, a.cursor.line);
-    s = push_u8_stringf(scratch, "%.*s\n\n", string_expand(s));
-    buffer_replace_range(app, a.buffer, a.cursor_line_pos_range, s);
-    view_set_cursor_and_preferred_x(app, a.view, seek_line_col(a.cursor.line+1, 0));
+    buffer_replace_range(app, a.buffer, range, string_u8_litexpr(""));
 }
 
 ////////////////////////////////

@@ -72,8 +72,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(replace_in_range,            KeyCode_A, KeyCode_Control);
     Bind(copy,                        KeyCode_C, KeyCode_Control);
     Bind(delete_range,                KeyCode_X, KeyCode_Control, KeyCode_Shift);
-    Bind(cut_lines,                 KeyCode_K, KeyCode_Control);
-    Bind(delete_lines,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
+    Bind(cut_lines,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
+    Bind(delete_line,                 KeyCode_K, KeyCode_Control);
 
     Bind(left_adjust_view,            KeyCode_E, KeyCode_Control, KeyCode_Shift);
     Bind(search,                      KeyCode_F, KeyCode_Control);
@@ -93,8 +93,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(save_all_dirty_buffers,      KeyCode_S, KeyCode_Control, KeyCode_Shift);
     Bind(search_identifier,           KeyCode_F, KeyCode_Control, KeyCode_Shift);
     Bind(list_all_locations_of_identifier, KeyCode_T, KeyCode_Control, KeyCode_Shift);
-    Bind(paste_and_indent,            KeyCode_V, KeyCode_Control);
-    Bind(paste_next_and_indent,       KeyCode_V, KeyCode_Control, KeyCode_Shift);
+    Bind(paste_and_indent,            KeyCode_V, KeyCode_Control, KeyCode_Shift);
+    Bind(paste_next_and_indent,       KeyCode_V, KeyCode_Control);
     Bind(cut,                         KeyCode_X, KeyCode_Control);
     Bind(redo,                        KeyCode_Z, KeyCode_Control, KeyCode_Shift);
     Bind(undo,                        KeyCode_Z, KeyCode_Control);

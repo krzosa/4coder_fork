@@ -62,7 +62,7 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Bind(replace_in_range,            KeyCode_A, KeyCode_Command);
     Bind(copy,                        KeyCode_C, KeyCode_Command);
     Bind(delete_range,                KeyCode_D, KeyCode_Command);
-    Bind(delete_line,                 KeyCode_D, KeyCode_Command, KeyCode_Shift);
+    // Bind(delete_line,                 KeyCode_D, KeyCode_Command, KeyCode_Shift);
     Bind(center_view,                 KeyCode_E, KeyCode_Command);
     Bind(left_adjust_view,            KeyCode_E, KeyCode_Command, KeyCode_Shift);
     Bind(search,                      KeyCode_F, KeyCode_Command);
