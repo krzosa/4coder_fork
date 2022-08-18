@@ -903,7 +903,7 @@ execute_quick_command(App *app, Buffer_Seek_String_Flags search_flags, Quick_Com
     Quick_Command_Kind kind = kind_override ? kind_override : c->kind;
     switch(kind){
         Case(QuickCommandKind_Search){
-            seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, search);
+            seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, search, search_flags);
         } Break;
         Case(QuickCommandKind_ReplaceItem){
             i64 replace_pos = -1;
@@ -1202,10 +1202,8 @@ CUSTOM_COMMAND_SIG(replace_in_range)
 CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of needle with string in the range between cursor and the mark in the active buffer.")
 {
     Scratch_Block scratch(app);
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    Range_i64 range = get_view_range(app, view);
-    String_Pair strings = replace_in_range_query_user(app, scratch, buffer, range);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    String_Pair strings = replace_in_range_query_user(app, scratch, a.buffer, a.buffer_range);
     if(strings.valid) quick_command_push(QuickCommandKind_ReplaceRange, strings.a, strings.b);
 }
 
@@ -1213,10 +1211,8 @@ CUSTOM_COMMAND_SIG(replace_in_buffer)
 CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of needle with string in the active buffer.")
 {
     Scratch_Block scratch(app);
-    View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-    Range_i64 range = buffer_range(app, buffer);
-    String_Pair strings = replace_in_range_query_user(app, scratch, buffer, range);
+    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    String_Pair strings = replace_in_range_query_user(app, scratch, a.buffer, a.buffer_range);
     if(strings.valid) quick_command_push(QuickCommandKind_ReplaceBuffer, strings.a, strings.b);
 }
 
@@ -1268,7 +1264,7 @@ CUSTOM_DOC("Queries the user for two strings, and incrementally replaces every o
 
                 if (query_user_string(app, &with)){
                     quick_command_push(QuickCommandKind_ReplaceItem, replace.string, with.string);
-                    seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, replace.string);
+                    seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, replace.string, 0);
                 }
 
             }
@@ -1297,7 +1293,7 @@ CUSTOM_DOC("Queries the user for a string, and incrementally replace every occur
 
             if (query_user_string(app, &with)){
                 quick_command_push(QuickCommandKind_ReplaceItem, replace, with.string);
-                seek_string_set_cursor_to_the_next_occurence(app, view, buffer, replace);
+                seek_string_set_cursor_to_the_next_occurence(app, view, buffer, replace, 0);
             }
         }
     }

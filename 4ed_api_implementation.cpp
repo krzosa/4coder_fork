@@ -1188,6 +1188,7 @@ struct Active_View_Info{
     Buffer_Cursor *min;
     Buffer_Cursor *max;
 
+    Range_i64 buffer_range;
     // Ranges of lines cursor and mark are on
     // Lines INCLUDE the NEW LINE !!!
     Range_i64 mark_line_pos_range;
@@ -1212,6 +1213,7 @@ get_active_view_info(App *app, Access_Flag access){
         Editing_File *file = view->file;
         if (api_check_buffer(file, access)){
             result.buffer = file->id;
+            result.buffer_range = {0, buffer_size(&file->state.buffer)};
             result.mark   = buffer_cursor_from_pos(&file->state.buffer, view->mark);
             result.cursor = buffer_cursor_from_pos(&file->state.buffer, view->edit_pos_.cursor_pos);
             result.mark_line_pos_range = buffer_get_pos_range_from_line_number(&file->state.buffer, result.mark.line);

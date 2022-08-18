@@ -10,8 +10,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     SelectMapping(mapping);
 
     SelectMap(global_id);
-    Bind(keyboard_macro_switch_recording , KeyCode_Period, KeyCode_Control);
-    Bind(keyboard_macro_replay,           KeyCode_Period, KeyCode_Alt);
+    Bind(keyboard_macro_switch_recording , KeyCode_M, KeyCode_Alt);
+    Bind(keyboard_macro_replay,           KeyCode_M, KeyCode_Control);
     Bind(change_active_panel,           KeyCode_1, KeyCode_Control);
     Bind(change_active_panel_backwards, KeyCode_2, KeyCode_Control);
     Bind(command_lister,                KeyCode_P, KeyCode_Control, KeyCode_Shift);
@@ -42,10 +42,10 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(move_line_down, KeyCode_Down, KeyCode_Alt);
     Bind(duplicate_line_up, KeyCode_Up, KeyCode_Alt, KeyCode_Shift);
     Bind(duplicate_line_down, KeyCode_Down, KeyCode_Alt, KeyCode_Shift);
-    Bind(redo_last_command_search_backward, KeyCode_M, KeyCode_Control, KeyCode_Shift);
-    Bind(redo_last_command_search_forward, KeyCode_M, KeyCode_Control);
-    Bind(redo_last_command_forward, KeyCode_Comma, KeyCode_Control);
-    Bind(redo_last_command_backward, KeyCode_Comma, KeyCode_Control, KeyCode_Shift);
+    Bind(redo_last_command_search_backward, KeyCode_Comma, KeyCode_Control, KeyCode_Shift);
+    Bind(redo_last_command_search_forward, KeyCode_Comma, KeyCode_Control);
+    Bind(redo_last_command_forward, KeyCode_Period, KeyCode_Control);
+    Bind(redo_last_command_backward, KeyCode_Period, KeyCode_Control, KeyCode_Shift);
 
     Bind(delete_char,            KeyCode_Delete);
     Bind(backspace_char,         KeyCode_Backspace);

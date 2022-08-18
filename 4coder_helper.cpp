@@ -803,9 +803,9 @@ seek_string_check_is_found_max0(App *app, Buffer_ID buffer, i64 pos){
 }
 
 function void
-seek_string_set_cursor_to_the_next_occurence(App *app, View_ID view, Buffer_ID buffer, String8 string){
+seek_string_set_cursor_to_the_next_occurence(App *app, View_ID view, Buffer_ID buffer, String8 string, Buffer_Seek_String_Flags flags){
     i64 cursor_pos = view_get_cursor_pos(app, view);
-    seek_string(app, buffer, cursor_pos, 0, 0, string, &cursor_pos, 0);
+    seek_string(app, buffer, cursor_pos, 0, 0, string, &cursor_pos, flags);
     if(seek_string_check_is_found_max0(app, buffer, cursor_pos)){
         view_set_cursor_and_preferred_x(app, view, seek_pos(cursor_pos));
     }
