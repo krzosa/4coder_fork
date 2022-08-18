@@ -990,7 +990,7 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
             quick_command_push(QuickCommandKind_Search, bar.string, {});
 
             if (has_modifier(&in.event.key.modifiers, KeyCode_Control)){
-                list_all_locations__generic(app, {&bar.string, 1}, 0);
+                list_all_locations__generic(app, {&bar.string, 1}, ListAllLocationsFlag_MatchSubstring);
             }
 
             break;
