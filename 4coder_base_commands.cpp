@@ -1232,8 +1232,8 @@ CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of
         Range_i64 range = buffer_range(app, buffer);
         replace_in_range(app, buffer, range, pair.a, pair.b);
     }
-
     global_history_edit_group_end(app);
+
 }
 
 CUSTOM_COMMAND_SIG(query_replace)
