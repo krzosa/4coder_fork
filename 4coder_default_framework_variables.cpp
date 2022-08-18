@@ -102,7 +102,7 @@ struct Quick_Command{
     u8 search[512];
     u8 replace[512];
 };
-Quick_Command global_last_quick_commands[2];
+Quick_Command global_last_quick_commands;
 
 ////////////////////////////////
 global b32 global_keyboard_macro_is_recording = false;

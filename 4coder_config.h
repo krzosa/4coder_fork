@@ -1,3 +1,4 @@
+
 /*
 When designing config api:
 * Config should notify when value is not set
@@ -90,4 +91,3 @@ String8 debug_config_user_name = string_u8_litexpr("not-set");
 
 // Keyboard AltGr setting
 b32 debug_config_lalt_lctrl_is_altgr = false;
-

@@ -881,21 +881,20 @@ isearch__update_highlight(App *app, View_ID view, Range_i64 range){
 
 function void
 quick_command_push(Quick_Command_Kind kind, String8 search, String8 replace = {}){
-    Quick_Command *c = global_last_quick_commands;
-    block_copy(c+1, c, sizeof(*c));
+    Quick_Command *c = &global_last_quick_commands;
 
-    i64 max_chars = sizeof(c[0].search) - 1;
-    c[0].search_size  = clamp_top(search.size, max_chars);
-    c[0].replace_size = clamp_top(replace.size, max_chars);
+    i64 max_chars = sizeof(c->search) - 1;
+    c->search_size  = clamp_top(search.size, max_chars);
+    c->replace_size = clamp_top(replace.size, max_chars);
 
-    c[0].kind = kind;
-    block_copy(c[0].search, search.str, c[0].search_size);
-    block_copy(c[0].replace, replace.str, c[0].replace_size);
+    c->kind = kind;
+    block_copy(c->search, search.str, c->search_size);
+    block_copy(c->replace, replace.str, c->replace_size);
 }
 
 function void
-execute_quick_command(App *app, i32 command_index, Buffer_Seek_String_Flags search_flags, Quick_Command_Kind kind_override = QuickCommandKind_Invalid){
-    Quick_Command *c = global_last_quick_commands + command_index;
+execute_quick_command(App *app, Buffer_Seek_String_Flags search_flags, Quick_Command_Kind kind_override = QuickCommandKind_Invalid){
+    Quick_Command *c = &global_last_quick_commands;
     Active_View_Info a = get_active_view_info(app, Access_ReadVisible);
 
     String8 search = {c->search, (u64)c->search_size};
@@ -910,7 +909,6 @@ execute_quick_command(App *app, i32 command_index, Buffer_Seek_String_Flags sear
             i64 replace_pos = -1;
             seek_string(app, a.buffer, a.cursor.pos-1, 0, 0, search, &replace_pos, search_flags);
             if(seek_string_check_is_found_max0(app, a.buffer, replace_pos)){
-                seek_string_set_cursor_to_the_next_occurence(app, a.view, a.buffer, search);
                 buffer_replace_range(app, a.buffer, Ii64_size(replace_pos, search.size), replace);
             }
         } Break;
@@ -924,12 +922,10 @@ execute_quick_command(App *app, i32 command_index, Buffer_Seek_String_Flags sear
     }
 }
 
-CUSTOM_COMMAND_SIG(redo_last_command_search_backward)CUSTOM_DOC("Use search item of last quick command"){execute_quick_command(app, 0, BufferSeekString_Backward, QuickCommandKind_Search);}
-CUSTOM_COMMAND_SIG(redo_last_command_search_forward)CUSTOM_DOC("Use search item of last quick command"){execute_quick_command(app, 0, 0, QuickCommandKind_Search);}
-CUSTOM_COMMAND_SIG(redo_last_command_forward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 0, 0);}
-CUSTOM_COMMAND_SIG(redo_last_command_backward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 0, BufferSeekString_Backward);}
-CUSTOM_COMMAND_SIG(redo_before_last_command_forward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 1, 0);}
-CUSTOM_COMMAND_SIG(redo_before_last_command_backward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 1, BufferSeekString_Backward);}
+CUSTOM_COMMAND_SIG(redo_last_command_search_backward)CUSTOM_DOC("Use search item of last quick command"){execute_quick_command(app, BufferSeekString_Backward, QuickCommandKind_Search);}
+CUSTOM_COMMAND_SIG(redo_last_command_search_forward)CUSTOM_DOC("Use search item of last quick command"){execute_quick_command(app, 0, QuickCommandKind_Search);}
+CUSTOM_COMMAND_SIG(redo_last_command_forward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, 0);}
+CUSTOM_COMMAND_SIG(redo_last_command_backward)CUSTOM_DOC("Go to last saved quick command"){execute_quick_command(app, BufferSeekString_Backward);}
 
 function void
 isearch(App *app, Scan_Direction start_scan, i64 first_pos,
@@ -1227,11 +1223,13 @@ CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of
 CUSTOM_COMMAND_SIG(replace_in_all_buffers)
 CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of needle with string in all editable buffers.")
 {
-    global_history_edit_group_begin(app);
 
     Scratch_Block scratch(app);
     Query_Bar_Group group(app);
     String_Pair pair = query_user_replace_pair(app, scratch, string_u8_litexpr("Replace in all buffers: "));
+    if(!pair.valid) return;
+
+    global_history_edit_group_begin(app);
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_ReadWriteVisible);
          buffer != 0;
          buffer = get_buffer_next(app, buffer, Access_ReadWriteVisible)){

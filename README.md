@@ -44,7 +44,8 @@ In this readme you will find:
 # TODO Small
 
 * Fix control+N fix which goes to second error first
-
+* replace_in_all_buffers errors out
+* Add selection as starting string to replace stuff
 
 # TODO Listers
 
@@ -53,6 +54,7 @@ In this readme you will find:
 
 # Todo
 
+* Query command history, switching using up and down
 * Improve hiperlink functionality as much as possible, stuff you can click should be highlighted underlined and satisfying to click, all clickable stuff in source files should be emphesized, as much stuff should be clickable.
    * Control Shift other panel
    * Color includes

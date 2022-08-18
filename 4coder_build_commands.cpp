@@ -244,6 +244,7 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, 
     String8 file = push_stringf(scratch, "%.*s/%s\0", string_expand(dir), "__gen.cpp");
     system_save_file(scratch, (char *)file.str, string);
 
+    // TODO(Krzosa): Not crossplatform
     String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -o __gen.exe && __gen.exe\0", string_expand(file));
 
     Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));

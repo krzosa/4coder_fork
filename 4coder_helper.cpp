@@ -2533,27 +2533,6 @@ exec_system_command(App *app, View_ID view, Buffer_Identifier buffer_id,
     return(result);
 }
 
-// TODO(allen): --- end ---
-
-////////////////////////////////
-
-#if 0
-function f32
-font_get_glyph_advance(Face_Advance_Map *map, Face_Metrics *metrics, u32 codepoint, f32 tab_width){
-    return(font_get_glyph_advance(map, metrics, codepoint, tab_width));
-}
-function f32
-font_get_max_glyph_advance_range(Face_Advance_Map *map, Face_Metrics *metrics,
-                                 u32 codepoint_first, u32 codepoint_last, f32 tab_width){
-    return(font_get_max_glyph_advance_range(map, metrics, codepoint_first, codepoint_last, tab_width));
-}
-function f32
-font_get_average_glyph_advance_range(Face_Advance_Map *map, Face_Metrics *metrics,
-                                     u32 codepoint_first, u32 codepoint_last, f32 tab_width){
-    return(font_get_average_glyph_advance_range(map, metrics, codepoint_first, codepoint_last, tab_width));
-}
-#endif
-
 ////////////////////////////////
 // NOTE(allen): Layout Invalidate
 

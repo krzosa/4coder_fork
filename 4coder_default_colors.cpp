@@ -134,7 +134,7 @@ set_default_color_scheme(App *app){
     u32 number=0xFFB5CEA8;
     u32 string=0xFFD69D85;
     u32 preproc=0xFF9B9B9B;
-    // u32 macro=0xFFc586c0;
+    u32 macro=0xFFc586c0;
     u32 type=0xFF4EC9B0;
     u32 green=0xFFA6E22E;
     u32 purple=0xFF967EFB;
@@ -163,7 +163,7 @@ set_default_color_scheme(App *app){
     default_color_table.arrays[defcolor_comment_pop] = make_colors(arena, keyword, keyword);
     default_color_table.arrays[defcolor_keyword] = make_colors(arena, keyword);
     default_color_table.arrays[defcolor_function] = make_colors(arena, type);
-    default_color_table.arrays[defcolor_macro] = make_colors(arena, type);
+    default_color_table.arrays[defcolor_macro] = make_colors(arena, macro);
     default_color_table.arrays[defcolor_type] = make_colors(arena, type);
     default_color_table.arrays[defcolor_str_constant] = make_colors(arena, string);
     default_color_table.arrays[defcolor_char_constant] = make_colors(arena, string);
