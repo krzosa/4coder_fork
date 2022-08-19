@@ -288,11 +288,9 @@ CUSTOM_DOC("Run python interpreter on all comments that start with /*#py")
 
                     String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
 
-                    Buffer_ID out_buffer = create_buffer(app, name, BufferCreate_AlwaysNew|BufferCreate_NeverAttachToFile);
+                    Buffer_Identifier ident = {(char *)name.str, (i32)name.size};
+                    Buffer_ID out_buffer = buffer_identifier_to_id_create_out_buffer(app, ident);
                     if (out_buffer != 0){
-                        buffer_set_setting(app, out_buffer, BufferSetting_ReadOnly, true);
-                        buffer_set_setting(app, out_buffer, BufferSetting_Unimportant, true);
-
                         Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
                         py->range_to_modify = generated_range;
                         py->buffer_to_modify = buffer;
