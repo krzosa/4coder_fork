@@ -152,6 +152,14 @@ CUSTOM_DOC("Make it big")
     global_compilation_view_maximized = !global_compilation_view_maximized;
 }
 
+struct Python_Changed_Buffer{
+    Buffer_ID buffer;
+    i64 change_size;
+    i64 change_pos;
+};
+global Python_Changed_Buffer changed_buffer_data[1024];
+global i64 changed_buffer_data_count;
+
 struct Python_Eval_Data{
     Range_i64 range_to_modify;
     Buffer_ID buffer_to_modify;
@@ -167,7 +175,31 @@ Child_Process_End_Sig(python_eval_callback){
         string = push_stringf(scratch, "%.*s/*END*/", string_expand(string));
     }
 
-    buffer_replace_range(app, py->buffer_to_modify, py->range_to_modify, string);
+    // NOTE(Krzosa): Modify the range to take into account the previous changes
+    Assert(changed_buffer_data_count < ArrayCount(changed_buffer_data));
+    for(int i = 0; i < changed_buffer_data_count; i++){
+        Python_Changed_Buffer *b = changed_buffer_data + i;
+        if(b->buffer == py->buffer_to_modify){
+            if(py->range_to_modify.min > b->change_pos){
+                py->range_to_modify.min += b->change_size;
+                py->range_to_modify.max += b->change_size;
+            }
+        }
+    }
+
+    Range_i64 modified_range = {py->range_to_modify.min, py->range_to_modify.min+(i64)string.size};
+    global_history_edit_group_begin(app);
+    {
+        buffer_replace_range(app, py->buffer_to_modify, py->range_to_modify, string);
+    }
+    global_history_edit_group_end(app);
+
+    Assert(changed_buffer_data_count + 1 < ArrayCount(changed_buffer_data));
+    Python_Changed_Buffer *b = changed_buffer_data + changed_buffer_data_count++;
+    b->buffer = py->buffer_to_modify;
+    b->change_pos = modified_range.min;
+    b->change_size = range_size(modified_range);
+
     heap_free(&global_heap, data);
 }
 CUSTOM_COMMAND_SIG(python_interpreter_on_comment)
@@ -175,6 +207,7 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, 
 {
     Scratch_Block scratch(app);
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
+    changed_buffer_data_count = 0;
 
     Range_i64 range = {};
     seek_string_backward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("/*"), &range.min);
@@ -220,7 +253,7 @@ CUSTOM_DOC("")
     String8 dir = push_hot_directory(app, scratch);
     int code_file_id = 0;
 
-    global_history_edit_group_begin(app);
+    changed_buffer_data_count = 0;
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always);
          buffer != 0;
          buffer = get_buffer_next(app, buffer, Access_Always)){
@@ -244,7 +277,7 @@ CUSTOM_DOC("")
 
                     int current_id = code_file_id++;
                     Range_i64 code_range = {py_seek_pos, close_seek_pos};
-                    Range_i64 generated_range = {close_seek_pos, end_block_pos};
+                    Range_i64 generated_range = {close_seek_pos+2, end_block_pos+2};
 
                     String8 code = push_buffer_range(app, scratch, buffer, code_range);
                     String8 name = push_stringf(scratch, "__python_gen%d.py", current_id);
@@ -286,11 +319,6 @@ CUSTOM_DOC("")
             }
         }
     }
-
-
-    global_history_edit_group_end(app);
-
-
 }
 
 
