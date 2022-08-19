@@ -245,8 +245,8 @@ string_match_found(String_Match m){
     return m.buffer != 0;
 }
 
-CUSTOM_COMMAND_SIG(python_interpreter_on_all_comments_todo)
-CUSTOM_DOC("")
+CUSTOM_COMMAND_SIG(python_interpreter_on_all_marked_comments)
+CUSTOM_DOC("Run python interpreter on all comments that start with /*#py")
 {
     Scratch_Block scratch(app);
 
