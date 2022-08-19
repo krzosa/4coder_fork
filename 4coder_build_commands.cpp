@@ -198,7 +198,7 @@ Child_Process_End_Sig(python_eval_callback){
     Python_Changed_Buffer *b = changed_buffer_data + changed_buffer_data_count++;
     b->buffer = py->buffer_to_modify;
     b->change_pos = modified_range.min;
-    b->change_size = range_size(modified_range);
+    b->change_size = range_size(modified_range) - range_size(py->range_to_modify);
 
     heap_free(&global_heap, data);
 }
@@ -269,15 +269,17 @@ CUSTOM_DOC("")
                     seek_pos = close_seek_pos;
 
                     String_Match end_of_generated_block = buffer_seek_string(app, buffer, string_u8_litexpr("/*END*/"), Scan_Forward, (i32)close_seek_pos);
-                    i64 end_block_pos = close_seek_pos;
+                    Range_i64 generated_range = {close_seek_pos+2, close_seek_pos+2};
                     if(string_match_found(end_of_generated_block)){
-                        end_block_pos = end_of_generated_block.range.min;
-                        seek_pos = end_block_pos;
+                        if(end_of_generated_block.range.min > generated_range.max){
+                            generated_range.max = end_of_generated_block.range.min;
+                        }
+                        seek_pos = end_of_generated_block.range.min;
                     }
 
                     int current_id = code_file_id++;
                     Range_i64 code_range = {py_seek_pos, close_seek_pos};
-                    Range_i64 generated_range = {close_seek_pos+2, end_block_pos+2};
+
 
                     String8 code = push_buffer_range(app, scratch, buffer, code_range);
                     String8 name = push_stringf(scratch, "__python_gen%d.py", current_id);
