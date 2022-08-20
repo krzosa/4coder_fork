@@ -283,6 +283,11 @@ buffer_batch_edit(App *app, Buffer_ID buffer_id, Batch_Edit *batch)
     return(result);
 }
 
+inline b32
+string_match_found(String_Match m){
+    return m.buffer != 0;
+}
+
 function String_Match
 buffer_seek_string(App *app, Buffer_ID buffer, String_Const_u8 needle, Scan_Direction direction, i64 start_pos){
     Models *models = (Models*)app->cmd_context;

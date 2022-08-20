@@ -152,33 +152,30 @@ CUSTOM_DOC("Make it big")
     global_compilation_view_maximized = !global_compilation_view_maximized;
 }
 
-struct Python_Changed_Buffer{
-    Buffer_ID buffer;
-    i64 change_size;
-    i64 change_pos;
-};
-global Python_Changed_Buffer changed_buffer_data[1024];
-global i64 changed_buffer_data_count;
 
 struct Python_Eval_Data{
     Range_i64 range_to_modify;
     Buffer_ID buffer_to_modify;
 };
+struct Python_Changed_Buffer{
+    Buffer_ID buffer;
+    i64 change_size;
+    i64 change_pos;
+};
+global Python_Changed_Buffer python_changed_buffer_data[1024];
+global i64 python_buffer_data_count;
+
 Child_Process_End_Sig(python_eval_callback){
+    Scratch_Block scratch(app);
     Python_Eval_Data *py = (Python_Eval_Data *)data;
 
-    Scratch_Block scratch(app);
     String_Const_u8 string = push_whole_buffer(app, scratch, buffer);
-    string = push_stringf(scratch, "\n%.*s", string_expand(string));
-
-    if(py->range_to_modify.max == py->range_to_modify.min){
-        string = push_stringf(scratch, "%.*s/*END*/", string_expand(string));
-    }
+    string = push_stringf(scratch, "\n%.*s/*END*/", string_expand(string));
 
     // NOTE(Krzosa): Modify the range to take into account the previous changes
-    Assert(changed_buffer_data_count < ArrayCount(changed_buffer_data));
-    for(int i = 0; i < changed_buffer_data_count; i++){
-        Python_Changed_Buffer *b = changed_buffer_data + i;
+    Assert(python_buffer_data_count < ArrayCount(python_changed_buffer_data));
+    for(int i = 0; i < python_buffer_data_count; i++){
+        Python_Changed_Buffer *b = python_changed_buffer_data + i;
         if(b->buffer == py->buffer_to_modify){
             if(py->range_to_modify.min > b->change_pos){
                 py->range_to_modify.min += b->change_size;
@@ -194,55 +191,68 @@ Child_Process_End_Sig(python_eval_callback){
     }
     global_history_edit_group_end(app);
 
-    Assert(changed_buffer_data_count + 1 < ArrayCount(changed_buffer_data));
-    Python_Changed_Buffer *b = changed_buffer_data + changed_buffer_data_count++;
+    Assert(python_buffer_data_count + 1 < ArrayCount(python_changed_buffer_data));
+    Python_Changed_Buffer *b = python_changed_buffer_data + python_buffer_data_count++;
     b->buffer = py->buffer_to_modify;
     b->change_pos = modified_range.min;
     b->change_size = range_size(modified_range) - range_size(py->range_to_modify);
 
     heap_free(&global_heap, data);
 }
+
+void create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scratch, int id, Buffer_ID buffer_with_code, Range_i64 code_range, Range_i64 range_to_modify){
+    //
+    // Dump comment code to file
+    //
+    String_Const_u8 string = push_buffer_range(app, scratch, buffer_with_code, code_range);
+
+    // Skip the run all comments marker
+    if(string.size && string.str[0] == '#'){
+        string.str  += 1;
+        string.size -= 1;
+    }
+
+    String8 name = push_stringf(scratch, "__python_gen%d.py", id);
+    String8 dir = push_hot_directory(app, scratch);
+    String8 file = push_stringf(scratch, "%.*s/%.*s\0", string_expand(dir), string_expand(name));
+    system_save_file(scratch, (char *)file.str, string);
+
+    //
+    // Call python with the code
+    //
+    Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
+    py->range_to_modify = range_to_modify;
+    py->buffer_to_modify = buffer_with_code;
+
+    // String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -o __gen.exe && __gen.exe\0", string_expand(file));
+    String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
+    exec_system_command(app, global_compilation_view, {(char *)name.str, (i32)name.size}, dir, cmd, CLI_SendEndSignal|CLI_OverlapWithConflict, python_eval_callback, py);
+}
+
 CUSTOM_COMMAND_SIG(python_interpreter_on_comment)
 CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, result ends up in clipboard")
 {
     Scratch_Block scratch(app);
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
-    changed_buffer_data_count = 0;
+    python_buffer_data_count = 0;
 
     Range_i64 range = {};
     seek_string_backward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("/*"), &range.min);
     seek_string_forward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("*/"), &range.max);
     range.min += 2;
-    String_Const_u8 string = push_buffer_range(app, scratch, a.buffer, range);
 
-    Range_i64 mod_range = {range.max+2};
-    seek_string_forward(app, a.buffer, range.max, 0, string_u8_litexpr("/*END*/"), &mod_range.max);
-    if(mod_range.max >= a.buffer_range.max) mod_range.max = mod_range.min;
-
-
-    String8 dir = push_hot_directory(app, scratch);//get_hot_dsystem_get_path(scratch, SystemPath_UserDirectory);
-    String8 file = push_stringf(scratch, "%.*s/%s\0", string_expand(dir), "__python_gen.py");
-    system_save_file(scratch, (char *)file.str, string);
-
-    String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
-
-    Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
-    py->range_to_modify = mod_range;
-    py->buffer_to_modify = a.buffer;
-    Child_Process_ID child_process_id = create_child_process(app, dir, cmd, python_eval_callback, py);
-    if (child_process_id != 0){
-        Buffer_ID buffer = buffer_identifier_to_id_create_out_buffer(app, standard_build_buffer_identifier);
-        if (buffer != 0){
-            if (set_buffer_system_command(app, child_process_id, buffer, standard_build_exec_flags)){
-                view_set_buffer(app, global_compilation_view, buffer, 0);
+    Range_i64 mod_range = {range.max+2, range.max+2};
+    String_Match end_block_match = buffer_seek_string(app, a.buffer, string_u8_litexpr("/*END*/"), Scan_Forward, a.cursor.pos);
+    String_Match next_comment_match = buffer_seek_string(app, a.buffer, string_u8_litexpr("/*"), Scan_Forward, a.cursor.pos);
+    if(string_match_found(end_block_match)){
+        if(string_match_found(next_comment_match)){
+            if(end_block_match.range.min == next_comment_match.range.min){
+                mod_range.max = end_block_match.range.max;
             }
         }
     }
-}
 
-inline b32
-string_match_found(String_Match m){
-    return m.buffer != 0;
+    create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, 0, a.buffer, range, mod_range);
 }
 
 CUSTOM_COMMAND_SIG(python_interpreter_on_all_marked_comments)
@@ -250,128 +260,61 @@ CUSTOM_DOC("Run python interpreter on all comments that start with /*#py")
 {
     Scratch_Block scratch(app);
 
-    String8 dir = push_hot_directory(app, scratch);
     int code_file_id = 0;
-
-    changed_buffer_data_count = 0;
-    for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always);
-         buffer != 0;
-         buffer = get_buffer_next(app, buffer, Access_Always)){
-        i64 seek_pos = 0;
+    python_buffer_data_count = 0; // Zero global
+    for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always); buffer != 0; buffer = get_buffer_next(app, buffer, Access_Always)){
+        i32 seek_pos = 0;
         for(;;){
-            String_Match match = buffer_seek_string(app, buffer, string_u8_litexpr("/*#py"), Scan_Forward, (i32)seek_pos);
-            if(string_match_found(match)){
-                i64 py_seek_pos = match.range.min + 2; // NOTE(Krzosa): Skip comment
+            //
+            // Find the 2 ranges: one with code to run, one optional with previous output
+            //
+            Range_i64 code_range  = {};
+            Range_i64 gen_range   = {};
 
-                String_Match end_of_comment_match = buffer_seek_string(app, buffer, string_u8_litexpr("*/"), Scan_Forward, (i32)py_seek_pos);
-                if(string_match_found(end_of_comment_match)){
-                    i64 close_seek_pos = end_of_comment_match.range.min;
-                    seek_pos = close_seek_pos;
-
-                    String_Match end_of_generated_block = buffer_seek_string(app, buffer, string_u8_litexpr("/*END*/"), Scan_Forward, (i32)close_seek_pos);
-                    Range_i64 generated_range = {close_seek_pos+2, close_seek_pos+2};
-                    if(string_match_found(end_of_generated_block)){
-                        if(end_of_generated_block.range.min > generated_range.max){
-                            generated_range.max = end_of_generated_block.range.min;
-                        }
-                        seek_pos = end_of_generated_block.range.min;
-                    }
-
-                    int current_id = code_file_id++;
-                    Range_i64 code_range = {py_seek_pos, close_seek_pos};
-
-
-                    String8 code = push_buffer_range(app, scratch, buffer, code_range);
-                    String8 name = push_stringf(scratch, "__python_gen%d.py", current_id);
-                    String8 file = push_stringf(scratch, "%.*s/%.*s\0", string_expand(dir), string_expand(name));
-                    system_save_file(scratch, (char *)file.str, code);
-
-                    String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
-
-                    Buffer_Identifier ident = {(char *)name.str, (i32)name.size};
-                    Buffer_ID out_buffer = buffer_identifier_to_id_create_out_buffer(app, ident);
-                    if (out_buffer != 0){
-                        Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
-                        py->range_to_modify = generated_range;
-                        py->buffer_to_modify = buffer;
-                        Child_Process_ID child_process_id = create_child_process(app, dir, cmd, python_eval_callback, py);
-                        if (child_process_id != 0){
-                            if (set_buffer_system_command(app, child_process_id, out_buffer, standard_build_exec_flags)){
-                                view_set_buffer(app, global_compilation_view, out_buffer, 0);
-                            }
-                        }
-                    }
-                    else{
-                        print_message(app, string_u8_litexpr("Failed to create buffer while pythoning"));
-                    }
-                }
-                else{
-                    String8 buffer_name = push_buffer_file_name(app, scratch, buffer);
-                    Buffer_Cursor cursor = buffer_compute_cursor(app, buffer, {buffer_seek_pos, py_seek_pos});
-                    String8 err = push_stringf(scratch, "Unclosed python comment in file %.*s:%d", string_expand(buffer_name),
-                                               (int)cursor.col);
-                    print_message(app, err);
-                    return;
-                }
+            String_Match code_begin = buffer_seek_string(app, buffer, string_u8_litexpr("/*#"), Scan_Forward, seek_pos);
+            if(string_match_found(code_begin)){
+                seek_pos = code_begin.range.max;
+                const i32 comment_token_size = 3;
+                code_range.min = code_begin.range.min + comment_token_size;
             }
-            else{
+            else break; // No more code sections, go next
+
+            String_Match code_end = buffer_seek_string(app, buffer, string_u8_litexpr("*/"), Scan_Forward, seek_pos);
+            if(string_match_found(code_end)){
+                seek_pos = code_end.range.max;
+                code_range.max = code_end.range.min;
+            }
+            else{ // Unclose comment go next buffer, post error
+                String8 buffer_name = push_buffer_file_name(app, scratch, buffer);
+                Buffer_Cursor cursor = buffer_compute_cursor(app, buffer, {seek_pos, seek_pos});
+                String8 err = push_stringf(scratch, "Unclosed code comment in file %.*s:%d", string_expand(buffer_name), (int)cursor.col);
+                print_message(app, err);
+                // TODO(Krzosa): Add error messages
                 break;
             }
-        }
-    }
-}
 
+            gen_range = {code_end.range.max, code_end.range.max};
+            String_Match gen_end = buffer_seek_string(app, buffer, string_u8_litexpr("/*END*/"), Scan_Forward, seek_pos);
+            if(string_match_found(gen_end)){
+                //
+                // Should make sure that this generated block belongs to this code comment
+                //
+                b32 gen_block_belongs_to_the_code_block = false;
+                String_Match next_code = buffer_seek_string(app, buffer, string_u8_litexpr("/*"), Scan_Forward, seek_pos);
+                if(string_match_found(next_code)){
+                    if(gen_end.range.min == next_code.range.min){
+                        gen_block_belongs_to_the_code_block = true;
+                    }
+                }
+                else gen_block_belongs_to_the_code_block = true;
 
-
-Child_Process_End_Sig(clang_callback){
-    Python_Eval_Data *py = (Python_Eval_Data *)data;
-
-
-    Scratch_Block scratch(app);
-    String_Const_u8 string = push_whole_buffer(app, scratch, buffer);
-
-
-    if(py->range_to_modify.max == py->range_to_modify.min){
-        buffer_replace_range(app, py->buffer_to_modify, Ii64(py->range_to_modify.min), string_u8_litexpr("/*END*/"));
-    }
-
-    buffer_replace_range(app, py->buffer_to_modify, py->range_to_modify, string);
-    heap_free(&global_heap, data);
-}
-CUSTOM_COMMAND_SIG(compile_and_run_comment)
-CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, result ends up in clipboard")
-{
-    Scratch_Block scratch(app);
-    Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
-
-    Range_i64 range = {};
-    seek_string_backward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("/*"), &range.min);
-    seek_string_forward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("*/"), &range.max);
-    range.min += 2;
-    String_Const_u8 string = push_buffer_range(app, scratch, a.buffer, range);
-
-    Range_i64 mod_range = {range.max+2};
-    seek_string_forward(app, a.buffer, range.max, 0, string_u8_litexpr("/*END*/"), &mod_range.max);
-    if(mod_range.max >= buffer_get_size(app, a.buffer)) mod_range.max = mod_range.min;
-
-
-    String8 dir = push_hot_directory(app, scratch);//get_hot_dsystem_get_path(scratch, SystemPath_UserDirectory);
-    String8 file = push_stringf(scratch, "%.*s/%s\0", string_expand(dir), "__gen.cpp");
-    system_save_file(scratch, (char *)file.str, string);
-
-    // TODO(Krzosa): Not crossplatform
-    String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -o __gen.exe && __gen.exe\0", string_expand(file));
-
-    Python_Eval_Data *py = (Python_Eval_Data *)heap_allocate(&global_heap, sizeof(Python_Eval_Data));
-    py->range_to_modify = mod_range;
-    py->buffer_to_modify = a.buffer;
-    Child_Process_ID child_process_id = create_child_process(app, dir, cmd, clang_callback, py);
-    if (child_process_id != 0){
-        Buffer_ID buffer = buffer_identifier_to_id_create_out_buffer(app, standard_build_buffer_identifier);
-        if (buffer != 0){
-            if (set_buffer_system_command(app, child_process_id, buffer, standard_build_exec_flags)){
-                view_set_buffer(app, global_compilation_view, buffer, 0);
+                if(gen_block_belongs_to_the_code_block){
+                    gen_range.max = gen_end.range.max;
+                    seek_pos = gen_range.max;
+                }
             }
+
+            create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, code_file_id++, buffer, code_range, gen_range);
         }
     }
 }

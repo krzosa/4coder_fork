@@ -2514,10 +2514,9 @@ set_buffer_system_command(App *app, Child_Process_ID process, Buffer_ID buffer, 
 }
 
 function b32
-exec_system_command(App *app, View_ID view, Buffer_Identifier buffer_id,
-                    String_Const_u8 path, String_Const_u8 command, Command_Line_Interface_Flag flags){
+exec_system_command(App *app, View_ID view, Buffer_Identifier buffer_id, String_Const_u8 path, String_Const_u8 command, Command_Line_Interface_Flag flags, Child_Process_End *end_callback = 0, void *data = 0){
     b32 result = false;
-    Child_Process_ID child_process_id = create_child_process(app, path, command);
+    Child_Process_ID child_process_id = create_child_process(app, path, command, end_callback, data);
     if (child_process_id != 0){
         result = true;
         Buffer_ID buffer_attach_id = buffer_identifier_to_id_create_out_buffer(app, buffer_id);
