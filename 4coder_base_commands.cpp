@@ -1203,7 +1203,7 @@ CUSTOM_DOC("Queries the user for a needle and string. Replaces all occurences of
 {
     Scratch_Block scratch(app);
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
-    String_Pair strings = replace_in_range_query_user(app, scratch, a.buffer, a.buffer_range);
+    String_Pair strings = replace_in_range_query_user(app, scratch, a.buffer, a.selected_pos_range);
     if(strings.valid) quick_command_push(QuickCommandKind_ReplaceRange, strings.a, strings.b);
 }
 
