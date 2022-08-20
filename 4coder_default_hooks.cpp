@@ -1239,7 +1239,12 @@ set_all_default_hooks(App *app){
     set_custom_hook(app, HookID_BufferRegion, default_buffer_region);
     set_custom_hook(app, HookID_ViewChangeBuffer, default_view_change_buffer);
 
+    // if(debug_config_enable_code_wrapping){
+    // set_custom_hook(app, HookID_Layout, layout_wrap_whitespace);
+    // }
+    // else{
     set_custom_hook(app, HookID_Layout, layout_unwrapped);
+    // }
     //set_custom_hook(app, HookID_Layout, layout_wrap_anywhere);
     //set_custom_hook(app, HookID_Layout, layout_wrap_whitespace);
     //set_custom_hook(app, HookID_Layout, layout_virt_indent_unwrapped);

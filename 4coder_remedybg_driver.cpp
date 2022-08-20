@@ -108,13 +108,19 @@ CUSTOM_DOC("Run to cursor")
     exec_system_commandf(app, global_compilation_view, standard_build_buffer_identifier, EXEC_COMMANDF_DEFAULT_DIR, "remedybg.exe run-to-cursor {file} {line}");
 }
 
+CUSTOM_COMMAND_SIG(remedy_build_and_run_to_cursor)
+CUSTOM_DOC("Build using build.bat and run to cursor")
+{
+    exec_system_commandf(app, global_compilation_view, standard_build_buffer_identifier, EXEC_COMMANDF_DEFAULT_DIR, "remedybg.exe run-to-cursor {file} {line}");
+}
+
 CUSTOM_COMMAND_SIG(remedy_breakpoint_at_cursor)
 CUSTOM_DOC("Set remedybg breakpoint at cursor")
 {
     exec_system_commandf(app, global_compilation_view, standard_build_buffer_identifier, EXEC_COMMANDF_DEFAULT_DIR, "remedybg.exe add-breakpoint-at-file {file} {line}");
 }
 
-CUSTOM_COMMAND_SIG(debugger_remove_breakpoint_at_cursor)
+CUSTOM_COMMAND_SIG(remedy_remove_breakpoint_at_cursor)
 CUSTOM_DOC("Remove remedybg breakpoint at cursor")
 {
     exec_system_commandf(app, global_compilation_view, standard_build_buffer_identifier, EXEC_COMMANDF_DEFAULT_DIR, "remedybg.exe remove-breakpoint-at-file {file} {line}");

@@ -25,19 +25,28 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
 
     // TODO(Krzosa): We want to move this into Fkey bindings as default
     Bind(build_in_build_panel,          KeyCode_F1);
+
+    // Remedy
+    Bind(remedy_start_debug,          KeyCode_F5);
+    Bind(remedy_stop_debug,          KeyCode_F5, KeyCode_Shift);
+
+    Bind(remedy_open_file_at_cursor,    KeyCode_F8);
+    Bind(remedy_breakpoint_at_cursor,    KeyCode_F9);
+    Bind(remedy_remove_breakpoint_at_cursor,    KeyCode_F9, KeyCode_Shift);
+    Bind(remedy_build_and_run_to_cursor,KeyCode_F11);
+    Bind(remedy_run_to_cursor,          KeyCode_F10, KeyCode_Control);
+
     Bind(maximize_build_panel, KeyCode_Escape);
 
-    Bind(open_in_other,                 KeyCode_O, KeyCode_Alt);
-    // Bind(interactive_kill_buffer,       KeyCode_K, KeyCode_Control);
 
-    // Bind(goto_first_jump,               KeyCode_M, KeyCode_Alt, KeyCode_Shift);
+    Bind(open_in_other,                 KeyCode_O, KeyCode_Alt);
     Bind(jump_to_last_point,            KeyCode_Q, KeyCode_Alt);
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
 
     SelectMap(file_id);
     Bind(python_interpreter_on_comment, KeyCode_L, KeyCode_Control);
     Bind(python_interpreter_on_all_marked_comments, KeyCode_L, KeyCode_Control, KeyCode_Shift);
-    // Bind(compile_and_run_comment, KeyCode_L, KeyCode_Control, KeyCode_Shift);
+
     Bind(put_new_line_below,  KeyCode_Return, KeyCode_Control);
     Bind(move_line_up, KeyCode_Up, KeyCode_Alt);
     Bind(move_line_down, KeyCode_Down, KeyCode_Alt);
