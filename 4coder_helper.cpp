@@ -2532,6 +2532,65 @@ exec_system_command(App *app, View_ID view, Buffer_Identifier buffer_id, String_
     return(result);
 }
 
+function bool
+string_starts_with(String8 a, String8 starts_with) {
+    if(a.size < starts_with.size) return false;
+    for(u64 i = 0; i < starts_with.size; i++) {
+        if(a.str[i] != starts_with.str[i]) return false;
+    }
+    return true;
+}
+
+const String8 EXEC_COMMANDF_DEFAULT_DIR = {};
+
+function void
+exec_system_commandf(App *app, View_ID view, Buffer_Identifier buffer, String8 dir, char *format, ...) {
+    Scratch_Block scratch(app);
+    if(dir.str == 0) dir = push_hot_directory(app, scratch);
+
+    va_list args;
+    va_start(args, format);
+    String_Const_u8 cmd = push_stringfv(scratch, format, args);
+    va_end(args);
+
+    //
+    // Figure out active view info
+    Active_View_Info a = get_active_view_info(app, Access_ReadVisible);
+    String8 buffer_name = push_buffer_file_name(app, scratch, a.buffer);
+
+    String_u8 str = string_u8_push(scratch, 4096);
+    String8 sfile = string_u8_litexpr("{file}");
+    String8 sline = string_u8_litexpr("{line}");
+    String8 smark_line = string_u8_litexpr("{mark_line}");
+    for(u64 i = 0; i < cmd.size; i++) {
+
+        String8 matcher = string_skip(cmd, i);
+        if(string_starts_with(matcher, sfile)) {
+            string_append(&str, buffer_name);
+            i+=sfile.size-1;
+        }
+        else if(string_starts_with(matcher, sline)) {
+            String8 number = push_stringf(scratch, "%d", a.cursor.line);
+            string_append(&str, number);
+            i+=sline.size-1;
+        }
+        else if(string_starts_with(matcher, smark_line)) {
+            String8 number = push_stringf(scratch, "%d", a.mark.line);
+            string_append(&str, number);
+            i+=smark_line.size-1;
+        }
+        else {
+            string_append_character(&str, cmd.str[i]);
+        }
+    }
+
+    print_message(app, str.string);
+    print_message(app, string_u8_litexpr("\n"));
+    if(cmd.size){
+        exec_system_command(app, view, buffer, dir, str.string, CLI_OverlapWithConflict|CLI_CursorAtEnd|CLI_SendEndSignal);
+    }
+}
+
 ////////////////////////////////
 // NOTE(allen): Layout Invalidate
 

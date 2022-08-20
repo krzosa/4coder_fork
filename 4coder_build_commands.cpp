@@ -200,7 +200,8 @@ Child_Process_End_Sig(python_eval_callback){
     heap_free(&global_heap, data);
 }
 
-void create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scratch, int id, Buffer_ID buffer_with_code, Range_i64 code_range, Range_i64 range_to_modify){
+function void
+create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scratch, int id, Buffer_ID buffer_with_code, Range_i64 code_range, Range_i64 range_to_modify){
     //
     // Dump comment code to file
     //
@@ -212,7 +213,13 @@ void create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena
         string.size -= 1;
     }
 
-    String8 name = push_stringf(scratch, "__python_gen%d.py", id);
+    //
+    // TODO(Krzosa): We want this to be configurable!!
+    // TODO(Krzosa): Probably want some injected into code variables like file
+    //
+
+    String8 name = push_stringf(scratch, "__python_gen%d.cpp", id);
+    // String8 name = push_stringf(scratch, "__python_gen%d.py", id);
     String8 dir = push_hot_directory(app, scratch);
     String8 file = push_stringf(scratch, "%.*s/%.*s\0", string_expand(dir), string_expand(name));
     system_save_file(scratch, (char *)file.str, string);
@@ -224,8 +231,8 @@ void create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena
     py->range_to_modify = range_to_modify;
     py->buffer_to_modify = buffer_with_code;
 
-    // String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -o __gen.exe && __gen.exe\0", string_expand(file));
-    String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
+    String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -o __python_gen%d.exe && __python_gen%d.exe\0", string_expand(file), id, id);
+    // String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
     exec_system_command(app, global_compilation_view, {(char *)name.str, (i32)name.size}, dir, cmd, CLI_SendEndSignal|CLI_OverlapWithConflict, python_eval_callback, py);
 }
 
