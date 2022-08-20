@@ -33,7 +33,7 @@ b32 debug_config_use_paren_helper = true;
 b32 debug_config_use_comment_keywords = true;
 b32 debug_config_lister_whole_word_backspace_when_modified = true;
 b32 debug_config_show_line_number_margins = false;
-b32 debug_config_enable_output_wrapping = true;
+b32 debug_config_enable_output_wrapping = false;
 b32 debug_config_highlight_line_at_cursor = true;
 b32 debug_config_enable_undo_fade_out = true;
 
@@ -59,7 +59,7 @@ f32 debug_config_lister_item_height = 1.2f;
 String8 debug_config_treat_as_code = string_u8_litexpr(".cpp.c.hpp.h.cc.cs.java.rs.glsl.m.mm");
 b32 debug_config_enable_virtual_whitespace = true;
 i64 debug_config_virtual_whitespace_regular_indent = 4;
-b32 debug_config_enable_code_wrapping = true;
+b32 debug_config_enable_code_wrapping = false;
 
 // This only applies to code files in code-wrapping mode.
 // Plain text and code files without virtual-whitespace will not be effected.

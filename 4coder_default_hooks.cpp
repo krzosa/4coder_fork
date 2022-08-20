@@ -931,7 +931,6 @@ BUFFER_HOOK_SIG(default_begin_buffer){
                     string_match(ext, string_u8_litexpr("cc"))){
                     treat_as_code = true;
                 }
-
 #if 0
                 treat_as_code = true;
 
@@ -1002,10 +1001,9 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     *eol_setting = setting;
 
     // NOTE(allen): Decide buffer settings
-    b32 wrap_lines = true;
+    b32 wrap_lines = debug_config_enable_code_wrapping;
     b32 use_lexer = false;
     if (treat_as_code){
-        wrap_lines = debug_config_enable_code_wrapping;
         use_lexer = true;
     }
 
