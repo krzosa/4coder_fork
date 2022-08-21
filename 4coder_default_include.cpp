@@ -19,7 +19,7 @@
 #endif
 
 
-#include "4coder_config.h"
+#include "4coder_config1.cpp"
 #include "4coder_variables.h"
 #include "4coder_async_tasks.h"
 #include "4coder_string_match.h"
@@ -48,6 +48,7 @@
 
 ////////////////////////////////
 
+#include "4coder_config_generated.cpp"
 #include "4coder_file.cpp"
 #include "4coder_async_tasks.cpp"
 #include "4coder_default_map.cpp"
@@ -87,7 +88,7 @@
 #include "4coder_profile_inspect.cpp"
 #include "4coder_variables.cpp"
 #include "4coder_default_hooks.cpp"
-#include "4coder_config.cpp"
+#include "4coder_config2.cpp"
 #include "4coder_remedybg_driver.cpp"
 
 #endif

@@ -1,19 +1,3 @@
-
-struct Config_Value{
-    String8 type;
-    String8 name;
-    String8 value_specifier;
-    String8 value_str;
-    bool value_bool;
-    f32  value_float;
-    i64  value_int;
-};
-
-struct Loaded_Config{
-    Config_Value *values;
-    i32 count;
-};
-function void load_config(App *app, Arena *arena);
 /*
 #define _CRT_SECURE_NO_WARNINGS
 #include "4coder_base_types.h"
@@ -24,21 +8,22 @@ function void load_config(App *app, Arena *arena);
 #include "4coder_stringf.cpp"
 #include "4coder_malloc_allocator.cpp"
 
-typedef u32 Face_Antialiasing_Mode;
-enum{
-    FaceAntialiasingMode_8BitMono,
-    FaceAntialiasingMode_1BitMono,
-};
-
 #include "4coder_token.cpp"
 #include "generated/lexer_cpp.cpp"
-#include "4coder_config.h"
 
 #include "4coder_file.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+
+typedef u32 Face_Antialiasing_Mode;
+enum{
+    FaceAntialiasingMode_8BitMono,
+    FaceAntialiasingMode_1BitMono,
+};
+
+#include "4coder_config1.cpp"
 
 int main(){
   Arena arena_ = make_arena_malloc(MB(1), 8);
@@ -56,7 +41,7 @@ int main(){
     if(string_match(string_u8_litexpr("String8"), v->type)) is_string = true;
 
     printf("%.*s ", string_expand(v->type));
-    printf("debug_config_%.*s = ", string_expand(v->name));
+    printf("debug_%.*s_%.*s = ", string_expand(v->section), string_expand(v->name));
     if(is_string == true) printf("string_u8_litexpr(\"");
     printf("%.*s", string_expand(v->value_str));
     if(is_string == true) printf("\")");
@@ -69,10 +54,10 @@ int main(){
     Config_Value *v = values + i;
     printf(R"==(
     if(string_match(record->name, string_u8_litexpr("%.*s"))){
-      debug_config_%.*s = record->%.*s;
+      debug_%.*s_%.*s = record->%.*s;
       return;
     }
-    )==", string_expand(v->name), string_expand(v->name), string_expand(v->value_specifier));
+    )==", string_expand(v->name), string_expand(v->section), string_expand(v->name), string_expand(v->value_specifier));
   }
   printf("}");
 
@@ -309,75 +294,3 @@ set_config_value(Config_Value *record){
         return;
     }
 }/*END*/
-
-function Loaded_Config
-parse_config(Arena *scratch, Arena *arena, String8 text){
-    Token_List token_list = lex_full_input_cpp(scratch, text);
-    Config_Value *values = push_array(arena, Config_Value, 256);
-    i32 values_count = 0;
-
-    Token_Iterator_List it = token_iterator(0, &token_list);
-    for(;;){
-        Token *token = next_token(&it);
-        if(token->kind == TokenBaseKind_EOF){
-            break;
-        }
-
-        if(token->kind == TokenBaseKind_Identifier){
-            String8 string = get_token_string(text, token);
-            if(match_token(&it, TokenCppKind_Eq)){
-                Token *value = next_token(&it);
-                String8 value_string = get_token_string(text, value);
-
-                Config_Value *v = values + values_count++;
-                v->value_str = value_string;
-                v->name  = string;
-
-                String8 type = {};
-                if(value->sub_kind == TokenCppKind_LiteralTrue){
-                    type = string_u8_litexpr("b32");
-                    v->value_bool = true;
-                    v->value_specifier = string_u8_litexpr("value_bool");
-                }
-
-                else if(value->sub_kind == TokenCppKind_LiteralFalse){
-                    type = string_u8_litexpr("b32");
-                    v->value_bool = false;
-                    v->value_specifier = string_u8_litexpr("value_bool");
-                }
-
-                else if(value->sub_kind == TokenCppKind_LiteralString){
-                    type = string_u8_litexpr("String8");
-                    v->value_specifier = string_u8_litexpr("value_str");
-                    v->value_str.str += 1;
-                    v->value_str.size -= 2;
-                }
-
-                else if(value->sub_kind == TokenCppKind_LiteralInteger){
-                    type = string_u8_litexpr("i64");
-                    v->value_int = string_to_integer(value_string, 10);
-                    v->value_specifier = string_u8_litexpr("value_int");
-                }
-
-                else if(value->sub_kind == TokenCppKind_Identifier){
-                    type = string_u8_litexpr("i64");
-                    v->value_specifier = string_u8_litexpr("value_int");
-                }
-
-                else if(value->sub_kind == TokenCppKind_LiteralFloat32 || value->sub_kind == TokenCppKind_LiteralFloat64){
-                    type = string_u8_litexpr("f32");
-                    v->value_float = atof((char *)value_string.str);
-                    v->value_specifier = string_u8_litexpr("value_float");
-                }
-
-                else{
-                    // TODO
-                }
-                v->type = type;
-            }
-        }
-    }
-
-    Loaded_Config result = {values, values_count};
-    return result;
-}

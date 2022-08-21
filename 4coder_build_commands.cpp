@@ -239,9 +239,7 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
     py->range_to_modify = range_to_modify;
     py->buffer_to_modify = buffer_with_code;
 
-    // String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -g -o __gen%d.exe && __gen%d.exe\0", string_expand(file), id, id);
     print_message(app, command_to_run);
-    // String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
     exec_system_command(app, global_compilation_view, {(char *)buffer_name.str, (i32)buffer_name.size}, dir, command_to_run, CLI_SendEndSignal|CLI_OverlapWithConflict, python_eval_callback, py);
 }
 

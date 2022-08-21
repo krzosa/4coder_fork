@@ -687,38 +687,36 @@ token_relex(Token_List relex_list, i64 new_pos_to_old_pos_shift, Token *tokens, 
 
 function Token *
 next_token(Token_Iterator_List *it){
-    token_it_inc(it);
     Token *token = token_it_read(it);
+    token_it_inc(it);
     return token;
 }
 
 function Token *
 next_token_raw(Token_Iterator_List *it){
-    token_it_inc_non_whitespace(it);
     Token *token = token_it_read(it);
+    token_it_inc_non_whitespace(it);
     return token;
 }
 
-function b32
+function Token *
 match_token(Token_Iterator_List *it, i16 sub_kind){
-    token_it_inc(it);
     Token *token = token_it_read(it);
     if(token->sub_kind == sub_kind){
-        return true;
+        token_it_inc(it);
+        return token;
     }
-    token_it_dec(it);
-    return false;
+    return 0;
 }
 
-function b32
+function Token *
 match_token(Token_Iterator_List *it, Token_Base_Kind kind){
-    token_it_inc(it);
     Token *token = token_it_read(it);
     if(token->kind == kind){
-        return true;
+        token_it_inc(it);
+        return token;
     }
-    token_it_dec(it);
-    return false;
+    return 0;
 }
 
 function String8
