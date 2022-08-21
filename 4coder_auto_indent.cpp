@@ -393,11 +393,11 @@ auto_indent_buffer(App *app, Buffer_ID buffer, Range_i64 pos, Indent_Flag flags,
 
 function void
 auto_indent_buffer(App *app, Buffer_ID buffer, Range_i64 pos, Indent_Flag flags){
-    i32 indent_width = (i32)debug_config_indent_width;
-    i32 tab_width = (i32)debug_config_default_tab_width;
+    i32 indent_width = (i32)config_indent_width;
+    i32 tab_width = (i32)config_default_tab_width;
     tab_width = clamp_bot(1, tab_width);
     AddFlag(flags, Indent_FullTokens);
-    b32 indent_with_tabs = debug_config_indent_with_tabs;
+    b32 indent_with_tabs = config_indent_with_tabs;
     if (indent_with_tabs){
         AddFlag(flags, Indent_UseTab);
     }

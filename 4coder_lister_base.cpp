@@ -186,13 +186,13 @@ lister_render(App *app, Frame_Info frame_info, View_ID view){
     Face_ID face_id = get_face_id(app, 0);
     Face_Metrics metrics = get_face_metrics(app, face_id);
     f32 line_height = metrics.line_height;
-    f32 block_height = line_height*debug_config_lister_item_height;
+    f32 block_height = line_height*config_lister_item_height;
     f32 text_field_height = lister_get_text_field_height(line_height);
 
     // NOTE(allen): file bar
     // TODO(allen): What's going on with 'showing_file_bar'? I found it like this.
     b64 showing_file_bar = false;
-    b32 hide_file_bar_in_ui = debug_config_hide_file_bar_in_ui;
+    b32 hide_file_bar_in_ui = config_hide_file_bar_in_ui;
     if (view_get_setting(app, view, ViewSetting_ShowFileBar, &showing_file_bar) &&
         showing_file_bar && !hide_file_bar_in_ui){
         Rect_f32_Pair pair = layout_file_bar_on_top(region, line_height);
@@ -318,7 +318,7 @@ lister_render(App *app, Frame_Info frame_info, View_ID view){
             highlight = UIHighlight_Hover;
         }
 
-        u64 lister_roundness_100 = debug_config_lister_roundness;
+        u64 lister_roundness_100 = config_lister_roundness;
         f32 roundness = block_height*lister_roundness_100*0.01f;
         draw_rectangle_fcolor(app, item_rect, roundness, get_item_margin_color(highlight));
         draw_rectangle_fcolor(app, item_inner, roundness, get_item_margin_color(highlight, 1));
@@ -475,11 +475,11 @@ lister_user_data_at_p(App *app, View_ID view, Lister *lister, Vec2_f32 m_p){
     Face_ID face_id = get_face_id(app, 0);
     Face_Metrics metrics = get_face_metrics(app, face_id);
     f32 line_height = metrics.line_height;
-    f32 block_height = debug_config_lister_item_height*line_height;
+    f32 block_height = config_lister_item_height*line_height;
     f32 text_field_height = lister_get_text_field_height(line_height);
 
     b64 showing_file_bar = false;
-    b32 hide_file_bar_in_ui = debug_config_hide_file_bar_in_ui;
+    b32 hide_file_bar_in_ui = config_hide_file_bar_in_ui;
     if (view_get_setting(app, view, ViewSetting_ShowFileBar, &showing_file_bar) &&
         showing_file_bar && hide_file_bar_in_ui){
         Rect_f32_Pair pair = layout_file_bar_on_top(region, line_height);

@@ -275,7 +275,7 @@ lister__backspace_text_field__file_path(App *app){
                 String_Const_u8 text_field = lister->text_field.string;
                 String_Const_u8 new_hot = string_remove_last_folder(text_field);
                 b32 is_modified = has_modifier(&input, KeyCode_Control);
-                b32 whole_word_when_mod = debug_config_lister_whole_word_backspace_when_modified;
+                b32 whole_word_when_mod = config_lister_whole_word_backspace_when_modified;
                 b32 whole_word_backspace = (is_modified == whole_word_when_mod);
                 if (whole_word_backspace){
                     lister->text_field.size = new_hot.size;

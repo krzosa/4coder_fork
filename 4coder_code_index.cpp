@@ -971,11 +971,11 @@ layout_index__inner(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, F
 
     Face_Advance_Map advance_map       = get_face_advance_map(app, face);
     Face_Metrics     metrics           = get_face_metrics(app, face);
-    f32              tab_width         = (f32)debug_config_default_tab_width;
+    f32              tab_width         = (f32)config_default_tab_width;
     tab_width                          = clamp_bot(1, tab_width);
     LefRig_TopBot_Layout_Vars pos_vars = get_lr_tb_layout_vars(&advance_map, &metrics, tab_width, width);
 
-    u64 vw_indent      = debug_config_virtual_whitespace_regular_indent;
+    u64 vw_indent      = config_virtual_whitespace_regular_indent;
     f32 regular_indent = metrics.space_advance * vw_indent;
     f32 wrap_align_x   = width - metrics.normal_advance;
 
@@ -1223,7 +1223,7 @@ function Layout_Item_List
 layout_virt_indent_index(App *app, Arena *arena, Buffer_ID buffer, Range_i64 range, Face_ID face, f32 width, Layout_Wrap_Kind kind){
     Layout_Item_List result = {};
 
-    b32 enable_virtual_whitespace = debug_config_enable_virtual_whitespace;
+    b32 enable_virtual_whitespace = config_enable_virtual_whitespace;
     if (enable_virtual_whitespace){
         code_index_lock();
         Code_Index_File *file = code_index_get_file(buffer);

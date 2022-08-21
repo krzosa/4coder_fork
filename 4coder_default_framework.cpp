@@ -135,7 +135,7 @@ get_view_for_locked_jump_buffer(App *app){
 // TODO(allen): re-evaluate the setup of this.
 function void
 new_view_settings(App *app, View_ID view){
-    b32 use_file_bars = debug_config_use_file_bars;
+    b32 use_file_bars = config_use_file_bars;
     view_set_setting(app, view, ViewSetting_ShowFileBar, use_file_bars);
 }
 

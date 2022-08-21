@@ -24,10 +24,10 @@ CUSTOM_DOC("Default command for responding to a startup event")
         //
         // Apply config
         //
-        String_Const_u8 mode = debug_config_mode;
+        String_Const_u8 mode = config_mode;
         change_mode(app, mode);
 
-        b32 lalt_lctrl_is_altgr = debug_config_lalt_lctrl_is_altgr;
+        b32 lalt_lctrl_is_altgr = config_lalt_lctrl_is_altgr;
         global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
 
         // Themes
@@ -36,10 +36,10 @@ CUSTOM_DOC("Default command for responding to a startup event")
         // set_active_color(colors);
 
         Face_Description description = {};
-        description.parameters.pt_size = (i32)debug_config_default_font_size;
-        description.parameters.hinting = debug_config_default_font_hinting;
+        description.parameters.pt_size = (i32)config_default_font_size;
+        description.parameters.hinting = config_default_font_hinting;
         description.parameters.aa_mode = FaceAntialiasingMode_8BitMono;
-        description.font.file_name = debug_config_default_font_name;
+        description.font.file_name = config_default_font_name;
 
         if (!modify_global_face_by_description(app, description)){
             String8 name_in_fonts_folder = push_u8_stringf(scratch, "fonts/%.*s", string_expand(description.font.file_name));
@@ -47,7 +47,7 @@ CUSTOM_DOC("Default command for responding to a startup event")
             modify_global_face_by_description(app, description);
         }
 
-        b32 bind_by_physical_key = debug_config_bind_by_physical_key;
+        b32 bind_by_physical_key = config_bind_by_physical_key;
         if (bind_by_physical_key){
             system_set_key_mode(KeyMode_Physical);
         }
@@ -126,7 +126,7 @@ CUSTOM_DOC("Default command for responding to a startup event")
     }
 
     {
-        def_enable_virtual_whitespace = debug_config_enable_virtual_whitespace;
+        def_enable_virtual_whitespace = config_enable_virtual_whitespace;
         clear_all_layouts(app);
     }
 }
@@ -272,7 +272,7 @@ default_tick(App *app, Frame_Info frame_info){
     // NOTE(allen): Clear layouts if virtual whitespace setting changed.
 
     {
-        b32 enable_virtual_whitespace = debug_config_enable_virtual_whitespace;
+        b32 enable_virtual_whitespace = config_enable_virtual_whitespace;
         if (enable_virtual_whitespace != def_enable_virtual_whitespace){
             def_enable_virtual_whitespace = enable_virtual_whitespace;
             clear_all_layouts(app);
@@ -289,7 +289,7 @@ default_buffer_region(App *app, View_ID view_id, Rect_f32 region){
     f32 digit_advance = metrics.decimal_digit_advance;
 
     // NOTE(allen): margins
-    region = rect_inner(region, debug_config_background_margin_width);
+    region = rect_inner(region, config_background_margin_width);
 
     // NOTE(allen): file bar
     b64 showing_file_bar = false;
@@ -317,7 +317,7 @@ default_buffer_region(App *app, View_ID view_id, Rect_f32 region){
     }
 
     // NOTE(allen): line numbers
-    b32 show_line_number_margins = debug_config_show_line_number_margins;
+    b32 show_line_number_margins = config_show_line_number_margins;
     if (show_line_number_margins){
         Rect_f32_Pair pair = layout_line_number_margin(app, buffer, region, digit_advance);
         region = pair.max;
@@ -379,9 +379,9 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
     // NOTE(allen): Cursor shape
     Face_Metrics metrics = get_face_metrics(app, face_id);
-    u64 cursor_roundness_100 = debug_config_cursor_roundness;
+    u64 cursor_roundness_100 = config_cursor_roundness;
     f32 cursor_roundness = metrics.normal_advance*cursor_roundness_100*0.01f;
-    f32 mark_thickness = (f32)debug_config_mark_thickness;
+    f32 mark_thickness = (f32)config_mark_thickness;
 
     i64 cursor_pos = view_correct_cursor(app, view_id);
     view_correct_mark(app, view_id);
@@ -394,7 +394,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
 
     // NOTE(allen): Line highlight
-    b32 highlight_line_at_cursor = debug_config_highlight_line_at_cursor;
+    b32 highlight_line_at_cursor = config_highlight_line_at_cursor;
     if (highlight_line_at_cursor && is_active_view){
         i64 line_number = get_line_number_from_pos(app, buffer, cursor_pos);
         draw_line_highlight(app, text_layout_id, line_number, fcolor_id(defcolor_highlight_cursor_line));
@@ -406,7 +406,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         draw_cpp_token_colors(app, text_layout_id, &token_array);
 
         // NOTE(allen): Scan for TODOs and NOTEs
-        b32 use_comment_keyword = debug_config_use_comment_keywords;
+        b32 use_comment_keyword = config_use_comment_keywords;
         if (use_comment_keyword){
             Comment_Highlight_Pair pairs[] = {
                 {string_u8_litexpr("NOTE"), finalize_color(defcolor_comment_pop, 0)},
@@ -504,14 +504,14 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     if(code_index_file) recursive_nest_highlight(app, text_layout_id, visible_range, code_index_file);
 
     // NOTE(allen): Scope highlight
-    b32 use_scope_highlight = debug_config_use_scope_highlight;
+    b32 use_scope_highlight = config_use_scope_highlight;
     if (use_scope_highlight){
         Color_Array colors = finalize_color_array(defcolor_back_cycle);
         draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors.vals, colors.count);
     }
 
-    b32 use_error_highlight = debug_config_use_error_highlight;
-    b32 use_jump_highlight = debug_config_use_jump_highlight;
+    b32 use_error_highlight = config_use_error_highlight;
+    b32 use_jump_highlight = config_use_jump_highlight;
     if (use_error_highlight || use_jump_highlight){
         // NOTE(allen): Error highlight
         String_Const_u8 name = string_u8_litexpr("*compilation*");
@@ -532,7 +532,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     }
 
     // NOTE(allen): Color parens
-    b32 use_paren_helper = debug_config_use_paren_helper;
+    b32 use_paren_helper = config_use_paren_helper;
     if (use_paren_helper){
         Color_Array colors = finalize_color_array(defcolor_text_cycle);
         draw_paren_highlight(app, buffer, text_layout_id, cursor_pos, colors.vals, colors.count);
@@ -660,7 +660,7 @@ default_render_caller(App *app, Frame_Info frame_info, View_ID view_id){
     }
 
     // NOTE(allen): layout line numbers
-    b32 show_line_number_margins = debug_config_show_line_number_margins;
+    b32 show_line_number_margins = config_show_line_number_margins;
     Rect_f32 line_number_rect = {};
     if (show_line_number_margins){
         Rect_f32_Pair pair = layout_line_number_margin(app, buffer, region, digit_advance);
@@ -922,7 +922,7 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     b32 treat_as_code = false;
     String_Const_u8 file_name = push_buffer_file_name(app, scratch, buffer_id);
     if (file_name.size > 0){
-        String_Const_u8 treat_as_code_string = debug_config_treat_as_code;
+        String_Const_u8 treat_as_code_string = config_treat_as_code;
         String_Const_u8_Array extensions = parse_extension_line_to_extension_list(app, scratch, treat_as_code_string);
         String_Const_u8 ext = string_file_extension(file_name);
         for (i32 i = 0; i < extensions.count; ++i){
@@ -1005,7 +1005,7 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     *eol_setting = setting;
 
     // NOTE(allen): Decide buffer settings
-    b32 wrap_lines = debug_config_enable_code_wrapping;
+    b32 wrap_lines = config_enable_code_wrapping;
     b32 use_lexer = false;
     if (treat_as_code){
         use_lexer = true;
@@ -1013,7 +1013,7 @@ BUFFER_HOOK_SIG(default_begin_buffer){
 
     String_Const_u8 buffer_name = push_buffer_base_name(app, scratch, buffer_id);
     if (buffer_name.size > 0 && buffer_name.str[0] == '*' && buffer_name.str[buffer_name.size - 1] == '*'){
-        wrap_lines = debug_config_enable_output_wrapping;
+        wrap_lines = config_enable_output_wrapping;
     }
 
     if (use_lexer){
@@ -1060,8 +1060,8 @@ BUFFER_HOOK_SIG(default_new_file){
 BUFFER_HOOK_SIG(default_file_save){
     ProfileScope(app, "default file save");
 
-    b32 auto_indent = debug_config_automatically_indent_text_on_save;
-    b32 is_virtual = debug_config_enable_virtual_whitespace;
+    b32 auto_indent = config_automatically_indent_text_on_save;
+    b32 is_virtual = config_enable_virtual_whitespace;
     if (auto_indent && is_virtual){
         auto_indent_buffer(app, buffer_id, buffer_range(app, buffer_id));
     }
@@ -1241,7 +1241,7 @@ set_all_default_hooks(App *app){
     set_custom_hook(app, HookID_BufferRegion, default_buffer_region);
     set_custom_hook(app, HookID_ViewChangeBuffer, default_view_change_buffer);
 
-    // if(debug_config_enable_code_wrapping){
+    // if(config_enable_code_wrapping){
     // set_custom_hook(app, HookID_Layout, layout_wrap_whitespace);
     // }
     // else{

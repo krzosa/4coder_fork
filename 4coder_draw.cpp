@@ -262,7 +262,7 @@ layout_fps_hud_on_bottom(Rect_f32 rect, f32 line_height){
 
 function Rect_f32
 draw_background_and_margin(App *app, View_ID view){
-    f32 width = debug_config_background_margin_width;
+    f32 width = config_background_margin_width;
 
     Rect_f32 view_rect = view_get_screen_rect(app, view);
     Rect_f32 inner = rect_inner(view_rect, width);

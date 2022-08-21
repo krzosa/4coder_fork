@@ -85,7 +85,7 @@ standard_search_and_build_from_dir(App *app, View_ID view, String_Const_u8 start
         String_Const_u8 command = push_u8_stringf(scratch, "\"%.*s/%.*s\"",
                                                   string_expand(path),
                                                   string_expand(cmd_string));
-        b32 auto_save = debug_config_automatically_save_changes_on_build;
+        b32 auto_save = config_automatically_save_changes_on_build;
         if (auto_save){
             save_all_dirty_buffers(app);
         }
@@ -221,14 +221,14 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
         string.size -= 1;
     }
 
-    String8 ext = debug_config_comment_runner_filename_extension;
+    String8 ext = config_comment_runner_filename_extension;
     String8 buffer_name = push_stringf(scratch, "__buffer_gen%d.%.*s", id, string_expand(ext));
     String8 name = push_stringf(scratch, "__gen%d.%.*s", id, string_expand(ext));
     String8 dir = push_hot_directory(app, scratch);
     String8 file = push_stringf(scratch, "%.*s/%.*s\0", string_expand(dir), string_expand(name));
     system_save_file(scratch, (char *)file.str, string);
 
-    String8 command_to_run = debug_config_comment_runner_command;
+    String8 command_to_run = config_comment_runner_command;
     command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{file}"), name);
     command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{id}"), push_stringf(scratch, "%d", id));
 
