@@ -80,8 +80,8 @@ parse_config(Arena *scratch, Arena *arena, String8 text, String8 default_section
 
                     Case(TokenCppKind_LiteralIntegerHex){
                         v->type      = string_u8_litexpr("u32");
-                        v->value_str = string_skip(v->value_str, 2);
-                        v->value_u32 = string_to_integer(v->value_str, 16);
+                        String8 hex  = string_skip(v->value_str, 2);
+                        v->value_u32 = string_to_integer(hex, 16);
                         v->value_specifier = string_u8_litexpr("value_u32");
                     }Break;
 
