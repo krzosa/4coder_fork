@@ -17,6 +17,10 @@ CUSTOM_DOC("Default command for responding to a startup event")
 
         Scratch_Block scratch(app);
 
+        extern Arena config_arena;
+        config_arena = make_arena_system(1024*1024*32);
+        load_config(app, &config_arena);
+
         //
         // Apply config
         //

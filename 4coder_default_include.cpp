@@ -87,6 +87,7 @@
 #include "4coder_profile_inspect.cpp"
 #include "4coder_variables.cpp"
 #include "4coder_default_hooks.cpp"
+#include "4coder_config.cpp"
 #include "4coder_remedybg_driver.cpp"
 
 #endif

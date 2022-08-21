@@ -1,29 +1,86 @@
 
+struct Config_Value{
+    String8 type;
+    String8 name;
+    String8 value_specifier;
+    String8 value_str;
+    bool value_bool;
+    f32  value_float;
+    i64  value_int;
+};
+
+struct Loaded_Config{
+    Config_Value *values;
+    i32 count;
+};
+function void load_config(App *app, Arena *arena);
 /*
-When designing config api:
-* Config should notify when value is not set
-* Config should provide defaults everywhere
-* Should have easy to read messages
-* Should noticeably notify when error
-* Shouldn't require indentation, shouldn't require a lot of syntax
-*
+#define _CRT_SECURE_NO_WARNINGS
+#include "4coder_base_types.h"
+#include "4coder_token.h"
+#include "generated/lexer_cpp.h"
 
+#include "4coder_base_types.cpp"
+#include "4coder_stringf.cpp"
+#include "4coder_malloc_allocator.cpp"
+
+typedef u32 Face_Antialiasing_Mode;
+enum{
+    FaceAntialiasingMode_8BitMono,
+    FaceAntialiasingMode_1BitMono,
+};
+
+#include "4coder_token.cpp"
+#include "generated/lexer_cpp.cpp"
+#include "4coder_config.h"
+
+#include "4coder_file.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+int main(){
+  Arena arena_ = make_arena_malloc(MB(1), 8);
+  Arena *arena = &arena_;
+
+  String_Const_u8 text = file_dump(arena, "config.txt");
+  Loaded_Config config = parse_config(arena, arena, text);
+
+  Config_Value *values = config.values;
+  i64 values_count = config.count;
+  for(i32 i = 0; i < values_count; i++){
+    Config_Value *v = values + i;
+
+    b32 is_string = false;
+    if(string_match(string_u8_litexpr("String8"), v->type)) is_string = true;
+
+    printf("%.*s ", string_expand(v->type));
+    printf("debug_config_%.*s = ", string_expand(v->name));
+    if(is_string == true) printf("string_u8_litexpr(\"");
+    printf("%.*s", string_expand(v->value_str));
+    if(is_string == true) printf("\")");
+    printf(";\n");
+  }
+
+
+  printf("function void\nset_config_value(Config_Value *record){\n");
+  for(i32 i = 0; i < values_count; i++){
+    Config_Value *v = values + i;
+    printf(R"==(
+    if(string_match(record->name, string_u8_litexpr("%.*s"))){
+      debug_config_%.*s = record->%.*s;
+      return;
+    }
+    )==", string_expand(v->name), string_expand(v->name), string_expand(v->value_specifier));
+  }
+  printf("}");
+
+}
 */
-// Command Mapping
-// ""                - Leave the bindings unaltered - use this when writing your own customization!
-// "choose"          - Ask 4coder to choose based on platform.
-// "default"         - Use the default keybindings 4coder has always had.
-// "mac-default"     - Use keybindings similar to those found in other Mac applications.
 String8 debug_config_mapping = string_u8_litexpr("");
-
-
-// MODE
-// "4coder"       - The default 4coder mode that has been around since the beginning of time (2015)
-// "notepad-like" - Single "thin" cursor and highlight ranges like in notepad, sublime, notepad++, etc
 String8 debug_config_mode = string_u8_litexpr("4coder");
 b32 debug_config_bind_by_physical_key = false;
-
-// UI
 b32 debug_config_use_file_bars = true;
 b32 debug_config_hide_file_bar_in_ui = true;
 b32 debug_config_use_error_highlight = true;
@@ -36,58 +93,291 @@ b32 debug_config_show_line_number_margins = false;
 b32 debug_config_enable_output_wrapping = false;
 b32 debug_config_highlight_line_at_cursor = true;
 b32 debug_config_enable_undo_fade_out = true;
-
-
-f32 debug_config_background_margin_width = 0.f;
-
-// cursor_roundess is a value [0,50] setting the radius of
-// the cursor and mark's roundness as a percentage of their width
-// (At 50 the left and right corners will be so round they form a semi-circle,
-//  hence 50 is the max)
+f32 debug_config_background_margin_width = 0.0;
 i64 debug_config_cursor_roundness = 45;
-
-// mark_thickness is a pixel count value setting the
-// thickness of the mark wire box in original mode
 i64 debug_config_mark_thickness = 2;
-
-// lister_roundess is a value [0,50] setting the radius of
-// the lister items' roundness as a percentage of their height
 i64 debug_config_lister_roundness = 20;
-f32 debug_config_lister_item_height = 1.2f;
-
-// Code Wrapping
+f32 debug_config_lister_item_height = 1.2;
 String8 debug_config_treat_as_code = string_u8_litexpr(".cpp.c.hpp.h.cc.cs.java.rs.glsl.m.mm");
 b32 debug_config_enable_virtual_whitespace = true;
 i64 debug_config_virtual_whitespace_regular_indent = 4;
 b32 debug_config_enable_code_wrapping = false;
-
-// This only applies to code files in code-wrapping mode.
-// Plain text and code files without virtual-whitespace will not be effected.
 b32 debug_config_automatically_indent_text_on_save = true;
-
-// When set to true, all unsaved changes will be saved on a build.
 b32 debug_config_automatically_save_changes_on_build = true;
-
-// Indentation
 b32 debug_config_indent_with_tabs = false;
 i64 debug_config_indent_width = 4;
 i64 debug_config_default_tab_width = 4;
-
-// Theme
 String8 debug_config_default_theme_name = string_u8_litexpr("4coder");
-
-// Font
 String8 debug_config_default_font_name = string_u8_litexpr("liberation-mono.ttf");
 i64 debug_config_default_font_size = 12;
 b32 debug_config_default_font_hinting = false;
-
-// aa modes:
-//  8bit - mono-chrome 0-255 opacity channel per pixel
-//  1bit - mono-chrome 0/1 opacity channel per pixel
-Face_Antialiasing_Mode debug_config_default_font_aa_mode = FaceAntialiasingMode_8BitMono;
-
-// User
-String8 debug_config_user_name = string_u8_litexpr("not-set");
-
-// Keyboard AltGr setting
+i64 debug_config_default_font_aa_mode = FaceAntialiasingMode_8BitMono;
+String8 debug_config_user_name = string_u8_litexpr("Krzosa");
 b32 debug_config_lalt_lctrl_is_altgr = false;
+String8 debug_config_comment_runner_filename_extension = string_u8_litexpr("cpp");
+String8 debug_config_comment_runner_command = string_u8_litexpr("clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe");
+function void
+set_config_value(Config_Value *record){
+
+    if(string_match(record->name, string_u8_litexpr("mapping"))){
+        debug_config_mapping = record->value_str;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("mode"))){
+        debug_config_mode = record->value_str;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("bind_by_physical_key"))){
+        debug_config_bind_by_physical_key = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("use_file_bars"))){
+        debug_config_use_file_bars = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("hide_file_bar_in_ui"))){
+        debug_config_hide_file_bar_in_ui = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("use_error_highlight"))){
+        debug_config_use_error_highlight = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("use_jump_highlight"))){
+        debug_config_use_jump_highlight = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("use_scope_highlight"))){
+        debug_config_use_scope_highlight = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("use_paren_helper"))){
+        debug_config_use_paren_helper = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("use_comment_keywords"))){
+        debug_config_use_comment_keywords = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("lister_whole_word_backspace_when_modified"))){
+        debug_config_lister_whole_word_backspace_when_modified = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("show_line_number_margins"))){
+        debug_config_show_line_number_margins = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("enable_output_wrapping"))){
+        debug_config_enable_output_wrapping = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("highlight_line_at_cursor"))){
+        debug_config_highlight_line_at_cursor = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("enable_undo_fade_out"))){
+        debug_config_enable_undo_fade_out = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("background_margin_width"))){
+        debug_config_background_margin_width = record->value_float;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("cursor_roundness"))){
+        debug_config_cursor_roundness = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("mark_thickness"))){
+        debug_config_mark_thickness = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("lister_roundness"))){
+        debug_config_lister_roundness = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("lister_item_height"))){
+        debug_config_lister_item_height = record->value_float;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("treat_as_code"))){
+        debug_config_treat_as_code = record->value_str;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("enable_virtual_whitespace"))){
+        debug_config_enable_virtual_whitespace = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("virtual_whitespace_regular_indent"))){
+        debug_config_virtual_whitespace_regular_indent = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("enable_code_wrapping"))){
+        debug_config_enable_code_wrapping = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("automatically_indent_text_on_save"))){
+        debug_config_automatically_indent_text_on_save = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("automatically_save_changes_on_build"))){
+        debug_config_automatically_save_changes_on_build = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("indent_with_tabs"))){
+        debug_config_indent_with_tabs = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("indent_width"))){
+        debug_config_indent_width = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("default_tab_width"))){
+        debug_config_default_tab_width = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("default_theme_name"))){
+        debug_config_default_theme_name = record->value_str;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("default_font_name"))){
+        debug_config_default_font_name = record->value_str;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("default_font_size"))){
+        debug_config_default_font_size = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("default_font_hinting"))){
+        debug_config_default_font_hinting = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("default_font_aa_mode"))){
+        debug_config_default_font_aa_mode = record->value_int;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("user_name"))){
+        debug_config_user_name = record->value_str;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("lalt_lctrl_is_altgr"))){
+        debug_config_lalt_lctrl_is_altgr = record->value_bool;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("comment_runner_filename_extension"))){
+        debug_config_comment_runner_filename_extension = record->value_str;
+        return;
+    }
+
+    if(string_match(record->name, string_u8_litexpr("comment_runner_command"))){
+        debug_config_comment_runner_command = record->value_str;
+        return;
+    }
+}/*END*/
+
+function Loaded_Config
+parse_config(Arena *scratch, Arena *arena, String8 text){
+    Token_List token_list = lex_full_input_cpp(scratch, text);
+    Config_Value *values = push_array(arena, Config_Value, 256);
+    i32 values_count = 0;
+
+    Token_Iterator_List it = token_iterator(0, &token_list);
+    for(;;){
+        Token *token = next_token(&it);
+        if(token->kind == TokenBaseKind_EOF){
+            break;
+        }
+
+        if(token->kind == TokenBaseKind_Identifier){
+            String8 string = get_token_string(text, token);
+            if(match_token(&it, TokenCppKind_Eq)){
+                Token *value = next_token(&it);
+                String8 value_string = get_token_string(text, value);
+
+                Config_Value *v = values + values_count++;
+                v->value_str = value_string;
+                v->name  = string;
+
+                String8 type = {};
+                if(value->sub_kind == TokenCppKind_LiteralTrue){
+                    type = string_u8_litexpr("b32");
+                    v->value_bool = true;
+                    v->value_specifier = string_u8_litexpr("value_bool");
+                }
+
+                else if(value->sub_kind == TokenCppKind_LiteralFalse){
+                    type = string_u8_litexpr("b32");
+                    v->value_bool = false;
+                    v->value_specifier = string_u8_litexpr("value_bool");
+                }
+
+                else if(value->sub_kind == TokenCppKind_LiteralString){
+                    type = string_u8_litexpr("String8");
+                    v->value_specifier = string_u8_litexpr("value_str");
+                    v->value_str.str += 1;
+                    v->value_str.size -= 2;
+                }
+
+                else if(value->sub_kind == TokenCppKind_LiteralInteger){
+                    type = string_u8_litexpr("i64");
+                    v->value_int = string_to_integer(value_string, 10);
+                    v->value_specifier = string_u8_litexpr("value_int");
+                }
+
+                else if(value->sub_kind == TokenCppKind_Identifier){
+                    type = string_u8_litexpr("i64");
+                    v->value_specifier = string_u8_litexpr("value_int");
+                }
+
+                else if(value->sub_kind == TokenCppKind_LiteralFloat32 || value->sub_kind == TokenCppKind_LiteralFloat64){
+                    type = string_u8_litexpr("f32");
+                    v->value_float = atof((char *)value_string.str);
+                    v->value_specifier = string_u8_litexpr("value_float");
+                }
+
+                else{
+                    // TODO
+                }
+                v->type = type;
+            }
+        }
+    }
+
+    Loaded_Config result = {values, values_count};
+    return result;
+}

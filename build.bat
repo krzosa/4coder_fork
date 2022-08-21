@@ -27,9 +27,12 @@ clang platform_win32/win32_4ed.cpp %W% %I% %F% %L% %N%.exe -Wno-microsoft-goto
 
 copy 4ed.exe ship_files
 copy 4ed_app.dll ship_files
+copy config.txt ship_files
+
 
 copy 4ed.exe dev_version
 copy 4ed_app.dll dev_version
+copy config.txt dev_version
 
 popd
 

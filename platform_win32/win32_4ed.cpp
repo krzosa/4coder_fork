@@ -461,6 +461,7 @@ system_get_clipboard_sig(){
             // not having proper stuff.
             for (i32 R = 0; R < 8; ++R){
                 result = win32_read_clipboard_contents(win32vars.tctx, arena);
+                Sleep(5);
             }
         }
     }

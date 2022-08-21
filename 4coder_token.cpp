@@ -685,5 +685,47 @@ token_relex(Token_List relex_list, i64 new_pos_to_old_pos_shift, Token *tokens, 
     return(relex);
 }
 
+function Token *
+next_token(Token_Iterator_List *it){
+    token_it_inc(it);
+    Token *token = token_it_read(it);
+    return token;
+}
+
+function Token *
+next_token_raw(Token_Iterator_List *it){
+    token_it_inc_non_whitespace(it);
+    Token *token = token_it_read(it);
+    return token;
+}
+
+function b32
+match_token(Token_Iterator_List *it, i16 sub_kind){
+    token_it_inc(it);
+    Token *token = token_it_read(it);
+    if(token->sub_kind == sub_kind){
+        return true;
+    }
+    token_it_dec(it);
+    return false;
+}
+
+function b32
+match_token(Token_Iterator_List *it, Token_Base_Kind kind){
+    token_it_inc(it);
+    Token *token = token_it_read(it);
+    if(token->kind == kind){
+        return true;
+    }
+    token_it_dec(it);
+    return false;
+}
+
+function String8
+get_token_string(String8 string, Token *token){
+    String8 result = {string.str + token->pos, (u64)token->size};
+    return result;
+}
+
 // BOTTOM
 

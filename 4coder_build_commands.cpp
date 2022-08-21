@@ -153,6 +153,14 @@ CUSTOM_DOC("Make it big")
 }
 
 
+//
+// TODO(Krzosa): We want this to be configurable!!
+// TODO(Krzosa): Probably want some injected into code variables like file
+// TODO(Krzosa): Maybe add something like presets? you could bind a command into a number
+//               then you would specify it using something like #1
+// TODO(Krzosa): Probably would want also to add something like precise commands
+//               so you could specify a command to run it inside the comment
+//
 struct Python_Eval_Data{
     Range_i64 range_to_modify;
     Buffer_ID buffer_to_modify;
@@ -213,16 +221,16 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
         string.size -= 1;
     }
 
-    //
-    // TODO(Krzosa): We want this to be configurable!!
-    // TODO(Krzosa): Probably want some injected into code variables like file
-    //
-
-    String8 name = push_stringf(scratch, "__python_gen%d.cpp", id);
-    // String8 name = push_stringf(scratch, "__python_gen%d.py", id);
+    String8 ext = debug_config_comment_runner_filename_extension;
+    String8 buffer_name = push_stringf(scratch, "__buffer_gen%d.%.*s", id, string_expand(ext));
+    String8 name = push_stringf(scratch, "__gen%d.%.*s", id, string_expand(ext));
     String8 dir = push_hot_directory(app, scratch);
     String8 file = push_stringf(scratch, "%.*s/%.*s\0", string_expand(dir), string_expand(name));
     system_save_file(scratch, (char *)file.str, string);
+
+    String8 command_to_run = debug_config_comment_runner_command;
+    command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{file}"), name);
+    command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{id}"), push_stringf(scratch, "%d", id));
 
     //
     // Call python with the code
@@ -231,9 +239,10 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
     py->range_to_modify = range_to_modify;
     py->buffer_to_modify = buffer_with_code;
 
-    String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -o __python_gen%d.exe && __python_gen%d.exe\0", string_expand(file), id, id);
+    // String8 cmd = push_stringf(scratch, "clang %.*s -Wno-writable-strings -g -o __gen%d.exe && __gen%d.exe\0", string_expand(file), id, id);
+    print_message(app, command_to_run);
     // String8 cmd = push_stringf(scratch, "python %.*s\0", string_expand(file));
-    exec_system_command(app, global_compilation_view, {(char *)name.str, (i32)name.size}, dir, cmd, CLI_SendEndSignal|CLI_OverlapWithConflict, python_eval_callback, py);
+    exec_system_command(app, global_compilation_view, {(char *)buffer_name.str, (i32)buffer_name.size}, dir, command_to_run, CLI_SendEndSignal|CLI_OverlapWithConflict, python_eval_callback, py);
 }
 
 CUSTOM_COMMAND_SIG(python_interpreter_on_comment)

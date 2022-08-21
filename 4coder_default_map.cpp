@@ -33,8 +33,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(remedy_open_file_at_cursor,    KeyCode_F8);
     Bind(remedy_breakpoint_at_cursor,    KeyCode_F9);
     Bind(remedy_remove_breakpoint_at_cursor,    KeyCode_F9, KeyCode_Shift);
-    Bind(remedy_build_and_run_to_cursor,KeyCode_F11);
-    Bind(remedy_run_to_cursor,          KeyCode_F10, KeyCode_Control);
+    Bind(remedy_run_to_cursor,          KeyCode_F10);
 
     Bind(maximize_build_panel, KeyCode_Escape);
 
