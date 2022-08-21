@@ -63,7 +63,6 @@
 #include "4coder_fancy.cpp"
 #include "4coder_draw.cpp"
 #include "4coder_font_helper.cpp"
-// #include "4coder_dynamic_bindings.cpp"
 #include "4coder_search_list.cpp"
 #include "4coder_default_framework.cpp"
 #include "4coder_clipboard.cpp"

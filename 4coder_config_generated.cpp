@@ -114,47 +114,58 @@ String8 config_user_name = string_u8_litexpr("Krzosa");
 b32 config_lalt_lctrl_is_altgr = false;
 String8 config_comment_runner_filename_extension = string_u8_litexpr("cpp");
 String8 config_comment_runner_command = string_u8_litexpr("clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe");
-u32 theme_defcolor_bar = 0xFF333337;
-u32 theme_defcolor_base = 0xFFDCDCDC;
-u32 theme_defcolor_pop1 = 0xFFDCDCDC;
-u32 theme_defcolor_pop2 = 0xFF569CD6;
-u32 theme_defcolor_back = 0xFF1E1E1E;
-u32 theme_defcolor_margin = 0xFF1E1E1E;
-u32 theme_defcolor_margin_hover = 0xffff0000;
-u32 theme_defcolor_margin_active = 0xFF1E1E1E;
-u32 theme_defcolor_list_item = 0xFF1E1E1E;
-u32 theme_defcolor_list_item_hover = 0x22ffffff;
-u32 theme_defcolor_list_item_active = 0x33ffffff;
-u32 theme_defcolor_cursor = 0xFFDCDCDC;
-u32 theme_defcolor_at_cursor = 0xff000000;
-u32 theme_defcolor_highlight_cursor_line = 0xFF0F0F0F;
-u32 theme_defcolor_highlight = 0x11264F78;
-u32 theme_defcolor_at_highlight = 0xFF264F78;
-u32 theme_defcolor_mark = 0xFFDCDCDC;
-u32 theme_defcolor_text_default = 0xFFDCDCDC;
-u32 theme_defcolor_comment = 0xFF608B4E;
-u32 theme_defcolor_comment_pop = 0xFF569CD6;
-u32 theme_defcolor_keyword = 0xFF569CD6;
-u32 theme_defcolor_function = 0xFF4EC9B0;
-u32 theme_defcolor_macro = 0xFFc586c0;
-u32 theme_defcolor_type = 0xFF4EC9B0;
-u32 theme_defcolor_str_constant = 0xFFD69D85;
-u32 theme_defcolor_char_constant = 0xFFD69D85;
-u32 theme_defcolor_int_constant = 0xFFB5CEA8;
-u32 theme_defcolor_float_constant = 0xFFB5CEA8;
-u32 theme_defcolor_bool_constant = 0xFF569CD6;
-u32 theme_defcolor_preproc = 0xFF9B9B9B;
-u32 theme_defcolor_include = 0xFFDCDCDC;
-u32 theme_defcolor_special_character = 0xFFDCDCDC;
-u32 theme_defcolor_ghost_character = 0xFFDCDCDC;
-u32 theme_defcolor_highlight_junk = 0xFF3A0000;
-u32 theme_defcolor_highlight_white = 0xFF003A3A;
-u32 theme_defcolor_paste = 0xFFDDEE00;
-u32 theme_defcolor_undo = 0xFF00DDEE;
-u32 theme_defcolor_back_cycle = 0x0C4EC9B0;
-u32 theme_defcolor_text_cycle = 0xFFD69D85;
-u32 theme_defcolor_line_numbers_back = 0xFF1E1E1E;
-u32 theme_defcolor_line_numbers_text = 0xFFDCDCDC;
+u32 theme_bar = 0xFF333337;
+u32 theme_base = 0xFFDCDCDC;
+u32 theme_pop1 = 0xFFDCDCDC;
+u32 theme_pop2 = 0xFF569CD6;
+u32 theme_back = 0xFF1E1E1E;
+u32 theme_margin = 0xFF1E1E1E;
+u32 theme_margin_hover = 0xffff0000;
+u32 theme_margin_active = 0xFF1E1E1E;
+u32 theme_list_item_1 = 0xFF1E1E1E;
+u32 theme_list_item_2 = 0xFF1E1E1E;
+u32 theme_list_item_hover_1 = 0x22ffffff;
+u32 theme_list_item_hover_2 = 0x22ffffff;
+u32 theme_list_item_active_1 = 0x33ffffff;
+u32 theme_list_item_active_2 = 0x33ffffff;
+u32 theme_cursor_1 = 0xFFDCDCDC;
+u32 theme_cursor_2 = 0xFFA72822;
+u32 theme_at_cursor = 0xff000000;
+u32 theme_highlight_cursor_line = 0xFF0F0F0F;
+u32 theme_highlight = 0x11264F78;
+u32 theme_at_highlight = 0xFF264F78;
+u32 theme_mark = 0xFFDCDCDC;
+u32 theme_text_default = 0xFFDCDCDC;
+u32 theme_comment = 0xFF608B4E;
+u32 theme_comment_note = 0xFF569CD6;
+u32 theme_comment_todo = 0xFF569CD6;
+u32 theme_keyword = 0xFF569CD6;
+u32 theme_function = 0xFF4EC9B0;
+u32 theme_macro = 0xFFc586c0;
+u32 theme_type = 0xFF4EC9B0;
+u32 theme_str_constant = 0xFFD69D85;
+u32 theme_char_constant = 0xFFD69D85;
+u32 theme_int_constant = 0xFFB5CEA8;
+u32 theme_float_constant = 0xFFB5CEA8;
+u32 theme_bool_constant = 0xFF569CD6;
+u32 theme_preproc = 0xFF9B9B9B;
+u32 theme_include = 0xFFDCDCDC;
+u32 theme_special_character = 0xFFDCDCDC;
+u32 theme_ghost_character = 0xFFDCDCDC;
+u32 theme_highlight_junk = 0xFF3A0000;
+u32 theme_highlight_white = 0xFF003A3A;
+u32 theme_paste = 0xFFDDEE00;
+u32 theme_undo = 0xFF00DDEE;
+u32 theme_text_cycle_1 = 0xFFD69D85;
+u32 theme_text_cycle_2 = 0xFF4EC9B0;
+u32 theme_text_cycle_3 = 0xFFA6E22E;
+u32 theme_text_cycle_4 = 0xFF967EFB;
+u32 theme_back_cycle_1 = 0x0C4EC9B0;
+u32 theme_back_cycle_2 = 0x08569CD6;
+u32 theme_back_cycle_3 = 0x080000A0;
+u32 theme_back_cycle_4 = 0x08A0A000;
+u32 theme_line_numbers_back = 0xFF1E1E1E;
+u32 theme_line_numbers_text = 0xFFDCDCDC;
 function void
 set_config_value(Config_Value *record){
     if(string_match(string_u8_litexpr("config"), record->section)){
@@ -351,208 +362,263 @@ set_config_value(Config_Value *record){
     }
     if(string_match(string_u8_litexpr("theme"), record->section)){
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_bar"))){
-            theme_defcolor_bar = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("bar"))){
+            theme_bar = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_base"))){
-            theme_defcolor_base = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("base"))){
+            theme_base = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_pop1"))){
-            theme_defcolor_pop1 = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("pop1"))){
+            theme_pop1 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_pop2"))){
-            theme_defcolor_pop2 = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("pop2"))){
+            theme_pop2 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_back"))){
-            theme_defcolor_back = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("back"))){
+            theme_back = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_margin"))){
-            theme_defcolor_margin = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("margin"))){
+            theme_margin = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_margin_hover"))){
-            theme_defcolor_margin_hover = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("margin_hover"))){
+            theme_margin_hover = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_margin_active"))){
-            theme_defcolor_margin_active = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("margin_active"))){
+            theme_margin_active = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_list_item"))){
-            theme_defcolor_list_item = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("list_item_1"))){
+            theme_list_item_1 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_list_item_hover"))){
-            theme_defcolor_list_item_hover = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("list_item_2"))){
+            theme_list_item_2 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_list_item_active"))){
-            theme_defcolor_list_item_active = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("list_item_hover_1"))){
+            theme_list_item_hover_1 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_cursor"))){
-            theme_defcolor_cursor = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("list_item_hover_2"))){
+            theme_list_item_hover_2 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_at_cursor"))){
-            theme_defcolor_at_cursor = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("list_item_active_1"))){
+            theme_list_item_active_1 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_highlight_cursor_line"))){
-            theme_defcolor_highlight_cursor_line = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("list_item_active_2"))){
+            theme_list_item_active_2 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_highlight"))){
-            theme_defcolor_highlight = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("cursor_1"))){
+            theme_cursor_1 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_at_highlight"))){
-            theme_defcolor_at_highlight = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("cursor_2"))){
+            theme_cursor_2 = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_mark"))){
-            theme_defcolor_mark = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("at_cursor"))){
+            theme_at_cursor = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_text_default"))){
-            theme_defcolor_text_default = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("highlight_cursor_line"))){
+            theme_highlight_cursor_line = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_comment"))){
-            theme_defcolor_comment = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("highlight"))){
+            theme_highlight = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_comment_pop"))){
-            theme_defcolor_comment_pop = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("at_highlight"))){
+            theme_at_highlight = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_keyword"))){
-            theme_defcolor_keyword = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("mark"))){
+            theme_mark = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_function"))){
-            theme_defcolor_function = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("text_default"))){
+            theme_text_default = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_macro"))){
-            theme_defcolor_macro = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("comment"))){
+            theme_comment = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_type"))){
-            theme_defcolor_type = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("comment_note"))){
+            theme_comment_note = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_str_constant"))){
-            theme_defcolor_str_constant = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("comment_todo"))){
+            theme_comment_todo = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_char_constant"))){
-            theme_defcolor_char_constant = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("keyword"))){
+            theme_keyword = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_int_constant"))){
-            theme_defcolor_int_constant = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("function"))){
+            theme_function = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_float_constant"))){
-            theme_defcolor_float_constant = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("macro"))){
+            theme_macro = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_bool_constant"))){
-            theme_defcolor_bool_constant = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("type"))){
+            theme_type = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_preproc"))){
-            theme_defcolor_preproc = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("str_constant"))){
+            theme_str_constant = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_include"))){
-            theme_defcolor_include = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("char_constant"))){
+            theme_char_constant = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_special_character"))){
-            theme_defcolor_special_character = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("int_constant"))){
+            theme_int_constant = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_ghost_character"))){
-            theme_defcolor_ghost_character = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("float_constant"))){
+            theme_float_constant = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_highlight_junk"))){
-            theme_defcolor_highlight_junk = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("bool_constant"))){
+            theme_bool_constant = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_highlight_white"))){
-            theme_defcolor_highlight_white = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("preproc"))){
+            theme_preproc = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_paste"))){
-            theme_defcolor_paste = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("include"))){
+            theme_include = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_undo"))){
-            theme_defcolor_undo = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("special_character"))){
+            theme_special_character = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_back_cycle"))){
-            theme_defcolor_back_cycle = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("ghost_character"))){
+            theme_ghost_character = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_text_cycle"))){
-            theme_defcolor_text_cycle = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("highlight_junk"))){
+            theme_highlight_junk = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_line_numbers_back"))){
-            theme_defcolor_line_numbers_back = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("highlight_white"))){
+            theme_highlight_white = record->value_u32;
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("defcolor_line_numbers_text"))){
-            theme_defcolor_line_numbers_text = record->value_u32;
+        if(string_match(record->name, string_u8_litexpr("paste"))){
+            theme_paste = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("undo"))){
+            theme_undo = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("text_cycle_1"))){
+            theme_text_cycle_1 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("text_cycle_2"))){
+            theme_text_cycle_2 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("text_cycle_3"))){
+            theme_text_cycle_3 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("text_cycle_4"))){
+            theme_text_cycle_4 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("back_cycle_1"))){
+            theme_back_cycle_1 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("back_cycle_2"))){
+            theme_back_cycle_2 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("back_cycle_3"))){
+            theme_back_cycle_3 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("back_cycle_4"))){
+            theme_back_cycle_4 = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("line_numbers_back"))){
+            theme_line_numbers_back = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("line_numbers_text"))){
+            theme_line_numbers_text = record->value_u32;
             return;
         }
     }
