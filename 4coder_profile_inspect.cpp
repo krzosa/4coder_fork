@@ -331,7 +331,7 @@ profile_draw_node(App *app, View_ID view, Face_ID face_id,
 
         FColor color = fcolor_argb(theme_text_default);
         if (rect_contains_point(box, m_p)){
-            draw_rectangle_fcolor(app, box, 0.f, fcolor_argb(theme_margin));
+            draw_rectangle(app, box, 0.f, theme_margin);
             color = fcolor_argb(theme_pop1);
             insp->hover_node = node->parent;
         }
@@ -349,7 +349,7 @@ profile_draw_node(App *app, View_ID view, Face_ID face_id,
 
     Rect_f32 time_slice_box = side_by_side.min;
     time_slice_box = rect_inner(time_slice_box, 3.f);
-    draw_rectangle_outline_fcolor(app, time_slice_box, 0.f, 3.f, f_white);
+    draw_rectangle_outline(app, time_slice_box, 0.f, 3.f, theme_white);
     time_slice_box = rect_inner(time_slice_box, 3.f);
 
     if (node->closed){
@@ -456,15 +456,15 @@ profile_draw_node(App *app, View_ID view, Face_ID face_id,
             draw_fancy_line(app, face_id, fcolor_argb(theme_pop1), &line, p);
 
             Rect_f32 box = Rf32(x, y);
-            FColor margin = fcolor_argb(theme_margin);
+            ARGB_Color margin = theme_margin;
             if (rect_contains_point(box, m_p)){
                 insp->full_name_hovered = child_name;
                 insp->unique_counter_hovered = child->unique_counter;
                 insp->location_jump_hovered = profile_node_location(child);
                 insp->hover_node = child;
-                margin = fcolor_argb(theme_margin_hover);
+                margin = theme_margin_hover;
             }
-            draw_rectangle_outline_fcolor(app, box, 6.f, 3.f, margin);
+            draw_rectangle_outline(app, box, 6.f, 3.f, margin);
 
             y_pos = y.max;
             if (y_pos >= info_box.y1){
@@ -547,7 +547,7 @@ profile_render(App *app, Frame_Info frame_info, View_ID view){
             tab_state.x_half_padding = x_half_padding;
             tab_state.m_p = m_p;
 
-            draw_rectangle_fcolor(app, tabs_body.min, 0.f, fcolor_argb(theme_margin_hover));
+            draw_rectangle(app, tabs_body.min, 0.f, theme_margin_hover);
 
             if (inspect->tab_id == ProfileInspectTab_None){
                 inspect->tab_id = ProfileInspectTab_Threads;
@@ -628,12 +628,12 @@ profile_render(App *app, Frame_Info frame_info, View_ID view){
                     draw_fancy_line(app, face_id, fcolor_zero(), &list, p);
 
                     Rect_f32 box = Rf32(x, y);
-                    FColor margin = fcolor_argb(theme_margin);
+                    ARGB_Color margin = theme_margin;
                     if (rect_contains_point(box, m_p)){
                         inspect->hover_thread = thread;
-                        margin = fcolor_argb(theme_margin_hover);
+                        margin = theme_margin_hover;
                     }
-                    draw_rectangle_outline_fcolor(app, box, 6.f, 3.f, margin);
+                    draw_rectangle_outline(app, box, 6.f, 3.f, margin);
 
                     y_pos = y.max;
                     if (y_pos >= tabs_body.max.y1){
@@ -675,16 +675,16 @@ profile_render(App *app, Frame_Info frame_info, View_ID view){
                     draw_fancy_line(app, face_id, fcolor_zero(), &list, p);
 
                     Rect_f32 box = Rf32(x, y);
-                    FColor margin = fcolor_argb(theme_margin);
+                    ARGB_Color margin = theme_margin;
                     if (rect_contains_point(box, m_p)){
                         if (name_too_long){
                             inspect->full_name_hovered = node->name;
                         }
                         inspect->location_jump_hovered = node->location;
                         inspect->hover_slot = node;
-                        margin = fcolor_argb(theme_margin_hover);
+                        margin = theme_margin_hover;
                     }
-                    draw_rectangle_outline_fcolor(app, box, 6.f, 3.f, margin);
+                    draw_rectangle_outline(app, box, 6.f, 3.f, margin);
 
                     y_pos = y.max;
                     if (y_pos >= tabs_body.max.y1){
@@ -712,12 +712,12 @@ profile_render(App *app, Frame_Info frame_info, View_ID view){
                     draw_fancy_line(app, face_id, fcolor_zero(), &list, p);
 
                     Rect_f32 box = Rf32(x, y);
-                    FColor margin = fcolor_argb(theme_margin);
+                    ARGB_Color margin = theme_margin;
                     if (rect_contains_point(box, m_p)){
                         inspect->location_jump_hovered = node->location;
-                        margin = fcolor_argb(theme_margin_hover);
+                        margin = theme_margin_hover;
                     }
-                    draw_rectangle_outline_fcolor(app, box, 6.f, 3.f, margin);
+                    draw_rectangle_outline(app, box, 6.f, 3.f, margin);
 
                     y_pos = y.max;
                     if (y_pos >= tabs_body.max.y1){
@@ -832,7 +832,7 @@ profile_render(App *app, Frame_Info frame_info, View_ID view){
         else{
             Fancy_Block block = {};
             FColor text_color = fcolor_change_alpha(f_white, 0.5f);
-            FColor back_color = fcolor_change_alpha(f_black, 0.5f);
+            // FColor back_color = fcolor_change_alpha(f_black, 0.5f);
 
             if (inspect->full_name_hovered.size > 0){
                 Fancy_Line *line = push_fancy_line(scratch, &block, text_color);
@@ -849,8 +849,8 @@ profile_render(App *app, Frame_Info frame_info, View_ID view){
                                    string_expand(inspect->location_jump_hovered));
             }
 
-            draw_tool_tip(app, face_id, &block, m_p, region,
-                          x_padding, x_half_padding, back_color);
+            //draw_tool_tip(app, face_id, &block, m_p, region,
+            //x_padding, x_half_padding, back_color);
         }
     }
 

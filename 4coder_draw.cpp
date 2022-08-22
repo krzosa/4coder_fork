@@ -71,18 +71,6 @@ draw_string(App *app, Face_ID font_id, String_Const_u8 string, Vec2_f32 p, FColo
 }
 
 function void
-draw_rectangle_fcolor(App *app, Rect_f32 rect, f32 roundness, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_rectangle(app, rect, roundness, argb);
-}
-
-function void
-draw_rectangle_outline_fcolor(App *app, Rect_f32 rect, f32 roundness, f32 thickness, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_rectangle_outline(app, rect, roundness, thickness, argb);
-}
-
-function void
 draw_margin(App *app, Rect_f32 outer, Rect_f32 inner, ARGB_Color color){
     draw_rectangle(app, Rf32(outer.x0, outer.y0, outer.x1, inner.y0), 0.f, color);
     draw_rectangle(app, Rf32(outer.x0, inner.y1, outer.x1, outer.y1), 0.f, color);
@@ -364,7 +352,7 @@ draw_line_number_margin(App *app, View_ID view_id, Buffer_ID buffer, Face_ID fac
     FColor line_color = fcolor_argb(theme_line_numbers_text);
 
     Rect_f32 prev_clip = draw_set_clip(app, margin);
-    draw_rectangle_fcolor(app, margin, 0.f, fcolor_argb(theme_line_numbers_back));
+    draw_rectangle(app, margin, 0.f, theme_line_numbers_back);
 
     Range_i64 visible_range = text_layout_get_visible_range(app, text_layout_id);
     i64 line_count = buffer_get_line_count(app, buffer);
@@ -444,8 +432,8 @@ draw_fps_hud(App *app, Frame_Info frame_info, Face_ID face_id, Rect_f32 rect){
     history_animation_dt[wrapped_index] = frame_info.animation_dt;
     history_frame_index[wrapped_index]  = frame_info.index;
 
-    draw_rectangle_fcolor(app, rect, 0.f, f_black);
-    draw_rectangle_outline_fcolor(app, rect, 0.f, 1.f, f_white);
+    draw_rectangle(app, rect, 0.f, theme_black);
+    draw_rectangle_outline(app, rect, 0.f, 1.f, theme_white);
 
     Vec2_f32 p = rect.p0;
 
@@ -875,51 +863,6 @@ get_contained_box_near_point(Rect_f32 container, Vec2_f32 p, Vec2_f32 box_dims){
         }
     }
     return(Rf32_xy_wh(q, box_dims));
-}
-
-function Rect_f32
-draw_tool_tip(App *app, Face_ID face, Fancy_Block *block,
-              Vec2_f32 p, Rect_f32 region, f32 x_padding, f32 x_half_padding,
-              FColor back_color){
-    Rect_f32 box = Rf32(p, p);
-    if (block->line_count > 0){
-        Vec2_f32 dims = get_fancy_block_dim(app, face, block);
-        dims += V2f32(x_padding, 2.f);
-        box = get_contained_box_near_point(region, p, dims);
-        box.x0 = f32_round32(box.x0);
-        box.y0 = f32_round32(box.y0);
-        box.x1 = f32_round32(box.x1);
-        box.y1 = f32_round32(box.y1);
-        Rect_f32 prev_clip = draw_set_clip(app, box);
-        draw_rectangle_fcolor(app, box, 6.f, back_color);
-        draw_fancy_block(app, face, fcolor_zero(), block,
-                         box.p0 + V2f32(x_half_padding, 1.f));
-        draw_set_clip(app, prev_clip);
-    }
-    return(box);
-}
-
-function Rect_f32
-draw_drop_down(App *app, Face_ID face, Fancy_Block *block,
-               Vec2_f32 p, Rect_f32 region, f32 x_padding, f32 x_half_padding,
-               FColor outline_color, FColor back_color){
-    Rect_f32 box = Rf32(p, p);
-    if (block->line_count > 0){
-        Vec2_f32 dims = get_fancy_block_dim(app, face, block);
-        dims += V2f32(x_padding, 4.f);
-        box = get_contained_box_near_point(region, p, dims);
-        box.x0 = f32_round32(box.x0);
-        box.y0 = f32_round32(box.y0);
-        box.x1 = f32_round32(box.x1);
-        box.y1 = f32_round32(box.y1);
-        Rect_f32 prev_clip = draw_set_clip(app, box);
-        draw_rectangle_fcolor(app, box, 0.f, back_color);
-        draw_margin(app, box, rect_inner(box, 1.f), outline_color);
-        draw_fancy_block(app, face, fcolor_zero(), block,
-                         box.p0 + V2f32(x_half_padding, 2.f));
-        draw_set_clip(app, prev_clip);
-    }
-    return(box);
 }
 
 // BOTTOM

@@ -707,17 +707,17 @@ log_graph_render(App *app, Frame_Info frame_info, View_ID view){
 
             Rect_f32 box_inner = rect_inner(box, 3.f);
 
-            FColor margin_color = f_dark_gray;
+            ARGB_Color margin_color = theme_light_gray;
             if (!in_details_region && hover_event == 0 && rect_contains_point(box, m_p)){
-                margin_color = f_gray;
+                margin_color = theme_gray;
                 hover_event = box_node->event;
             }
             if (box_node->event == log_graph.selected_event){
-                margin_color = f_light_gray;
+                margin_color = theme_light_gray;
             }
 
-            draw_rectangle_fcolor(app, box      , 0.f, margin_color);
-            draw_rectangle_fcolor(app, box_inner, 0.f, f_black     );
+            draw_rectangle(app, box      , 0.f, margin_color);
+            draw_rectangle(app, box_inner, 0.f, theme_black );
 
             Log_Event *event = box_node->event;
 
@@ -754,8 +754,8 @@ log_graph_render(App *app, Frame_Info frame_info, View_ID view){
             Log_Graph_List_Tab current_tab = log_graph.tab;
             Log_Filter_Set *viewing_filter_set = log_filter_set_from_tab(current_tab);
 
-            draw_rectangle_fcolor(app, box      , 0.f, f_dark_gray);
-            draw_rectangle_fcolor(app, box_inner, 0.f, f_black    );
+            draw_rectangle(app, box      , 0.f, theme_dark_gray);
+            draw_rectangle(app, box_inner, 0.f, theme_black    );
 
             {
                 f32 y_cursor = box_inner.y0 + 3.f;

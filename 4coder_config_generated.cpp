@@ -633,4 +633,8 @@ theme_text_cycle(i32 i){
     return text_cycle[i % ArrayCount(text_cycle)];
 }
 
-
+global ARGB_Color theme_black = 0xFF000000;
+global ARGB_Color theme_white = 0xFFFFFFFF;
+global ARGB_Color theme_light_gray = 0xFFCCCCCC;
+global ARGB_Color theme_dark_gray = 0xFF555555;
+global ARGB_Color theme_gray = 0xFF999999;
