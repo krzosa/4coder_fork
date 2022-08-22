@@ -16,12 +16,10 @@ struct Loaded_Config{
     i32 count;
 };
 
-function void load_config(App *app, Arena *arena);
-
 function Loaded_Config
-parse_config(Arena *scratch, Arena *arena, String8 text, String8 default_section = string_u8_litexpr("config")){
+parse_config(Arena *scratch, Arena *string_arena, String8 text, String8 default_section = string_u8_litexpr("config")){
     Token_List token_list = lex_full_input_cpp(scratch, text);
-    Config_Value *values = push_array(arena, Config_Value, 256);
+    Config_Value *values = push_array(scratch, Config_Value, 256);
     i32 values_count = 0;
 
     String8 section = default_section;
@@ -70,6 +68,7 @@ parse_config(Arena *scratch, Arena *arena, String8 text, String8 default_section
                         v->type = string_u8_litexpr("String8");
                         v->value_str.str += 1; v->value_str.size -= 2;
                         v->value_specifier = string_u8_litexpr("value_str");
+                        v->value_str = push_string_copy(string_arena, v->value_str);
                     }Break;
 
                     Case(TokenCppKind_LiteralInteger){

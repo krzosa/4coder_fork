@@ -2508,6 +2508,16 @@ print_message(App *app, String_Const_u8 message)
     }
 }
 
+function void
+print_messagef(App *app, char *format, ...){
+    Scratch_Block scratch(app);
+    va_list args;
+    va_start(args, format);
+    String_Const_u8 cmd = push_stringfv(scratch, format, args);
+    va_end(args);
+    print_message(app, cmd);
+}
+
 function b32
 log_string(App *app, String_Const_u8 str){
     return(log_string(str));

@@ -23,7 +23,7 @@ enum{
     FaceAntialiasingMode_1BitMono,
 };
 
-#include "4coder_config1.cpp"
+#include "4coder_config_parse.cpp"
 
 int main(){
   Arena arena_ = make_arena_malloc(MB(1), 8);

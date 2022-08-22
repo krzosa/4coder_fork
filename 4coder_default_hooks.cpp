@@ -4,6 +4,10 @@
 
 // TOP
 
+CUSTOM_COMMAND_SIG(reload_config);
+CUSTOM_COMMAND_SIG(load_project_file);
+
+
 CUSTOM_COMMAND_SIG(default_startup)
 CUSTOM_DOC("Default command for responding to a startup event")
 {
@@ -17,9 +21,11 @@ CUSTOM_DOC("Default command for responding to a startup event")
 
         Scratch_Block scratch(app);
 
-        extern Arena config_arena;
-        config_arena = make_arena_system(1024*1024*32);
-        load_config(app, &config_arena);
+
+        extern Arena config_string_arena;
+        config_string_arena = make_arena_system(MB(1));
+        reload_config(app);
+        load_project_file(app);
 
         //
         // Apply config
