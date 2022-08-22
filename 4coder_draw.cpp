@@ -64,12 +64,6 @@ draw_string(App *app, Face_ID font_id, String_Const_u8 string, Vec2_f32 p, ARGB_
     return(draw_string_oriented(app, font_id, color, string, p, 0, V2f32(1.f, 0.f)));
 }
 
-function Vec2_f32
-draw_string(App *app, Face_ID font_id, String_Const_u8 string, Vec2_f32 p, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    return(draw_string(app, font_id, string, p, argb));
-}
-
 function void
 draw_margin(App *app, Rect_f32 outer, Rect_f32 inner, ARGB_Color color){
     draw_rectangle(app, Rf32(outer.x0, outer.y0, outer.x1, inner.y0), 0.f, color);
@@ -79,21 +73,9 @@ draw_margin(App *app, Rect_f32 outer, Rect_f32 inner, ARGB_Color color){
 }
 
 function void
-draw_margin(App *app, Rect_f32 outer, Rect_f32 inner, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_margin(app, outer, inner, argb);
-}
-
-function void
 draw_character_block(App *app, Text_Layout_ID layout, i64 pos, f32 roundness, ARGB_Color color){
     Rect_f32 rect = text_layout_character_on_screen(app, layout, pos);
     draw_rectangle(app, rect, roundness, color);
-}
-
-function void
-draw_character_block(App *app, Text_Layout_ID layout, i64 pos, f32 roundness, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_character_block(app, layout, pos, roundness, argb);
 }
 
 function void
@@ -129,28 +111,9 @@ draw_character_block(App *app, Text_Layout_ID layout, Range_i64 range, f32 round
 }
 
 function void
-draw_character_block(App *app, Text_Layout_ID layout, Range_i64 range, f32 roundness, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_character_block(app, layout, range, roundness, argb);
-}
-
-function void
 draw_character_wire_frame(App *app, Text_Layout_ID layout, i64 pos, f32 roundness, f32 thickness, ARGB_Color color){
     Rect_f32 rect = text_layout_character_on_screen(app, layout, pos);
     draw_rectangle_outline(app, rect, roundness, thickness, color);
-}
-
-function void
-draw_character_wire_frame(App *app, Text_Layout_ID layout, i64 pos, f32 roundness, f32 thickness, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_character_wire_frame(app, layout, pos, roundness, thickness, argb);
-}
-
-function void
-draw_character_wire_frame(App *app, Text_Layout_ID layout, Range_i64 range, f32 roundness, f32 thickness, FColor color){
-    for (i64 i = range.first; i < range.one_past_last; i += 1){
-        draw_character_wire_frame(app, layout, i, roundness, thickness, color);
-    }
 }
 
 function void
@@ -158,12 +121,6 @@ draw_character_i_bar(App *app, Text_Layout_ID layout, i64 pos, ARGB_Color color)
     Rect_f32 rect = text_layout_character_on_screen(app, layout, pos);
     rect.x1 = rect.x0 + 1.f;
     draw_rectangle(app, rect, 0.f, color);
-}
-
-function void
-draw_character_i_bar(App *app, Text_Layout_ID layout, i64 pos, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_character_i_bar(app, layout, pos, argb);
 }
 
 function void
@@ -178,36 +135,13 @@ draw_line_highlight(App *app, Text_Layout_ID layout, Range_i64 line_range, ARGB_
 }
 
 function void
-draw_line_highlight(App *app, Text_Layout_ID layout, Range_i64 line_range, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    draw_line_highlight(app, layout, line_range, argb);
-}
-
-function void
 draw_line_highlight(App *app, Text_Layout_ID layout, i64 line, ARGB_Color color){
     draw_line_highlight(app, layout, Ii64(line), color);
 }
 
 function void
-draw_line_highlight(App *app, Text_Layout_ID layout, i64 line, FColor color){
-    draw_line_highlight(app, layout, Ii64(line), color);
-}
-
-function void
-paint_text_color_fcolor(App *app, Text_Layout_ID layout, Range_i64 pos, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    paint_text_color(app, layout, pos, argb);
-}
-
-function void
 paint_text_color_pos(App *app, Text_Layout_ID layout, i64 pos, ARGB_Color color){
     paint_text_color(app, layout, Ii64(pos, pos + 1), color);
-}
-
-function void
-paint_text_color_pos(App *app, Text_Layout_ID layout, i64 pos, FColor color){
-    ARGB_Color argb = fcolor_resolve(color);
-    paint_text_color_pos(app, layout, pos, argb);
 }
 
 ////////////////////////////////
