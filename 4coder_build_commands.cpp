@@ -229,7 +229,7 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
     system_save_file(scratch, (char *)file.str, string);
 
     String8 command_to_run = config_comment_runner_command;
-    command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{file}"), name);
+    command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{file}"), file);
     command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{id}"), push_stringf(scratch, "%d", id));
 
     //
