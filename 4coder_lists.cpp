@@ -199,43 +199,6 @@ get_command_from_user(App *app, char *query, Command_Lister_Status_Rule *status_
 
 ////////////////////////////////
 
-function Color_Table*
-get_color_table_from_user(App *app, String_Const_u8 query, Color_Table_List *color_table_list){
-    if (color_table_list == 0){
-        color_table_list = &global_theme_list;
-    }
-
-    Scratch_Block scratch(app);
-    Lister_Block lister(app, scratch);
-    lister_set_query(lister, query);
-    lister_set_default_handlers(lister);
-
-    lister_add_item(lister, string_u8_litexpr("4coder"), string_u8_litexpr(""),
-                    (void*)&default_color_table, 0);
-
-    for (Color_Table_Node *node = color_table_list->first;
-         node != 0;
-         node = node->next){
-        lister_add_item(lister, node->name, string_u8_litexpr(""),
-                        (void*)&node->table, 0);
-    }
-
-    Lister_Result l_result = run_lister(app, lister);
-
-    Color_Table *result = 0;
-    if (!l_result.canceled){
-        result = (Color_Table*)l_result.user_data;
-    }
-    return(result);
-}
-
-function Color_Table*
-get_color_table_from_user(App *app){
-    return(get_color_table_from_user(app, string_u8_litexpr("Theme:"), 0));
-}
-
-////////////////////////////////
-
 function Lister_Activation_Code
 lister__write_character__file_path(App *app){
     Lister_Activation_Code result = ListerActivation_Continue;
@@ -777,17 +740,6 @@ CUSTOM_DOC("Opens an interactive list of all registered commands.")
         if (func != 0){
             view_enqueue_command_function(app, view, func);
         }
-    }
-}
-
-////////////////////////////////
-
-CUSTOM_UI_COMMAND_SIG(theme_lister)
-CUSTOM_DOC("TODO(Krzosa): Opens an interactive list of all registered themes.")
-{
-    Color_Table *color_table = get_color_table_from_user(app);
-    if (color_table != 0){
-        active_color_table = *color_table;
     }
 }
 

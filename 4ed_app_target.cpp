@@ -16,7 +16,6 @@
 #include "4coder_table.h"
 #include "4coder_events.h"
 #include "4coder_types.h"
-#include "4coder_default_colors.h"
 
 function Thread_Context* get_thread_context(App *app);
 function void print_message(App *app, String_Const_u8 message);

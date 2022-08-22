@@ -54,7 +54,7 @@ fcolor_resolve(FColor color){
     ARGB_Color result = 0;
     if (color.a_byte == 0){
         if (color.id != 0){
-            result = finalize_color(color.id, color.sub_index);
+            result = 0xFFFF00FF;
         }
     }
     else{
