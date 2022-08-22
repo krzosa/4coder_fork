@@ -147,7 +147,6 @@ CUSTOM_DOC("At the cursor, insert the text at the top of the clipboard.")
     i32 count = clipboard_count(0);
     if (count > 0){
         View_ID view = get_active_view(app, Access_ReadWriteVisible);
-        if_view_has_highlighted_range_delete_range(app, view);
 
         set_next_rewrite(app, view, Rewrite_Paste);
 

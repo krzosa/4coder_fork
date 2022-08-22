@@ -10,7 +10,6 @@ write_text(App *app, String_Const_u8 insert){
     ProfileScope(app, "write character");
     if (insert.str != 0 && insert.size > 0){
         View_ID view = get_active_view(app, Access_ReadWriteVisible);
-        if_view_has_highlighted_range_delete_range(app, view);
 
         i64 pos = view_get_cursor_pos(app, view);
         pos = view_get_character_legal_pos_from_pos(app, view, pos);
@@ -68,16 +67,14 @@ CUSTOM_COMMAND_SIG(delete_char)
 CUSTOM_DOC("Deletes the character to the right of the cursor.")
 {
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    if (!if_view_has_highlighted_range_delete_range(app, view)){
-        Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-        i64 start = view_get_cursor_pos(app, view);
-        i64 buffer_size = buffer_get_size(app, buffer);
-        if (0 <= start && start < buffer_size){
-            Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(start));
-            i64 character = view_relative_character_from_pos(app, view, cursor.line, cursor.pos);
-            i64 end = view_pos_from_relative_character(app, view, cursor.line, character + 1);
-            buffer_replace_range(app, buffer, Ii64(start, end), string_u8_empty);
-        }
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    i64 start = view_get_cursor_pos(app, view);
+    i64 buffer_size = buffer_get_size(app, buffer);
+    if (0 <= start && start < buffer_size){
+        Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(start));
+        i64 character = view_relative_character_from_pos(app, view, cursor.line, cursor.pos);
+        i64 end = view_pos_from_relative_character(app, view, cursor.line, character + 1);
+        buffer_replace_range(app, buffer, Ii64(start, end), string_u8_empty);
     }
 }
 
@@ -85,39 +82,37 @@ CUSTOM_COMMAND_SIG(backspace_char)
 CUSTOM_DOC("Deletes the character to the left of the cursor.")
 {
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
-    if (!if_view_has_highlighted_range_delete_range(app, view)){
-        Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
-        i64 end = view_get_cursor_pos(app, view);
-        i64 buffer_size = buffer_get_size(app, buffer);
-        if (0 < end && end <= buffer_size){
-            // HACK(Krzosa)
-            // NOTE(Krzosa): Special case, we want to delete whitespace normally inside of comments
-            // else clause seems to calculate beginning of line so that it can delete all the whitespace.
-            // We instead of that check if token is correct. Seems like a hack and there are probably many
-            // edge cases. For now it works
-            i64 start = -1;
-            Token_Array tokens = get_token_array_from_buffer(app, buffer);
-            if(tokens.tokens){
-                i64 index = token_index_from_pos(&tokens, end);
-                Assert(index < tokens.max);
-                Assert(index >= 0);
-                Token *token = tokens.tokens + index;
-                if(token->kind == TokenBaseKind_LiteralString || token->kind == TokenBaseKind_Comment){
-                    start = end - 1;
-                }
-
+    Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
+    i64 end = view_get_cursor_pos(app, view);
+    i64 buffer_size = buffer_get_size(app, buffer);
+    if (0 < end && end <= buffer_size){
+        // HACK(Krzosa)
+        // NOTE(Krzosa): Special case, we want to delete whitespace normally inside of comments
+        // else clause seems to calculate beginning of line so that it can delete all the whitespace.
+        // We instead of that check if token is correct. Seems like a hack and there are probably many
+        // edge cases. For now it works
+        i64 start = -1;
+        Token_Array tokens = get_token_array_from_buffer(app, buffer);
+        if(tokens.tokens){
+            i64 index = token_index_from_pos(&tokens, end);
+            Assert(index < tokens.max);
+            Assert(index >= 0);
+            Token *token = tokens.tokens + index;
+            if(token->kind == TokenBaseKind_LiteralString || token->kind == TokenBaseKind_Comment){
+                start = end - 1;
             }
 
-            // NOTE(Krzosa): Do the default thing
-            if(start == -1){
-                Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(end));
-                i64 character = view_relative_character_from_pos(app, view, cursor.line, cursor.pos);
-                start = view_pos_from_relative_character(app, view, cursor.line, character - 1);
-            }
+        }
 
-            if (buffer_replace_range(app, buffer, Ii64(start, end), string_u8_empty)){
-                view_set_cursor_and_preferred_x(app, view, seek_pos(start));
-            }
+        // NOTE(Krzosa): Do the default thing
+        if(start == -1){
+            Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(end));
+            i64 character = view_relative_character_from_pos(app, view, cursor.line, cursor.pos);
+            start = view_pos_from_relative_character(app, view, cursor.line, character - 1);
+        }
+
+        if (buffer_replace_range(app, buffer, Ii64(start, end), string_u8_empty)){
+            view_set_cursor_and_preferred_x(app, view, seek_pos(start));
         }
     }
 }

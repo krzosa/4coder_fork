@@ -72,12 +72,6 @@ global b32 show_fps_hud = false;
 // TODO(allen): REMOVE THIS!
 global Heap global_heap;
 
-enum{
-    FCoderMode_Original = 0,
-    FCoderMode_NotepadLike = 1,
-};
-global i32 fcoder_mode = FCoderMode_Original;
-
 global ID_Pos_Jump_Location prev_location = {};
 
 global Arena global_permanent_arena = {};

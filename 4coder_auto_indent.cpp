@@ -466,12 +466,7 @@ CUSTOM_DOC("Inserts text and auto-indents the line on which the cursor sits if a
             Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
 
             Range_i64 pos = {};
-            if (view_has_highlighted_range(app, view)){
-                pos = get_view_range(app, view);
-            }
-            else{
-                pos.min = pos.max = view_get_cursor_pos(app, view);
-            }
+            pos.min = pos.max = view_get_cursor_pos(app, view);
 
             write_text_input(app);
 

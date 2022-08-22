@@ -457,18 +457,6 @@ CUSTOM_DOC("Toggles the mouse suppression mode, see suppress_mouse and allow_mou
     set_mouse_suppression(!suppressing_mouse);
 }
 
-CUSTOM_COMMAND_SIG(set_mode_to_original)
-CUSTOM_DOC("Sets the edit mode to 4coder original.")
-{
-    fcoder_mode = FCoderMode_Original;
-}
-
-CUSTOM_COMMAND_SIG(set_mode_to_notepad_like)
-CUSTOM_DOC("Sets the edit mode to Notepad like.")
-{
-    begin_notepad_mode(app);
-}
-
 CUSTOM_COMMAND_SIG(toggle_highlight_line_at_cursor)
 CUSTOM_DOC("Toggles the line highlight at the cursor.")
 {
@@ -541,20 +529,6 @@ setup_built_in_mapping(App *app, String_Const_u8 name, Mapping *mapping, i64 glo
 #else
         setup_default_mapping(mapping, global_id, file_id, code_id);
 #endif
-    }
-}
-
-function void
-change_mode(App *app, String_Const_u8 mode){
-    fcoder_mode = FCoderMode_Original;
-    if (string_match(mode, string_u8_litexpr("4coder"))){
-        fcoder_mode = FCoderMode_Original;
-    }
-    else if (string_match(mode, string_u8_litexpr("notepad-like"))){
-        begin_notepad_mode(app);
-    }
-    else{
-        print_message(app, string_u8_litexpr("Unknown mode.\n"));
     }
 }
 
@@ -866,20 +840,8 @@ set_next_rewrite(App *app, View_ID view, Rewrite_Type rewrite){
 
 function void
 default_pre_command(App *app, Managed_Scope scope){
-    Rewrite_Type *next_rewrite =
-        scope_attachment(app, scope, view_next_rewrite_loc, Rewrite_Type);
+    Rewrite_Type *next_rewrite = scope_attachment(app, scope, view_next_rewrite_loc, Rewrite_Type);
     *next_rewrite = Rewrite_None;
-    if (fcoder_mode == FCoderMode_NotepadLike){
-        for (View_ID view_it = get_view_next(app, 0, Access_Always);
-             view_it != 0;
-             view_it = get_view_next(app, view_it, Access_Always)){
-            Managed_Scope scope_it = view_get_managed_scope(app, view_it);
-            b32 *snap_mark_to_cursor =
-                scope_attachment(app, scope_it, view_snap_mark_to_cursor,
-                                 b32);
-            *snap_mark_to_cursor = true;
-        }
-    }
 }
 
 function void
@@ -890,19 +852,6 @@ default_post_command(App *app, Managed_Scope scope){
             Rewrite_Type *rewrite =
                 scope_attachment(app, scope, view_rewrite_loc, Rewrite_Type);
             *rewrite = *next_rewrite;
-        }
-    }
-    if (fcoder_mode == FCoderMode_NotepadLike){
-        for (View_ID view_it = get_view_next(app, 0, Access_Always);
-             view_it != 0;
-             view_it = get_view_next(app, view_it, Access_Always)){
-            Managed_Scope scope_it = view_get_managed_scope(app, view_it);
-            b32 *snap_mark_to_cursor =
-                scope_attachment(app, scope_it, view_snap_mark_to_cursor, b32);
-            if (*snap_mark_to_cursor){
-                i64 pos = view_get_cursor_pos(app, view_it);
-                view_set_mark(app, view_it, seek_pos(pos));
-            }
         }
     }
 }

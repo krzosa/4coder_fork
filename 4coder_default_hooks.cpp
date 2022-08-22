@@ -27,12 +27,6 @@ CUSTOM_DOC("Default command for responding to a startup event")
         reload_config(app);
         load_project_file(app);
 
-        //
-        // Apply config
-        //
-        String_Const_u8 mode = config_mode;
-        change_mode(app, mode);
-
         b32 lalt_lctrl_is_altgr = config_lalt_lctrl_is_altgr;
         global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
 
@@ -554,17 +548,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         }
     }
 
-    // NOTE(allen): Cursor
-    switch (fcoder_mode){
-        case FCoderMode_Original:
-        {
-            draw_original_4coder_style_cursor_mark_highlight(app, view_id, is_active_view, buffer, text_layout_id, cursor_roundness, mark_thickness);
-        }break;
-        case FCoderMode_NotepadLike:
-        {
-            draw_notepad_style_cursor_highlight(app, view_id, buffer, text_layout_id, cursor_roundness);
-        }break;
-    }
+    draw_original_4coder_style_cursor_mark_highlight(app, view_id, is_active_view, buffer, text_layout_id, cursor_roundness, mark_thickness);
 
     // NOTE(allen): Fade ranges
     paint_fade_ranges(app, text_layout_id, buffer);

@@ -759,26 +759,6 @@ draw_original_4coder_style_cursor_mark_highlight(App *app, View_ID view_id, b32 
     }
 }
 
-function void
-draw_notepad_style_cursor_highlight(App *app, View_ID view_id,
-                                    Buffer_ID buffer, Text_Layout_ID text_layout_id,
-                                    f32 roundness){
-    b32 has_highlight_range = draw_highlight_range(app, view_id, buffer, text_layout_id, roundness);
-    if (!has_highlight_range){
-        i32 cursor_sub_id = default_cursor_sub_id();
-        i64 cursor_pos = view_get_cursor_pos(app, view_id);
-        i64 mark_pos = view_get_mark_pos(app, view_id);
-        if (cursor_pos != mark_pos){
-            Range_i64 range = Ii64(cursor_pos, mark_pos);
-            draw_character_block(app, text_layout_id, range, roundness, theme_highlight);
-            paint_text_color(app, text_layout_id, range, theme_at_highlight);
-        }
-
-        ARGB_Color cursor[] = {theme_cursor_1, theme_cursor_2};
-        draw_character_i_bar(app, text_layout_id, cursor_pos, cursor[cursor_sub_id]);
-    }
-}
-
 ////////////////////////////////
 
 function Rect_f32

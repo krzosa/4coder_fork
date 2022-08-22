@@ -2194,40 +2194,6 @@ no_mark_snap_to_cursor_if_shift(App *app, View_ID view_id){
     }
 }
 
-function b32
-view_has_highlighted_range(App *app, View_ID view){
-    b32 result = false;
-    if (fcoder_mode == FCoderMode_NotepadLike){
-        i64 pos = view_get_cursor_pos(app, view);
-        i64 mark = view_get_mark_pos(app, view);
-        result = (pos != mark);
-    }
-    return(result);
-}
-
-function b32
-if_view_has_highlighted_range_delete_range(App *app, View_ID view_id){
-    b32 result = false;
-    if (view_has_highlighted_range(app, view_id)){
-        Range_i64 range = get_view_range(app, view_id);
-        Buffer_ID buffer = view_get_buffer(app, view_id, Access_ReadWriteVisible);
-        buffer_replace_range(app, buffer, range, string_u8_litexpr(""));
-        result = true;
-    }
-    return(result);
-}
-
-function void
-begin_notepad_mode(App *app){
-    fcoder_mode = FCoderMode_NotepadLike;
-    for (View_ID view = get_view_next(app, 0, Access_Always);
-         view != 0;
-         view = get_view_next(app, view, Access_Always)){
-        i64 pos = view_get_cursor_pos(app, view);
-        view_set_mark(app, view, seek_pos(pos));
-    }
-}
-
 ////////////////////////////////
 
 function void
