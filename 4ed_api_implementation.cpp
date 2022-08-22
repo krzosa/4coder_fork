@@ -2516,6 +2516,7 @@ print_messagef(App *app, char *format, ...){
     String_Const_u8 cmd = push_stringfv(scratch, format, args);
     va_end(args);
     print_message(app, cmd);
+    print_message(app, string_u8_litexpr("\n"));
 }
 
 function b32

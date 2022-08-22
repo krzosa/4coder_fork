@@ -297,6 +297,8 @@ App_Init_Sig(app_init){
         { str8_lit("*keyboard*"), &models->keyboard_buffer, true , },
     };
 
+
+
     Buffer_Hook_Function *begin_buffer_func = models->begin_buffer;
     models->begin_buffer = 0;
 

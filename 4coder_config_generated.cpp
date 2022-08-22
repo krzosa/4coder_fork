@@ -624,3 +624,13 @@ set_config_value(Config_Value *record){
     }
 }
 /*END*/
+
+
+// TODO(Krzosa); Arrays in config?
+function ARGB_Color
+theme_text_cycle(i32 i){
+    ARGB_Color text_cycle[] = {theme_text_cycle_1, theme_text_cycle_2, theme_text_cycle_3, theme_text_cycle_4};
+    return text_cycle[i % ArrayCount(text_cycle)];
+}
+
+

@@ -348,8 +348,7 @@ recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range,
         }
     }
 
-    ARGB_Color text_cycle[] = {theme_text_cycle_1, theme_text_cycle_2, theme_text_cycle_3, theme_text_cycle_4};
-    ARGB_Color argb = text_cycle[counter];
+    ARGB_Color argb = theme_text_cycle(counter);
     argb &= ~0x33000000;
 
     for (;ptr < ptr_end; ptr += 1){
@@ -514,7 +513,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     b32 use_scope_highlight = config_use_scope_highlight;
     if (use_scope_highlight){
         ARGB_Color colors[] = {theme_back_cycle_1, theme_back_cycle_2, theme_back_cycle_3, theme_back_cycle_4};
-        draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors, 3);
+        draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors, 4);
     }
 
     b32 use_error_highlight = config_use_error_highlight;
