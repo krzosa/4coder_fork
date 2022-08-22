@@ -1738,7 +1738,7 @@ CUSTOM_DOC("Advances backwards through the undo history of the current buffer.")
             }
             if (has_hard_character){
                 Range_i64 range = Ii64_size(record.single_first, record.single_string_forward.size);
-                ARGB_Color color = fcolor_resolve(fcolor_id(defcolor_undo)) & 0xFFFFFF;
+                ARGB_Color color = theme_undo & 0xFFFFFF;
                 Fade_Range *fade = buffer_post_fade(app, buffer, undo_fade_time, range, color);
                 fade->negate_fade_direction = true;
                 fade->finish_call = undo__fade_finish;
@@ -1753,7 +1753,7 @@ CUSTOM_DOC("Advances backwards through the undo history of the current buffer.")
             buffer_history_set_current_state_index(app, buffer, current - 1);
             if (record.single_string_backward.size > 0){
                 Range_i64 range = Ii64_size(record.single_first, record.single_string_backward.size);
-                ARGB_Color color = fcolor_resolve(fcolor_id(defcolor_undo));
+                ARGB_Color color = theme_undo;
                 buffer_post_fade(app, buffer, undo_fade_time, range, color);
             }
         }
@@ -1779,7 +1779,7 @@ CUSTOM_DOC("Advances forwards through the undo history of the current buffer.")
 
         if (record.single_string_forward.size > 0){
             Range_i64 range = Ii64_size(record.single_first, record.single_string_forward.size);
-            ARGB_Color color = fcolor_resolve(fcolor_id(defcolor_undo));
+            ARGB_Color color = theme_undo;
             f32 undo_fade_time = 0.33f;
             buffer_post_fade(app, buffer, undo_fade_time, range, color);
         }

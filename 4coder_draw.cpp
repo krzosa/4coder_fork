@@ -6,51 +6,54 @@
 
 function void
 draw_text_layout_default(App *app, Text_Layout_ID layout_id){
-    ARGB_Color special_color = finalize_color(defcolor_special_character, 0);
-    ARGB_Color ghost_color = finalize_color(defcolor_ghost_character, 0);
+    ARGB_Color special_color = theme_special_character;
+    ARGB_Color ghost_color = theme_ghost_character;
     draw_text_layout(app, layout_id, special_color, ghost_color);
 }
 
-function FColor
+function ARGB_Color
 get_item_margin_color(i32 level, i32 sub_id){
-    FColor margin = fcolor_zero();
+    ARGB_Color margin = 0xFFFF00FF;
     switch (level){
         default:
         case UIHighlight_None:
         {
-            margin = fcolor_id(defcolor_list_item, sub_id);
+            ARGB_Color colors[] = {theme_list_item_1, theme_list_item_2};
+            margin = colors[sub_id];
         }break;
         case UIHighlight_Hover:
         {
-            margin = fcolor_id(defcolor_list_item_hover, sub_id);
+            ARGB_Color colors[] = {theme_list_item_hover_1, theme_list_item_hover_2};
+            margin = colors[sub_id];
         }break;
         case UIHighlight_Active:
         {
-            margin = fcolor_id(defcolor_list_item_active, sub_id);
+            ARGB_Color colors[] = {theme_list_item_active_1, theme_list_item_active_2};
+            margin = colors[sub_id];
         }break;
     }
     return(margin);
 }
-function FColor
+function ARGB_Color
 get_item_margin_color(i32 level){
     return(get_item_margin_color(level, 0));
 }
-function FColor
+function ARGB_Color
 get_panel_margin_color(i32 level){
-    FColor margin = fcolor_zero();
+    ARGB_Color margin = 0xFFFF00FF;
     switch (level){
         default:
         case UIHighlight_None:
         {
-            margin = fcolor_id(defcolor_margin);
+            margin = theme_margin;
         }break;
         case UIHighlight_Hover:
         {
-            margin = fcolor_id(defcolor_margin_hover);
+            margin = theme_margin_hover;
         }break;
         case UIHighlight_Active:
         {
-            margin = fcolor_id(defcolor_margin_active);
+            margin = theme_margin_active;
         }break;
     }
     return(margin);
@@ -267,11 +270,11 @@ draw_background_and_margin(App *app, View_ID view){
     Rect_f32 view_rect = view_get_screen_rect(app, view);
     Rect_f32 inner = rect_inner(view_rect, width);
 
-    ARGB_Color margin = finalize_color(defcolor_margin, 0);
-    ARGB_Color back = finalize_color(defcolor_back, 0);
+    ARGB_Color margin = theme_margin;
+    ARGB_Color back = theme_back;
     View_ID active_view = get_active_view(app, Access_Always);
     if(active_view == view){
-        margin = finalize_color(defcolor_margin_active, 0);
+        margin = theme_margin_active;
     }
 
     i64 should_modify_color;
@@ -290,10 +293,10 @@ function void
 draw_file_bar(App *app, View_ID view_id, Buffer_ID buffer, Face_ID face_id, Rect_f32 bar){
     Scratch_Block scratch(app);
 
-    draw_rectangle_fcolor(app, bar, 0.f, fcolor_id(defcolor_bar));
+    draw_rectangle(app, bar, 0.f, theme_bar);
 
-    FColor base_color = fcolor_id(defcolor_base);
-    FColor pop2_color = fcolor_id(defcolor_pop2);
+    FColor base_color = fcolor_argb(theme_base);
+    FColor pop2_color = fcolor_argb(theme_pop2);
 
     i64 cursor_position = view_get_cursor_pos(app, view_id);
     Buffer_Cursor cursor = view_compute_cursor(app, view_id, seek_pos(cursor_position));
@@ -347,8 +350,8 @@ function void
 draw_query_bar(App *app, Query_Bar *query_bar, Face_ID face_id, Rect_f32 bar){
     Scratch_Block scratch(app);
     Fancy_Line list = {};
-    push_fancy_string(scratch, &list, fcolor_id(defcolor_pop1)        , query_bar->prompt);
-    push_fancy_string(scratch, &list, fcolor_id(defcolor_text_default), query_bar->string);
+    push_fancy_string(scratch, &list, fcolor_argb(theme_pop1)        , query_bar->prompt);
+    push_fancy_string(scratch, &list, fcolor_argb(theme_text_default), query_bar->string);
     Vec2_f32 p = bar.p0 + V2f32(2.f, 2.f);
     draw_fancy_line(app, face_id, fcolor_zero(), &list, p);
 }
@@ -358,10 +361,10 @@ draw_line_number_margin(App *app, View_ID view_id, Buffer_ID buffer, Face_ID fac
     ProfileScope(app, "draw line number margin");
 
     Scratch_Block scratch(app);
-    FColor line_color = fcolor_id(defcolor_line_numbers_text);
+    FColor line_color = fcolor_argb(theme_line_numbers_text);
 
     Rect_f32 prev_clip = draw_set_clip(app, margin);
-    draw_rectangle_fcolor(app, margin, 0.f, fcolor_id(defcolor_line_numbers_back));
+    draw_rectangle_fcolor(app, margin, 0.f, fcolor_argb(theme_line_numbers_back));
 
     Range_i64 visible_range = text_layout_get_visible_range(app, text_layout_id);
     i64 line_count = buffer_get_line_count(app, buffer);
@@ -483,33 +486,33 @@ draw_fps_hud(App *app, Frame_Info frame_info, Face_ID face_id, Rect_f32 rect){
     }
 }
 
-function FColor
+function ARGB_Color
 get_token_color_cpp(Token token){
-    Managed_ID color = defcolor_text_default;
+    Managed_ID color = theme_text_default;
     switch (token.kind){
         case TokenBaseKind_Preprocessor:
         {
-            color = defcolor_preproc;
+            color = theme_preproc;
         }break;
         case TokenBaseKind_Keyword:
         {
-            color = defcolor_keyword;
+            color = theme_keyword;
         }break;
         case TokenBaseKind_Comment:
         {
-            color = defcolor_comment;
+            color = theme_comment;
         }break;
         case TokenBaseKind_LiteralString:
         {
-            color = defcolor_str_constant;
+            color = theme_str_constant;
         }break;
         case TokenBaseKind_LiteralInteger:
         {
-            color = defcolor_int_constant;
+            color = theme_int_constant;
         }break;
         case TokenBaseKind_LiteralFloat:
         {
-            color = defcolor_float_constant;
+            color = theme_float_constant;
         }break;
         default:{}break;
     }
@@ -518,7 +521,7 @@ get_token_color_cpp(Token token){
         case TokenCppKind_LiteralTrue:
         case TokenCppKind_LiteralFalse:
         {
-            color = defcolor_bool_constant;
+            color = theme_bool_constant;
         }break;
         case TokenCppKind_LiteralCharacter:
         case TokenCppKind_LiteralCharacterWide:
@@ -526,15 +529,14 @@ get_token_color_cpp(Token token){
         case TokenCppKind_LiteralCharacterUTF16:
         case TokenCppKind_LiteralCharacterUTF32:
         {
-            color = defcolor_char_constant;
+            color = theme_char_constant;
         }break;
         case TokenCppKind_PPIncludeFile:
         {
-            color = defcolor_include;
+            color = theme_include;
         }break;
     }
-    FColor result = fcolor_id(color);
-    return(result);
+    return(color);
 }
 
 function void
@@ -547,8 +549,7 @@ draw_cpp_token_colors(App *app, Text_Layout_ID text_layout_id, Token_Array *arra
         if (token->pos >= visible_range.one_past_last){
             break;
         }
-        FColor color = get_token_color_cpp(*token);
-        ARGB_Color argb = fcolor_resolve(color);
+        ARGB_Color argb = get_token_color_cpp(*token);
         paint_text_color(app, text_layout_id, Ii64_size(token->pos, token->size), argb);
         if (!token_it_inc_all(&it)){
             break;
@@ -568,8 +569,7 @@ draw_whitespace_highlight(App *app, Text_Layout_ID text_layout_id, Token_Array *
         }
         if (token->kind == TokenBaseKind_Whitespace){
             Range_i64 range = Ii64(token);
-            draw_character_block(app, text_layout_id, range, roundness,
-                                 fcolor_id(defcolor_highlight_white));
+            draw_character_block(app, text_layout_id, range, roundness, theme_highlight_white);
         }
         if (!token_it_inc_all(&it)){
             break;
@@ -592,8 +592,7 @@ draw_whitespace_highlight(App *app, Buffer_ID buffer, Text_Layout_ID text_layout
                 }
             }
             Range_i64 range = Ii64(s, i);
-            draw_character_block(app, text_layout_id, range, roundness,
-                                 fcolor_id(defcolor_highlight_white));
+            draw_character_block(app, text_layout_id, range, roundness, theme_highlight_white);
         }
         else{
             i += 1;
@@ -762,7 +761,7 @@ draw_paren_highlight(App *app, Buffer_ID buffer, Text_Layout_ID text_layout_id,
 
 function void
 draw_jump_highlights(App *app, Buffer_ID buffer, Text_Layout_ID text_layout_id,
-                     Buffer_ID jump_buffer, FColor line_color){
+                     Buffer_ID jump_buffer, ARGB_Color line_color){
     Scratch_Block scratch(app);
     if (jump_buffer != 0){
         Managed_Scope scopes[2];
@@ -798,10 +797,8 @@ draw_highlight_range(App *app, View_ID view_id,
             Marker marker_range[2];
             if (managed_object_load_data(app, *highlight, 0, 2, marker_range)){
                 Range_i64 range = Ii64(marker_range[0].pos, marker_range[1].pos);
-                draw_character_block(app, text_layout_id, range, roundness,
-                                     fcolor_id(defcolor_highlight));
-                paint_text_color_fcolor(app, text_layout_id, range,
-                                        fcolor_id(defcolor_at_highlight));
+                draw_character_block(app, text_layout_id, range, roundness, theme_highlight);
+                paint_text_color(app, text_layout_id, range, theme_at_highlight);
             }
         }
     }
@@ -827,16 +824,15 @@ draw_original_4coder_style_cursor_mark_highlight(App *app, View_ID view_id, b32 
 
         i64 cursor_pos = view_get_cursor_pos(app, view_id);
         i64 mark_pos = view_get_mark_pos(app, view_id);
+        ARGB_Color cursor[] = {theme_cursor_1, theme_cursor_2};
         if (is_active_view){
-            draw_character_block(app, text_layout_id, cursor_pos, roundness, fcolor_id(defcolor_cursor, cursor_sub_id));
-            paint_text_color_pos(app, text_layout_id, cursor_pos, fcolor_id(defcolor_at_cursor));
-            draw_character_wire_frame(app, text_layout_id, mark_pos, roundness, outline_thickness, fcolor_id(defcolor_mark));
+            draw_character_block(app, text_layout_id, cursor_pos, roundness, cursor[cursor_sub_id]);
+            paint_text_color_pos(app, text_layout_id, cursor_pos, theme_at_cursor);
+            draw_character_wire_frame(app, text_layout_id, mark_pos, roundness, outline_thickness, theme_mark);
         }
         else{
-            draw_character_wire_frame(app, text_layout_id, mark_pos, roundness, outline_thickness, fcolor_id(defcolor_mark));
-            draw_character_wire_frame(app, text_layout_id, cursor_pos,
-                                      roundness, outline_thickness,
-                                      fcolor_id(defcolor_cursor, cursor_sub_id));
+            draw_character_wire_frame(app, text_layout_id, mark_pos, roundness, outline_thickness, theme_mark);
+            draw_character_wire_frame(app, text_layout_id, cursor_pos, roundness, outline_thickness, cursor[cursor_sub_id]);
         }
     }
 }
@@ -852,10 +848,12 @@ draw_notepad_style_cursor_highlight(App *app, View_ID view_id,
         i64 mark_pos = view_get_mark_pos(app, view_id);
         if (cursor_pos != mark_pos){
             Range_i64 range = Ii64(cursor_pos, mark_pos);
-            draw_character_block(app, text_layout_id, range, roundness, fcolor_id(defcolor_highlight));
-            paint_text_color_fcolor(app, text_layout_id, range, fcolor_id(defcolor_at_highlight));
+            draw_character_block(app, text_layout_id, range, roundness, theme_highlight);
+            paint_text_color(app, text_layout_id, range, theme_at_highlight);
         }
-        draw_character_i_bar(app, text_layout_id, cursor_pos, fcolor_id(defcolor_cursor, cursor_sub_id));
+
+        ARGB_Color cursor[] = {theme_cursor_1, theme_cursor_2};
+        draw_character_i_bar(app, text_layout_id, cursor_pos, cursor[cursor_sub_id]);
     }
 }
 

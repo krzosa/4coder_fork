@@ -218,7 +218,7 @@ lister_render(App *app, Frame_Info frame_info, View_ID view){
     {
         Vec2_f32 p = V2f32(text_field_rect.x0 + 3.f, text_field_rect.y0);
         Fancy_Line text_field = {};
-        push_fancy_string(scratch, &text_field, fcolor_id(defcolor_pop1),
+        push_fancy_string(scratch, &text_field, fcolor_argb(theme_pop1),
                           lister->query.string);
         push_fancy_stringf(scratch, &text_field, " ");
         p = draw_fancy_line(app, face_id, fcolor_zero(), &text_field, p);
@@ -227,7 +227,7 @@ lister_render(App *app, Frame_Info frame_info, View_ID view){
         // more on being good at this and less on overriding everything 10 ways to sunday
         // would be good.
         block_zero_struct(&text_field);
-        push_fancy_string(scratch, &text_field, fcolor_id(defcolor_text_default),
+        push_fancy_string(scratch, &text_field, fcolor_argb(theme_text_default),
                           lister->text_field.string);
         f32 width = get_fancy_line_width(app, face_id, &text_field);
         f32 cap_width = text_field_rect.x1 - p.x - 6.f;
@@ -320,13 +320,13 @@ lister_render(App *app, Frame_Info frame_info, View_ID view){
 
         u64 lister_roundness_100 = config_lister_roundness;
         f32 roundness = block_height*lister_roundness_100*0.01f;
-        draw_rectangle_fcolor(app, item_rect, roundness, get_item_margin_color(highlight));
-        draw_rectangle_fcolor(app, item_inner, roundness, get_item_margin_color(highlight, 1));
+        draw_rectangle(app, item_rect, roundness, get_item_margin_color(highlight));
+        draw_rectangle(app, item_inner, roundness, get_item_margin_color(highlight, 1));
 
         Fancy_Line line = {};
-        push_fancy_string(scratch, &line, fcolor_id(defcolor_text_default), node->string);
+        push_fancy_string(scratch, &line, fcolor_argb(theme_text_default), node->string);
         push_fancy_stringf(scratch, &line, " ");
-        push_fancy_string(scratch, &line, fcolor_id(defcolor_pop2), node->status);
+        push_fancy_string(scratch, &line, fcolor_argb(theme_pop2), node->status);
 
         Vec2_f32 p = item_inner.p0 + V2f32(3.f, (block_height - line_height)*0.5f);
         draw_fancy_line(app, face_id, fcolor_zero(), &line, p);

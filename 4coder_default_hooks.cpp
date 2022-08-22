@@ -348,7 +348,8 @@ recursive_nest_highlight(App *app, Text_Layout_ID layout_id, Range_i64 range,
         }
     }
 
-    ARGB_Color argb = finalize_color(defcolor_text_cycle, counter);
+    ARGB_Color text_cycle[] = {theme_text_cycle_1, theme_text_cycle_2, theme_text_cycle_3, theme_text_cycle_4};
+    ARGB_Color argb = text_cycle[counter];
     argb &= ~0x33000000;
 
     for (;ptr < ptr_end; ptr += 1){
@@ -403,7 +404,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     b32 highlight_line_at_cursor = config_highlight_line_at_cursor;
     if (highlight_line_at_cursor && is_active_view){
         i64 line_number = get_line_number_from_pos(app, buffer, cursor_pos);
-        draw_line_highlight(app, text_layout_id, line_number, fcolor_id(defcolor_highlight_cursor_line));
+        draw_line_highlight(app, text_layout_id, line_number, theme_highlight_cursor_line);
     }
 
     // NOTE(allen): Token colorizing
@@ -415,8 +416,8 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         b32 use_comment_keyword = config_use_comment_keywords;
         if (use_comment_keyword){
             Comment_Highlight_Pair pairs[] = {
-                {string_u8_litexpr("NOTE"), finalize_color(defcolor_comment_pop, 0)},
-                {string_u8_litexpr("TODO"), finalize_color(defcolor_comment_pop, 1)},
+                {string_u8_litexpr("NOTE"), theme_comment_note},
+                {string_u8_litexpr("TODO"), theme_comment_todo},
             };
             draw_comment_highlights(app, buffer, text_layout_id, &token_array, pairs, ArrayCount(pairs));
         }
@@ -441,11 +442,11 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
             Code_Index_Note *note = code_index_note_from_string(lexeme);
             if(note){
                 if(note->note_kind == CodeIndexNote_Function){
-                    argb = finalize_color(defcolor_function, 0);
+                    argb = theme_function;
                 } else if(note->note_kind == CodeIndexNote_Type){
-                    argb = finalize_color(defcolor_type, 0);
+                    argb = theme_type;
                 } else if(note->note_kind == CodeIndexNote_Macro){
-                    argb = finalize_color(defcolor_macro, 0);
+                    argb = theme_macro;
                 }
 
                 paint_text_color(app, text_layout_id, range, argb);
@@ -457,7 +458,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
             if(token->kind == TokenBaseKind_LiteralString){
                 if(token->sub_kind == 41){
-                    argb = finalize_color(defcolor_str_constant, 0);
+                    argb = theme_str_constant;
                     String_Const_u8 quoted_name = push_buffer_range(app, scratch, buffer, Ii64_size(token->pos+1, token->size-2));
                     if(quoted_name.size){
                         String_Const_u8 new_file_name = construct_relative_path_in_the_same_folder_as_buffer(app, scratch, buffer, quoted_name);
@@ -501,7 +502,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         }
     }
     else{
-        paint_text_color_fcolor(app, text_layout_id, visible_range, fcolor_id(defcolor_text_default));
+        paint_text_color(app, text_layout_id, visible_range, theme_text_default);
     }
 
 
@@ -512,8 +513,8 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     // NOTE(allen): Scope highlight
     b32 use_scope_highlight = config_use_scope_highlight;
     if (use_scope_highlight){
-        Color_Array colors = finalize_color_array(defcolor_back_cycle);
-        draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors.vals, colors.count);
+        ARGB_Color colors[] = {theme_back_cycle_1, theme_back_cycle_2, theme_back_cycle_3, theme_back_cycle_4};
+        draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors, 3);
     }
 
     b32 use_error_highlight = config_use_error_highlight;
@@ -523,16 +524,14 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
         String_Const_u8 name = string_u8_litexpr("*compilation*");
         Buffer_ID compilation_buffer = get_buffer_by_name(app, name, Access_Always);
         if (use_error_highlight){
-            draw_jump_highlights(app, buffer, text_layout_id, compilation_buffer,
-                                 fcolor_id(defcolor_highlight_junk));
+            draw_jump_highlights(app, buffer, text_layout_id, compilation_buffer, theme_highlight_junk);
         }
 
         // NOTE(allen): Search highlight
         if (use_jump_highlight){
             Buffer_ID jump_buffer = get_locked_jump_buffer(app);
             if (jump_buffer != compilation_buffer){
-                draw_jump_highlights(app, buffer, text_layout_id, jump_buffer,
-                                     fcolor_id(defcolor_highlight_white));
+                draw_jump_highlights(app, buffer, text_layout_id, jump_buffer, theme_highlight_white);
             }
         }
     }
@@ -540,8 +539,8 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     // NOTE(allen): Color parens
     b32 use_paren_helper = config_use_paren_helper;
     if (use_paren_helper){
-        Color_Array colors = finalize_color_array(defcolor_text_cycle);
-        draw_paren_highlight(app, buffer, text_layout_id, cursor_pos, colors.vals, colors.count);
+        ARGB_Color colors[] = {theme_text_cycle_1, theme_text_cycle_2, theme_text_cycle_3, theme_text_cycle_4};
+        draw_paren_highlight(app, buffer, text_layout_id, cursor_pos, colors, 4);
     }
 
     // NOTE(allen): Whitespace highlight
@@ -575,33 +574,6 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     draw_text_layout_default(app, text_layout_id);
 
     draw_set_clip(app, prev_clip);
-
-#if 0
-    if(deffered_button_render.size){
-        String_Const_u8 text = deffered_button_render;
-        Fancy_String *fancy = push_fancy_string(scratch, 0, face_id, fcolor_id(defcolor_text_default), text);
-
-        Face_Metrics metrics = get_face_metrics(app, face_id);
-        Vec2_f32 dim = get_fancy_string_dim(app, 0, fancy);
-        Rect_f32 button_rect = Rf32_xy_wh({view_rect.x1 - dim.x, metrics.line_height}, dim + V2f32(2,2));
-
-        ARGB_Color background_color = fcolor_resolve(fcolor_id(defcolor_back));
-        ARGB_Color border_color = fcolor_resolve(fcolor_id(defcolor_margin_active));
-
-        background_color &= 0x00ffffff;
-        background_color |= 0xd0000000;
-
-        border_color &= 0x00ffffff;
-        border_color |= 0xd0000000;
-
-        f32 roundness = 4.f;
-        draw_rectangle(app, button_rect, roundness, background_color);
-        draw_rectangle_outline(app, button_rect, roundness, 3.f, border_color);
-
-        Vec2_f32 p = (button_rect.p0 + button_rect.p1 - dim)*0.5f;
-        draw_fancy_string(app, fancy, p);
-    }
-#endif
 }
 
 function Rect_f32
@@ -692,25 +664,7 @@ default_render_caller(App *app, Frame_Info frame_info, View_ID view_id){
 
 function void
 default_whole_screen_render_caller(App *app, Frame_Info frame_info){
-#if 0
-    Rect_f32 region = global_get_screen_rectangle(app);
-    Vec2_f32 center = rect_center(region);
 
-    Face_ID face_id = get_face_id(app, 0);
-    Scratch_Block scratch(app);
-    draw_string_oriented(app, face_id, finalize_color(defcolor_text_default, 0),
-                         SCu8("Hello, World!"), center - V2f32(200.f, 300.f),
-                         0, V2f32(0.f, -1.f));
-    draw_string_oriented(app, face_id, finalize_color(defcolor_text_default, 0),
-                         SCu8("Hello, World!"), center - V2f32(240.f, 300.f),
-                         0, V2f32(0.f, 1.f));
-    draw_string_oriented(app, face_id, finalize_color(defcolor_text_default, 0),
-                         SCu8("Hello, World!"), center - V2f32(400.f, 400.f),
-                         0, V2f32(-1.f, 0.f));
-    draw_string_oriented(app, face_id, finalize_color(defcolor_text_default, 0),
-                         SCu8("Hello, World!"), center - V2f32(400.f, -100.f),
-                         0, V2f32(cos_f32(pi_f32*.333f), sin_f32(pi_f32*.333f)));
-#endif
 }
 
 HOOK_SIG(default_view_adjust){

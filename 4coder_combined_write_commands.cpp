@@ -143,7 +143,7 @@ CUSTOM_DOC("Comment out multiple lines"){
         b32 there_is_a_comment = c_line_comment_starts_at_position(app, a.buffer, line_start);
         if(!comment_is_first_so_we_should_decomment && !there_is_a_comment){
             buffer_replace_range(app, a.buffer, Ii64(line_start), string_u8_litexpr("// "));
-            buffer_post_fade(app, a.buffer, 0.667f, Ii64_size(line_start,3), finalize_color(defcolor_paste, 0));
+            buffer_post_fade(app, a.buffer, 0.667f, Ii64_size(line_start,3), theme_paste);
         }
         if(comment_is_first_so_we_should_decomment && there_is_a_comment){
             buffer_replace_range(app, a.buffer, Ii64_size(line_start,2), string_u8_empty);

@@ -49,16 +49,14 @@ clipboard_collection_render(App *app, Frame_Info frame_info, View_ID view){
 
     Fancy_Block message = {};
     Fancy_Line *line = push_fancy_line(scratch, &message);
-    push_fancy_string(scratch, line, fcolor_id(defcolor_pop2),
-                      string_u8_litexpr("Collecting all clipboard events "));
-    push_fancy_string(scratch, line, fcolor_id(defcolor_pop1),
-                      string_u8_litexpr("press [escape] to stop"));
+    push_fancy_string(scratch, line, fcolor_argb(theme_pop2), string_u8_litexpr("Collecting all clipboard events "));
+    push_fancy_string(scratch, line, fcolor_argb(theme_pop1), string_u8_litexpr("press [escape] to stop"));
 
     for (Node_String_Const_u8 *node = clipboard_collection_list.first;
          node != 0;
          node = node->next){
         line = push_fancy_line(scratch, &message);
-        push_fancy_string(scratch, line, fcolor_id(defcolor_text_default), node->string);
+        push_fancy_string(scratch, line, fcolor_argb(theme_text_default), node->string);
     }
 
     Face_ID face_id = get_face_id(app, 0);
@@ -169,7 +167,7 @@ CUSTOM_DOC("At the cursor, insert the text at the top of the clipboard.")
                 view_set_mark(app, view, seek_pos(pos));
                 view_set_cursor_and_preferred_x(app, view, seek_pos(pos + (i32)string.size));
 
-                ARGB_Color argb = fcolor_resolve(fcolor_id(defcolor_paste));
+                ARGB_Color argb = theme_paste;
                 buffer_post_fade(app, buffer, 0.667f, Ii64_size(pos, string.size), argb);
             }
         }
@@ -209,7 +207,7 @@ CUSTOM_DOC("If the previous command was paste or paste_next, replaces the paste 
                 buffer_replace_range(app, buffer, range, string);
                 view_set_cursor_and_preferred_x(app, view, seek_pos(pos + string.size));
 
-                ARGB_Color argb = fcolor_resolve(fcolor_id(defcolor_paste));
+                ARGB_Color argb = theme_paste;
                 buffer_post_fade(app, buffer, 0.667f, Ii64_size(pos, string.size), argb);
             }
             else{
@@ -270,7 +268,7 @@ CUSTOM_DOC("Paste multiple entries from the clipboard at once")
                 view_set_mark(app, view, seek_pos(range.max + 1));
                 view_set_cursor_and_preferred_x(app, view, seek_pos(range.max + insert_string.size));
 
-                ARGB_Color argb = fcolor_resolve(fcolor_id(defcolor_paste));
+                ARGB_Color argb = theme_paste;
                 buffer_post_fade(app, buffer, 0.667f, Ii64(range.max + 1, range.max + insert_string.size), argb);
             }
             else{
@@ -327,7 +325,7 @@ multi_paste_range(App *app, View_ID view, Range_i64 range, i32 paste_count, b32 
             view_set_mark(app, view, seek_pos(finish_range.min));
             view_set_cursor_and_preferred_x(app, view, seek_pos(finish_range.max));
 
-            ARGB_Color argb = fcolor_resolve(fcolor_id(defcolor_paste));
+            ARGB_Color argb = theme_paste;
             buffer_post_fade(app, buffer, 0.667f, finish_range, argb);
         }
     }

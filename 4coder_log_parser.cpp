@@ -668,9 +668,8 @@ log_graph_render(App *app, Frame_Info frame_info, View_ID view){
 
         Rect_f32 view_rect = view_get_screen_rect(app, view);
         Rect_f32 inner = rect_inner(view_rect, 3);
-        draw_rectangle_fcolor(app, view_rect, 0.f,
-                              get_item_margin_color(is_active_view?UIHighlight_Active:UIHighlight_None));
-        draw_rectangle_fcolor(app, inner, 0.f, fcolor_id(defcolor_back));
+        draw_rectangle(app, view_rect, 0.f, get_item_margin_color(is_active_view?UIHighlight_Active:UIHighlight_None));
+        draw_rectangle(app, inner, 0.f, theme_back);
 
         Rect_f32 prev_clip = draw_set_clip(app, inner);
         ////////////////////////////////
