@@ -89,10 +89,6 @@ lock_jump_buffer(App *app, String_Const_u8 name){
     if (name.size < sizeof(locked_buffer_space)){
         block_copy(locked_buffer_space, name.str, name.size);
         locked_buffer = SCu8(locked_buffer_space, name.size);
-        Scratch_Block scratch(app);
-        String_Const_u8 escaped = string_escape(scratch, name);
-        LogEventF(log_string(app, M), scratch, 0, 0, system_thread_get_id(),
-                  "lock jump buffer [name=\"%.*s\"]", string_expand(escaped));
     }
 }
 

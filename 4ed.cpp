@@ -182,12 +182,6 @@ app_load_vtables(API_VTable_system *vtable_system, API_VTable_font *vtable_font,
     graphics_api_read_vtable(vtable_graphics);
 }
 
-internal Log_Function*
-app_get_logger(void){
-    log_init();
-    return(log_string);
-}
-
 App_Read_Command_Line_Sig(app_read_command_line){
     Models *models = models_init();
     App_Settings *settings = &models->settings;
@@ -293,7 +287,6 @@ App_Init_Sig(app_init){
     File_Init init_files[] = {
         { str8_lit("*messages*"), &models->message_buffer , true , },
         { str8_lit("*scratch*") , &models->scratch_buffer , false, },
-        { str8_lit("*log*")     , &models->log_buffer     , true , },
         { str8_lit("*keyboard*"), &models->keyboard_buffer, true , },
     };
 
@@ -537,7 +530,6 @@ App_Step_Sig(app_step){
             app.cmd_context = models;
             begin_buffer_func(&app, models->message_buffer->id);
             begin_buffer_func(&app, models->scratch_buffer->id);
-            begin_buffer_func(&app, models->log_buffer->id);
             begin_buffer_func(&app, models->keyboard_buffer->id);
         }
     }
@@ -816,9 +808,6 @@ App_Step_Sig(app_step){
     }
 
 
-    // NOTE(allen): flush the log
-    log_flush(tctx, models);
-
     // NOTE(allen): set the app_result
     Application_Step_Result app_result = {};
     app_result.mouse_cursor_type = APP_MOUSE_CURSOR_DEFAULT;
@@ -873,7 +862,6 @@ extern "C" __declspec(dllexport) App_Get_Functions_Sig(app_get_functions){
     App_Functions result = {};
 
     result.load_vtables = app_load_vtables;
-    result.get_logger = app_get_logger;
     result.read_command_line = app_read_command_line;
     result.init = app_init;
     result.step = app_step;

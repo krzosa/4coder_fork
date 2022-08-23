@@ -30,8 +30,6 @@ file_change_notification_check(Arena *scratch, Working_Set *working_set, Editing
             else{
                 file_add_dirty_flag(file, DirtyState_UnloadedChanges);
                 if (file->external_mod_node.next == 0){
-                    LogEventF(log_string(M), &working_set->arena, file->id, 0, system_thread_get_id(),
-                              "external modification [lwt=0x%llx]", attributes.last_write_time);
                     dll_insert_back(&working_set->has_external_mod_sentinel, &file->external_mod_node);
                     system_signal_step(0);
                 }

@@ -159,8 +159,6 @@ save_file_to_name(Thread_Context *tctx, Models *models, Editing_File *file, u8 *
             file->state.save_state = FileSaveState_SavedWaitingForNotification;
             file_clear_dirty_flags(file);
         }
-        LogEventF(log_string(M), scratch, file->id, 0, system_thread_get_id(),
-                  "save file [last_write_time=0x%llx]", new_attributes.last_write_time);
     }
 
     return(result);
@@ -217,16 +215,6 @@ file_create_from_string(Thread_Context *tctx, Models *models, Editing_File *file
     file->state.line_layout_table = make_table_Data_u64(allocator, 500);
 
     file->settings.is_initialized = true;
-
-    {
-        Temp_Memory temp = begin_temp(scratch);
-        String_Const_u8 name = SCu8(file->unique_name.name_space, file->unique_name.name_size);
-        name = string_escape(scratch, name);
-        LogEventF(log_string(M), scratch, file->id, 0, system_thread_get_id(),
-                  "init file [lwt=0x%llx] [name=\"%.*s\"]",
-                  attributes.last_write_time, string_expand(name));
-        end_temp(temp);
-    }
 
     ////////////////////////////////
 

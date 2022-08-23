@@ -87,7 +87,6 @@ typedef void App_Load_VTables(API_VTable_system *vtable_system,
 
 struct App_Functions{
     App_Load_VTables *load_vtables;
-    App_Get_Logger *get_logger;
     App_Read_Command_Line *read_command_line;
     App_Init *init;
     App_Step *step;

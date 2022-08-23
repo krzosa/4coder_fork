@@ -77,7 +77,6 @@ function Profile_Global_List* get_core_profile_list(App *app);
 #include "4coder_profile_static_enable.cpp"
 #include "4coder_hash_functions.cpp"
 #include "4coder_table.cpp"
-#include "4coder_log.cpp"
 #include "4coder_buffer_seek_constructors.cpp"
 #include "4coder_command_map.cpp"
 #include "4coder_codepoint_map.cpp"

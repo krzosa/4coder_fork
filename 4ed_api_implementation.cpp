@@ -2519,11 +2519,6 @@ print_messagef(App *app, char *format, ...){
     print_message(app, string_u8_litexpr("\n"));
 }
 
-function b32
-log_string(App *app, String_Const_u8 str){
-    return(log_string(str));
-}
-
 function Face_ID
 get_largest_face_id(App *app)
 {

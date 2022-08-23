@@ -46,7 +46,6 @@
 #include "4coder_events.cpp"
 #include "4coder_hash_functions.cpp"
 #include "4coder_table.cpp"
-#include "4coder_log.cpp"
 
 #include "4coder_search_list.cpp"
 
@@ -1398,8 +1397,6 @@ win32_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
         {
             if (win32vars.clip_catch_all){
                 win32vars.got_useful_event = true;
-                LogEventLit(win32vars.log_string(M), scratch, 0, 0, system_thread_get_id(),
-                            "new clipboard contents");
             }
         }break;
 
@@ -1789,7 +1786,6 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
     log_os("Linking vtables...\n");
 
     app.load_vtables(&system_vtable, &font_vtable, &graphics_vtable);
-    win32vars.log_string = app.get_logger();
 
     // NOTE(allen): init & command line parameters
     log_os("Parsing command line...\n");
