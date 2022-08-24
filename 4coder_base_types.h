@@ -961,20 +961,6 @@ enum{
     StringEncoding_UTF32 = 3,
 };
 
-struct String_Const_Any{
-    String_Encoding encoding;
-    union{
-        struct{
-            void *str;
-            u64 size;
-        };
-        String_Const_char s_char;
-        String_Const_u8 s_u8;
-        String_Const_u16 s_u16;
-        String_Const_u32 s_u32;
-    };
-};
-
 #define str8_lit(s) {(u8*)(s), sizeof(s) - 1}
 #define string_litinit(s) {(u8*)(s), sizeof(s) - 1}
 #define string_u8_litinit(s) {(u8*)(s), sizeof(s) - 1}
@@ -1022,17 +1008,6 @@ struct List_String_Const_u32{
 
 typedef Node_String_Const_u8 String8Node;
 typedef List_String_Const_u8 String8List;
-
-struct Node_String_Const_Any{
-    Node_String_Const_Any *next;
-    String_Const_Any string;
-};
-struct List_String_Const_Any{
-    Node_String_Const_Any *first;
-    Node_String_Const_Any *last;
-    u64 total_size;
-    i32 node_count;
-};
 
 struct String_char{
     union{

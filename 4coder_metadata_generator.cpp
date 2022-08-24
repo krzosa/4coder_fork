@@ -757,22 +757,19 @@ parse_files_by_pattern(Arena *arena, Meta_Command_Entry_Arrays *entry_arrays, Fi
     Cross_Platform_File_List list = get_file_list(arena, pattern, filter_all);
     for (i32 i = 0; i < list.count; ++i){
         Cross_Platform_File_Info *info = &list.info[i];
-
-        String_Const_Any info_name = SCany(info->name, info->len);
         Temp_Memory temp = begin_temp(arena);
 
-        String_Const_u8 result = {};
+        String_Const_u8 info_name_ascii = {};
 
         // NOTE(Krzosa): This was inlined while deleting String_Any !!! Probably need to cleanup !!
         // not sure if this even can be anythin other then UTF8 !
         switch (info->len){
-            case StringEncoding_ASCII: result = string_u8_from_string_char(arena, {(char *)info->name, (u64)info->len}).string; break;
-            case StringEncoding_UTF8:  result = {(u8 *)info->name, (u64)info->len}; break;
-            case StringEncoding_UTF16: result = string_u8_from_string_u16(arena, {(u16 *)info->name, (u64)info->len}).string; break;
-            case StringEncoding_UTF32: result = string_u8_from_string_u32(arena, {(u32 *)info->name, (u64)info->len}).string; break;
+            case StringEncoding_ASCII: info_name_ascii = string_u8_from_string_char(arena, {(char *)info->name, (u64)info->len}).string; break;
+            case StringEncoding_UTF8:  info_name_ascii = {(u8 *)info->name, (u64)info->len}; break;
+            case StringEncoding_UTF16: info_name_ascii = string_u8_from_string_u16(arena, {(u16 *)info->name, (u64)info->len}).string; break;
+            case StringEncoding_UTF32: info_name_ascii = string_u8_from_string_u32(arena, {(u32 *)info->name, (u64)info->len}).string; break;
         }
 
-        String_Const_u8 info_name_ascii = string_u8_from_any(arena, info_name);
         b32 is_generated = string_match(info_name_ascii, string_u8_litexpr("4coder_generated"));
         end_temp(temp);
 
