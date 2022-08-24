@@ -2613,20 +2613,10 @@ Su8(u8 *str, u64 size, u64 cap){
     String_u8 string = {str, size, cap};
     return(string);
 }
-function String_u16
-Su16(u16 *str, u64 size, u64 cap){
-    String_u16 string = {str, size, cap};
-    return(string);
-}
 
 function String_u8
 Su8(u8 *str, u64 size){
     String_u8 string = {str, size, size + 1};
-    return(string);
-}
-function String_u16
-Su16(u16 *str, u64 size){
-    String_u16 string = {str, size, size + 1};
     return(string);
 }
 
@@ -2635,21 +2625,11 @@ function String_u8
 Su8(u8 *str, u8 *one_past_last){
     return(Su8(str, (u64)(one_past_last - str)));
 }
-function String_u16
-Su16(u16 *str, u16 *one_past_last){
-    return(Su16(str, (u64)(one_past_last - str)));
-}
 
 function String_u8
 Su8(u8 *str){
     u64 size = cstring_length(str);
     String_u8 string = {str, size, size + 1};
-    return(string);
-}
-function String_u16
-Su16(u16 *str){
-    u64 size = cstring_length(str);
-    String_u16 string = {str, size, size + 1};
     return(string);
 }
 
@@ -2658,20 +2638,10 @@ Su8(String_Const_u8 str, u64 cap){
     String_u8 string = {str.str, str.size, cap};
     return(string);
 }
-function String_u16
-Su16(String_Const_u16 str, u64 cap){
-    String_u16 string = {str.str, str.size, cap};
-    return(string);
-}
 
 function String_Const_u8
 SCu8(u8 *str, u64 size){
     String_Const_u8 string = {str, size};
-    return(string);
-}
-function String_Const_u16
-SCu16(u16 *str, u64 size){
-    String_Const_u16 string = {str, size};
     return(string);
 }
 
@@ -2680,19 +2650,10 @@ SCu8(void){
     String_Const_u8 string = {};
     return(string);
 }
-function String_Const_u16
-SCu16(void){
-    String_Const_u16 string = {};
-    return(string);
-}
 
 function String_Const_u8
 SCu8(u8 *str, u8 *one_past_last){
     return(SCu8(str, (u64)(one_past_last - str)));
-}
-function String_Const_u16
-SCu16(u16 *str, u16 *one_past_last){
-    return(SCu16(str, (u64)(one_past_last - str)));
 }
 
 function String_Const_u8
@@ -2701,19 +2662,9 @@ SCu8(u8 *str){
     String_Const_u8 string = {str, size};
     return(string);
 }
-function String_Const_u16
-SCu16(u16 *str){
-    u64 size = cstring_length(str);
-    String_Const_u16 string = {str, size};
-    return(string);
-}
 
 function String_Const_u8
 SCu8(String_u8 string){
-    return(string.string);
-}
-function String_Const_u16
-SCu16(String_u16 string){
     return(string.string);
 }
 
@@ -2730,18 +2681,9 @@ SCu8(char *str){
     return(SCu8((u8*)str));
 }
 
-function String_Const_u16
-SCu16(wchar_t *str, u64 size){
-    return(SCu16((u16*)str, size));
-}
-function String_Const_u16
-SCu16(wchar_t *str){
-    return(SCu16((u16*)str));
-}
 
 #define string_litexpr(s) SCchar((s), sizeof(s) - 1)
 #define string_u8_litexpr(s) SCu8((u8*)(s), (u64)(sizeof(s) - 1))
-#define string_u16_litexpr(s) SCu16((u16*)(s), (u64)(sizeof(s)/2 - 1))
 
 #define string_expand(s) (i32)(s).size, (char*)(s).str
 
@@ -3706,14 +3648,6 @@ string_get_character(String_Const_u8 str, u64 i){
     }
     return(r);
 }
-function u16
-string_get_character(String_Const_u16 str, u64 i){
-    u16 r = 0;
-    if (i < str.size){
-        r = str.str[i];
-    }
-    return(r);
-}
 
 function String_Const_u8
 string_prefix(String_Const_u8 str, u64 size){
@@ -3721,23 +3655,9 @@ string_prefix(String_Const_u8 str, u64 size){
     str.size = size;
     return(str);
 }
-function String_Const_u16
-string_prefix(String_Const_u16 str, u64 size){
-    size = clamp_top(size, str.size);
-    str.size = size;
-    return(str);
-}
-
 
 function String_Const_u8
 string_postfix(String_Const_u8 str, u64 size){
-    size = clamp_top(size, str.size);
-    str.str += (str.size - size);
-    str.size = size;
-    return(str);
-}
-function String_Const_u16
-string_postfix(String_Const_u16 str, u64 size){
     size = clamp_top(size, str.size);
     str.str += (str.size - size);
     str.size = size;
@@ -3751,22 +3671,9 @@ string_skip(String_Const_u8 str, u64 n){
     str.size -= n;
     return(str);
 }
-function String_Const_u16
-string_skip(String_Const_u16 str, u64 n){
-    n = clamp_top(n, str.size);
-    str.str += n;;
-    str.size -= n;
-    return(str);
-}
 
 function String_Const_u8
 string_chop(String_Const_u8 str, u64 n){
-    n = clamp_top(n, str.size);
-    str.size -= n;
-    return(str);
-}
-function String_Const_u16
-string_chop(String_Const_u16 str, u64 n){
     n = clamp_top(n, str.size);
     str.size -= n;
     return(str);
@@ -3776,20 +3683,10 @@ function String_Const_u8
 string_substring(String_Const_u8 str, Range_i64 range){
     return(SCu8(str.str + range.min, str.str + range.max));
 }
-function String_Const_u16
-string_substring(String_Const_u16 str, Range_i64 range){
-    return(SCu16(str.str + range.min, str.str + range.max));
-}
 
 
 function u64
 string_find_first(String_Const_u8 str, u64 start_pos, u8 c){
-    u64 i = start_pos;
-    for (;i < str.size && c != str.str[i]; i += 1);
-    return(i);
-}
-function u64
-string_find_first(String_Const_u16 str, u64 start_pos, u16 c){
     u64 i = start_pos;
     for (;i < str.size && c != str.str[i]; i += 1);
     return(i);
@@ -3799,20 +3696,9 @@ function u64
 string_find_first(String_Const_u8 str, u8 c){
     return(string_find_first(str, 0, c));
 }
-function u64
-string_find_first(String_Const_u16 str, u16 c){
-    return(string_find_first(str, 0, c));
-}
 
 function i64
 string_find_last(String_Const_u8 str, u8 c){
-    i64 size = (i64)str.size;
-    i64 i = size - 1;
-    for (;i >= 0 && c != str.str[i]; i -= 1);
-    return(i);
-}
-function i64
-string_find_last(String_Const_u16 str, u16 c){
     i64 size = (i64)str.size;
     i64 i = size - 1;
     for (;i >= 0 && c != str.str[i]; i -= 1);
@@ -3825,22 +3711,9 @@ string_find_first_whitespace(String_Const_u8 str){
     for (;i < str.size && !character_is_whitespace(str.str[i]); i += 1);
     return(i);
 }
-function u64
-string_find_first_whitespace(String_Const_u16 str){
-    u64 i = 0;
-    for (;i < str.size && !character_is_whitespace(str.str[i]); i += 1);
-    return(i);
-}
 
 function i64
 string_find_last_whitespace(String_Const_u8 str){
-    i64 size = (i64)str.size;
-    i64 i = size - 1;
-    for (;i >= 0 && !character_is_whitespace(str.str[i]); i -= 1);
-    return(i);
-}
-function i64
-string_find_last_whitespace(String_Const_u16 str){
     i64 size = (i64)str.size;
     i64 i = size - 1;
     for (;i >= 0 && !character_is_whitespace(str.str[i]); i -= 1);
@@ -3854,22 +3727,9 @@ string_find_first_non_whitespace(String_Const_u8 str){
     for (;i < str.size && character_is_whitespace(str.str[i]); i += 1);
     return(i);
 }
-function u64
-string_find_first_non_whitespace(String_Const_u16 str){
-    u64 i = 0;
-    for (;i < str.size && character_is_whitespace(str.str[i]); i += 1);
-    return(i);
-}
 
 function i64
 string_find_last_non_whitespace(String_Const_u8 str){
-    i64 size = (i64)str.size;
-    i64 i = size - 1;
-    for (;i >= 0 && character_is_whitespace(str.str[i]); i -= 1);
-    return(i);
-}
-function i64
-string_find_last_non_whitespace(String_Const_u16 str){
     i64 size = (i64)str.size;
     i64 i = size - 1;
     for (;i >= 0 && character_is_whitespace(str.str[i]); i -= 1);
@@ -3882,12 +3742,6 @@ string_find_first_slash(String_Const_u8 str){
     for (;i < str.size && !character_is_slash(str.str[i]); i += 1);
     return(i);
 }
-function u64
-string_find_first_slash(String_Const_u16 str){
-    u64 i = 0;
-    for (;i < str.size && !character_is_slash(str.str[i]); i += 1);
-    return(i);
-}
 
 function i64
 string_find_last_slash(String_Const_u8 str){
@@ -3896,30 +3750,9 @@ string_find_last_slash(String_Const_u8 str){
     for (;i >= 0 && !character_is_slash(str.str[i]); i -= 1);
     return(i);
 }
-function i64
-string_find_last_slash(String_Const_u16 str){
-    i64 size = (i64)str.size;
-    i64 i = size - 1;
-    for (;i >= 0 && !character_is_slash(str.str[i]); i -= 1);
-    return(i);
-}
 
 function String_Const_u8
 string_remove_last_folder(String_Const_u8 str){
-    if (str.size > 0){
-        str.size -= 1;
-    }
-    i64 slash_pos = string_find_last_slash(str);
-    if (slash_pos < 0){
-        str.size = 0;
-    }
-    else{
-        str.size = slash_pos + 1;
-    }
-    return(str);
-}
-function String_Const_u16
-string_remove_last_folder(String_Const_u16 str){
     if (str.size > 0){
         str.size -= 1;
     }
@@ -3957,28 +3790,9 @@ string_remove_front_of_path(String_Const_u8 str){
     }
     return(str);
 }
-function String_Const_u16
-string_remove_front_of_path(String_Const_u16 str){
-    i64 slash_pos = string_find_last_slash(str);
-    if (slash_pos < 0){
-        str.size = 0;
-    }
-    else{
-        str.size = slash_pos + 1;
-    }
-    return(str);
-}
 
 function String_Const_u8
 string_front_of_path(String_Const_u8 str){
-    i64 slash_pos = string_find_last_slash(str);
-    if (slash_pos >= 0){
-        str = string_skip(str, slash_pos + 1);
-    }
-    return(str);
-}
-function String_Const_u16
-string_front_of_path(String_Const_u16 str){
     i64 slash_pos = string_find_last_slash(str);
     if (slash_pos >= 0){
         str = string_skip(str, slash_pos + 1);
@@ -4010,21 +3824,9 @@ function String_Const_u8
 string_file_extension(String_Const_u8 string){
     return(string_skip(string, string_find_last(string, '.') + 1));
 }
-function String_Const_u16
-string_file_extension(String_Const_u16 string){
-    return(string_skip(string, string_find_last(string, '.') + 1));
-}
 
 function String_Const_u8
 string_file_without_extension(String_Const_u8 string){
-    i64 pos = string_find_last(string, '.');
-    if (pos > 0){
-        string = string_prefix(string, pos);
-    }
-    return(string);
-}
-function String_Const_u16
-string_file_without_extension(String_Const_u16 string){
     i64 pos = string_find_last(string, '.');
     if (pos > 0){
         string = string_prefix(string, pos);
@@ -4038,21 +3840,9 @@ string_skip_whitespace(String_Const_u8 str){
     str = string_skip(str, f);
     return(str);
 }
-function String_Const_u16
-string_skip_whitespace(String_Const_u16 str){
-    u64 f = string_find_first_non_whitespace(str);
-    str = string_skip(str, f);
-    return(str);
-}
 
 function String_Const_u8
 string_chop_whitespace(String_Const_u8 str){
-    i64 e = string_find_last_non_whitespace(str);
-    str = string_prefix(str, (u64)(e + 1));
-    return(str);
-}
-function String_Const_u16
-string_chop_whitespace(String_Const_u16 str){
     i64 e = string_find_last_non_whitespace(str);
     str = string_prefix(str, (u64)(e + 1));
     return(str);
@@ -4066,31 +3856,9 @@ string_skip_chop_whitespace(String_Const_u8 str){
     str = string_prefix(str, (u64)(e + 1));
     return(str);
 }
-function String_Const_u16
-string_skip_chop_whitespace(String_Const_u16 str){
-    u64 f = string_find_first_non_whitespace(str);
-    str = string_skip(str, f);
-    i64 e = string_find_last_non_whitespace(str);
-    str = string_prefix(str, (u64)(e + 1));
-    return(str);
-}
 
 function b32
 string_match(String_Const_u8 a, String_Const_u8 b){
-    b32 result = false;
-    if (a.size == b.size){
-        result = true;
-        for (u64 i = 0; i < a.size; i += 1){
-            if (a.str[i] != b.str[i]){
-                result = false;
-                break;
-            }
-        }
-    }
-    return(result);
-}
-function b32
-string_match(String_Const_u16 a, String_Const_u16 b){
     b32 result = false;
     if (a.size == b.size){
         result = true;
@@ -4118,38 +3886,9 @@ string_match_insensitive(String_Const_u8 a, String_Const_u8 b){
     }
     return(result);
 }
-function b32
-string_match_insensitive(String_Const_u16 a, String_Const_u16 b){
-    b32 result = false;
-    if (a.size == b.size){
-        result = true;
-        for (u64 i = 0; i < a.size; i += 1){
-            if (character_to_upper(a.str[i]) != character_to_upper(b.str[i])){
-                result = false;
-                break;
-            }
-        }
-    }
-    return(result);
-}
 
 function b32
 string_match(String_Const_u8 a, String_Const_u8 b, String_Match_Rule rule){
-    b32 result = false;
-    switch (rule){
-        case StringMatch_Exact:
-        {
-            result = string_match(a, b);
-        }break;
-        case StringMatch_CaseInsensitive:
-        {
-            result = string_match_insensitive(a, b);
-        }break;
-    }
-    return(result);
-}
-function b32
-string_match(String_Const_u16 a, String_Const_u16 b, String_Match_Rule rule){
     b32 result = false;
     switch (rule){
         case StringMatch_Exact:
@@ -4188,46 +3927,14 @@ string_find_first(String_Const_u8 str, String_Const_u8 needle, String_Match_Rule
     }
     return(i);
 }
-function u64
-string_find_first(String_Const_u16 str, String_Const_u16 needle, String_Match_Rule rule){
-    u64 i = 0;
-    if (needle.size > 0){
-        i = str.size;
-        if (str.size >= needle.size){
-            i = 0;
-            u16 c = character_to_upper(needle.str[0]);
-            u64 one_past_last = str.size - needle.size + 1;
-            for (;i < one_past_last; i += 1){
-                if (character_to_upper(str.str[i]) == c){
-                    String_Const_u16 source_part = string_prefix(string_skip(str, i), needle.size);
-                    if (string_match(source_part, needle, rule)){
-                        break;
-                    }
-                }
-            }
-            if (i == one_past_last){
-                i = str.size;
-            }
-        }
-    }
-    return(i);
-}
 
 function u64
 string_find_first(String_Const_u8 str, String_Const_u8 needle){
     return(string_find_first(str, needle, StringMatch_Exact));
 }
-function u64
-string_find_first(String_Const_u16 str, String_Const_u16 needle){
-    return(string_find_first(str, needle, StringMatch_Exact));
-}
 
 function u64
 string_find_first_insensitive(String_Const_u8 str, String_Const_u8 needle){
-    return(string_find_first(str, needle, StringMatch_CaseInsensitive));
-}
-function u64
-string_find_first_insensitive(String_Const_u16 str, String_Const_u16 needle){
     return(string_find_first(str, needle, StringMatch_CaseInsensitive));
 }
 
@@ -4255,20 +3962,6 @@ string_compare(String_Const_u8 a, String_Const_u8 b){
     }
     return(result);
 }
-function i32
-string_compare(String_Const_u16 a, String_Const_u16 b){
-    i32 result = 0;
-    for (u64 i = 0; i < a.size || i < b.size; i += 1){
-        u16 ca = (i < a.size)?a.str[i]:0;
-        u16 cb = (i < b.size)?b.str[i]:0;
-        i32 dif = ((ca) - (cb));
-        if (dif != 0){
-            result = (dif > 0)?1:-1;
-            break;
-        }
-    }
-    return(result);
-}
 
 
 function i32
@@ -4285,30 +3978,9 @@ string_compare_insensitive(String_Const_u8 a, String_Const_u8 b){
     }
     return(result);
 }
-function i32
-string_compare_insensitive(String_Const_u16 a, String_Const_u16 b){
-    i32 result = 0;
-    for (u64 i = 0; i < a.size || i < b.size; i += 1){
-        u16 ca = (i <= a.size)?0:a.str[i];
-        u16 cb = (i <= b.size)?0:b.str[i];
-        i32 dif = character_to_upper(ca) - character_to_upper(cb);
-        if (dif != 0){
-            result = (dif > 0)?1:-1;
-            break;
-        }
-    }
-    return(result);
-}
 
 function String_Const_u8
 string_mod_upper(String_Const_u8 str){
-    for (u64 i = 0; i < str.size; i += 1){
-        str.str[i] = character_to_upper(str.str[i]);
-    }
-    return(str);
-}
-function String_Const_u16
-string_mod_upper(String_Const_u16 str){
     for (u64 i = 0; i < str.size; i += 1){
         str.str[i] = character_to_upper(str.str[i]);
     }
@@ -4322,26 +3994,11 @@ string_mod_lower(String_Const_u8 str){
     }
     return(str);
 }
-function String_Const_u16
-string_mod_lower(String_Const_u16 str){
-    for (u64 i = 0; i < str.size; i += 1){
-        str.str[i] = character_to_lower(str.str[i]);
-    }
-    return(str);
-}
 
 function String_Const_u8
 string_mod_replace_character(String_Const_u8 str, u8 o, u8 n){
     for (u64 i = 0; i < str.size; i += 1){
         u8 c = str.str[i];
-        str.str[i] = (c == o)?(n):(c);
-    }
-    return(str);
-}
-function String_Const_u16
-string_mod_replace_character(String_Const_u16 str, u16 o, u16 n){
-    for (u64 i = 0; i < str.size; i += 1){
-        u16 c = str.str[i];
         str.str[i] = (c == o)?(n):(c);
     }
     return(str);
@@ -4360,26 +4017,10 @@ string_append(String_u8 *dst, String_Const_u8 src){
     dst->size += copy_size;
     return(result);
 }
-function b32
-string_append(String_u16 *dst, String_Const_u16 src){
-    b32 result = false;
-    u64 available = dst->cap - dst->size;
-    if (src.size <= available){
-        result = true;
-    }
-    u64 copy_size = clamp_top(src.size, available);
-    block_copy(dst->str + dst->size, src.str, copy_size);
-    dst->size += copy_size;
-    return(result);
-}
 
 function b32
 string_append_character(String_u8 *dst, u8 c){
     return(string_append(dst, SCu8(&c, 1)));
-}
-function b32
-string_append_character(String_u16 *dst, u16 c){
-    return(string_append(dst, SCu16(&c, 1)));
 }
 
 function b32
@@ -4390,6 +4031,7 @@ string_null_terminate(String_u8 *str){
     }
     return(result);
 }
+
 function b32
 string_null_terminate(String_u16 *str){
     b32 result = false;
@@ -4398,6 +4040,7 @@ string_null_terminate(String_u16 *str){
     }
     return(result);
 }
+
 function b32
 string_null_terminate(String_u32 *str){
     b32 result = false;
@@ -4414,16 +4057,8 @@ string_u8_push(Arena *arena, u64 size){
     string.cap = size;
     return(string);
 }
-function String_u16
-string_u16_push(Arena *arena, u64 size){
-    String_u16 string = {};
-    string.str = push_array(arena, u16, size);
-    string.cap = size;
-    return(string);
-}
 
 #define push_string_u8 string_u8_push
-#define push_string_u16 string_u16_push
 #define push_string_u64 string_u64_push
 
 function String_Const_u8
@@ -4433,31 +4068,14 @@ string_const_u8_push(Arena *arena, u64 size){
     string.size = size;
     return(string);
 }
-function String_Const_u16
-string_const_u16_push(Arena *arena, u64 size){
-    String_Const_u16 string = {};
-    string.str = push_array(arena, u16, size);
-    string.size = size;
-    return(string);
-}
 
 #define push_string_const_u8 string_const_u8_push
-#define push_string_const_u16 string_const_u16_push
 #define push_string_const_u64 string_const_u64_push
 
 function String_Const_u8
 push_string_copy(Arena *arena, String_Const_u8 src){
     String_Const_u8 string = {};
     string.str = push_array(arena, u8, src.size + 1);
-    string.size = src.size;
-    block_copy_dynamic_array(string.str, src.str, src.size);
-    string.str[string.size] = 0;
-    return(string);
-}
-function String_Const_u16
-push_string_copy(Arena *arena, String_Const_u16 src){
-    String_Const_u16 string = {};
-    string.str = push_array(arena, u16, src.size + 1);
     string.size = src.size;
     block_copy_dynamic_array(string.str, src.str, src.size);
     string.str[string.size] = 0;
@@ -4481,24 +4099,10 @@ string_list_push(List_String_Const_u8 *list, Node_String_Const_u8 *node){
     list->node_count += 1;
     list->total_size += node->string.size;
 }
-function void
-string_list_push(List_String_Const_u16 *list, Node_String_Const_u16 *node){
-    sll_queue_push(list->first, list->last, node);
-    list->node_count += 1;
-    list->total_size += node->string.size;
-}
 
 function void
 string_list_push(Arena *arena, List_String_Const_u8 *list, String_Const_u8 string){
     Node_String_Const_u8 *node = push_array(arena, Node_String_Const_u8, 1);
-    sll_queue_push(list->first, list->last, node);
-    node->string = string;
-    list->node_count += 1;
-    list->total_size += string.size;
-}
-function void
-string_list_push(Arena *arena, List_String_Const_u16 *list, String_Const_u16 string){
-    Node_String_Const_u16 *node = push_array(arena, Node_String_Const_u16, 1);
     sll_queue_push(list->first, list->last, node);
     node->string = string;
     list->node_count += 1;
@@ -4510,13 +4114,6 @@ string_list_push(Arena *arena, List_String_Const_u16 *list, String_Const_u16 str
 
 function void
 string_list_push(List_String_Const_u8 *list, List_String_Const_u8 *src_list){
-    sll_queue_push_multiple(list->first, list->last, src_list->first, src_list->last);
-    list->node_count += src_list->node_count;
-    list->total_size += src_list->total_size;
-    block_zero_array(src_list);
-}
-function void
-string_list_push(List_String_Const_u16 *list, List_String_Const_u16 *src_list){
     sll_queue_push_multiple(list->first, list->last, src_list->first, src_list->last);
     list->node_count += src_list->node_count;
     list->total_size += src_list->total_size;
@@ -4548,31 +4145,6 @@ string_list_push_overlap(Arena *arena, List_String_Const_u8 *list, u8 overlap, S
         string_list_push(arena, list, string);
     }
 }
-function void
-string_list_push_overlap(Arena *arena, List_String_Const_u16 *list, u16 overlap, String_Const_u16 string){
-    b32 tail_has_overlap = false;
-    b32 string_has_overlap = false;
-    if (list->last != 0){
-        String_Const_u16 tail = list->last->string;
-        if (string_get_character(tail, tail.size - 1) == overlap){
-            tail_has_overlap = true;
-        }
-    }
-    if (string_get_character(string, 0) == overlap){
-        string_has_overlap = true;
-    }
-    if (tail_has_overlap == string_has_overlap){
-        if (!tail_has_overlap){
-            string_list_push(arena, list, push_string_copy(arena, SCu16(&overlap, 1)));
-        }
-        else{
-            string = string_skip(string, 1);
-        }
-    }
-    if (string.size > 0){
-        string_list_push(arena, list, string);
-    }
-}
 
 #define push_string_list string_list_push
 #define push_string_list_lit(a,l,s) string_list_push_lit(a,l,s)
@@ -4580,7 +4152,6 @@ string_list_push_overlap(Arena *arena, List_String_Const_u16 *list, u16 overlap,
 #define push_string_list_overlap(a,l,o,s) string_list_push_overlap(a,l,o,s)
 
 typedef String_Const_u8 String_u8_Mod_Function_Type(String_Const_u8 string);
-typedef String_Const_u16 String_u16_Mod_Function_Type(String_Const_u16 string);
 
 function String_Const_u8
 string_list_flatten(Arena *arena, List_String_Const_u8 list, String_u8_Mod_Function_Type *mod, String_Const_u8 separator, String_Separator_Flag separator_flags, String_Fill_Terminate_Rule rule){
@@ -4609,40 +4180,9 @@ string_list_flatten(Arena *arena, List_String_Const_u8 list, String_u8_Mod_Funct
     }
     return(string.string);
 }
-function String_Const_u16
-string_list_flatten(Arena *arena, List_String_Const_u16 list, String_u16_Mod_Function_Type *mod, String_Const_u16 separator, String_Separator_Flag separator_flags, String_Fill_Terminate_Rule rule){
-    u64 term_padding = (rule == StringFill_NullTerminate)?(1):(0);b32 before_first = HasFlag(separator_flags, StringSeparator_BeforeFirst);
-    b32 after_last = HasFlag(separator_flags, StringSeparator_AfterLast);
-    u64 separator_size = separator.size*(list.node_count + before_first + after_last - 1);
-    String_u16 string = string_u16_push(arena, list.total_size + separator_size + term_padding);
-    if (before_first){
-        string_append(&string, separator);
-    }
-    for (Node_String_Const_u16 *node = list.first;
-         node != 0;
-         node = node->next){
-        block_copy_dynamic_array(string.str + string.size, node->string.str, node->string.size);
-        if (mod != 0){
-            mod(SCu16(string.str + string.size, node->string.size));
-        }
-        string.size += node->string.size;
-        string_append(&string, separator);
-    }
-    if (after_last){
-        string_append(&string, separator);
-    }
-    if (term_padding == 1){
-        string_null_terminate(&string);
-    }
-    return(string.string);
-}
 
 function String_Const_u8
 string_list_flatten(Arena *arena, List_String_Const_u8 list, String_Const_u8 separator, String_Separator_Flag separator_flags, String_Fill_Terminate_Rule rule){
-    return(string_list_flatten(arena, list, 0, separator, separator_flags, rule));
-}
-function String_Const_u16
-string_list_flatten(Arena *arena, List_String_Const_u16 list, String_Const_u16 separator, String_Separator_Flag separator_flags, String_Fill_Terminate_Rule rule){
     return(string_list_flatten(arena, list, 0, separator, separator_flags, rule));
 }
 
@@ -4650,27 +4190,15 @@ function String_Const_u8
 string_list_flatten(Arena *arena, List_String_Const_u8 list, String_u8_Mod_Function_Type *mod, String_Fill_Terminate_Rule rule){
     return(string_list_flatten(arena, list, mod, SCu8(), 0, rule));
 }
-function String_Const_u16
-string_list_flatten(Arena *arena, List_String_Const_u16 list, String_u16_Mod_Function_Type *mod, String_Fill_Terminate_Rule rule){
-    return(string_list_flatten(arena, list, mod, SCu16(), 0, rule));
-}
 
 function String_Const_u8
 string_list_flatten(Arena *arena, List_String_Const_u8 string, String_Fill_Terminate_Rule rule){
     return(string_list_flatten(arena, string, 0, SCu8(), 0, rule));
 }
-function String_Const_u16
-string_list_flatten(Arena *arena, List_String_Const_u16 string, String_Fill_Terminate_Rule rule){
-    return(string_list_flatten(arena, string, 0, SCu16(), 0, rule));
-}
 
 function String_Const_u8
 string_list_flatten(Arena *arena, List_String_Const_u8 string){
     return(string_list_flatten(arena, string, 0, SCu8(), 0, StringFill_NoTerminate));
-}
-function String_Const_u16
-string_list_flatten(Arena *arena, List_String_Const_u16 string){
-    return(string_list_flatten(arena, string, 0, SCu16(), 0, StringFill_NoTerminate));
 }
 
 function List_String_Const_u8
@@ -4694,27 +4222,6 @@ string_split(Arena *arena, String_Const_u8 string, u8 *split_characters, i32 spl
     }
     return(list);
 }
-function List_String_Const_u16
-string_split(Arena *arena, String_Const_u16 string, u16 *split_characters, i32 split_character_count){
-    List_String_Const_u16 list = {};
-    for (;;){
-        u64 i = string.size;
-        String_Const_u16 prefix = string;
-        for (i32 j = 0; j < split_character_count; j += 1){
-            u64 pos = string_find_first(prefix, split_characters[j]);
-            prefix = string_prefix(prefix, pos);
-            i = Min(i, pos);
-        }
-        if (prefix.size > 0){
-            string_list_push(arena, &list, prefix);
-        }
-        string = string_skip(string, i + 1);
-        if (string.size == 0){
-            break;
-        }
-    }
-    return(list);
-}
 
 function List_String_Const_u8
 string_split_needle(Arena *arena, String_Const_u8 string, String_Const_u8 needle){
@@ -4722,22 +4229,6 @@ string_split_needle(Arena *arena, String_Const_u8 string, String_Const_u8 needle
     for (;string.size > 0;){
         u64 pos = string_find_first(string, needle);
         String_Const_u8 prefix = string_prefix(string, pos);
-        if (pos < string.size){
-            string_list_push(arena, &list, needle);
-        }
-        if (prefix.size > 0){
-            string_list_push(arena, &list, prefix);
-        }
-        string = string_skip(string, prefix.size + needle.size);
-    }
-    return(list);
-}
-function List_String_Const_u16
-string_split_needle(Arena *arena, String_Const_u16 string, String_Const_u16 needle){
-    List_String_Const_u16 list = {};
-    for (;string.size > 0;){
-        u64 pos = string_find_first(string, needle);
-        String_Const_u16 prefix = string_prefix(string, pos);
         if (pos < string.size){
             string_list_push(arena, &list, needle);
         }
@@ -4781,54 +4272,10 @@ string_list_insert_separators(Arena *arena, List_String_Const_u8 *list, String_C
         list->total_size += separator.size;
     }
 }
-function void
-string_list_insert_separators(Arena *arena, List_String_Const_u16 *list, String_Const_u16 separator, String_Separator_Flag flags){
-    Node_String_Const_u16 *last = list->last;
-    for (Node_String_Const_u16 *node = list->first, *next = 0;
-         node != last;
-         node = next){
-        next = node->next;
-        Node_String_Const_u16 *new_node = push_array(arena, Node_String_Const_u16, 1);
-        node->next = new_node;
-        new_node->next = next;
-        new_node->string = separator;
-        list->node_count += 1;
-        list->total_size += separator.size;
-    }
-    if (HasFlag(flags, StringSeparator_BeforeFirst)){
-        Node_String_Const_u16 *new_node = push_array(arena, Node_String_Const_u16, 1);
-        new_node->next = list->first;
-        list->first = new_node;
-        new_node->string = separator;
-        list->node_count += 1;
-        list->total_size += separator.size;
-    }
-    if (HasFlag(flags, StringSeparator_AfterLast)){
-        Node_String_Const_u16 *new_node = push_array(arena, Node_String_Const_u16, 1);
-        list->last->next = new_node;
-        list->last = new_node;
-        new_node->next = 0;
-        new_node->string = separator;
-        list->node_count += 1;
-        list->total_size += separator.size;
-    }
-}
 
 function void
 string_list_rewrite_nodes(Arena *arena, List_String_Const_u8 *list, String_Const_u8 needle, String_Const_u8 new_value){
     for (Node_String_Const_u8 *node = list->first;
-         node != 0;
-         node = node->next){
-        if (string_match(node->string, needle)){
-            node->string = new_value;
-            list->total_size += new_value.size;
-            list->total_size -= needle.size;
-        }
-    }
-}
-function void
-string_list_rewrite_nodes(Arena *arena, List_String_Const_u16 *list, String_Const_u16 needle, String_Const_u16 new_value){
-    for (Node_String_Const_u16 *node = list->first;
          node != 0;
          node = node->next){
         if (string_match(node->string, needle)){
@@ -4844,13 +4291,6 @@ string_condense_whitespace(Arena *arena, String_Const_u8 string){
     u8 split_characters[] = { ' ', '\t', '\n', '\r', '\f', '\v', };
     List_String_Const_u8 list = string_split(arena, string, split_characters, ArrayCount(split_characters));
     string_list_insert_separators(arena, &list, SCu8(split_characters, 1), StringSeparator_NoFlags);
-    return(string_list_flatten(arena, list, StringFill_NullTerminate));
-}
-function String_Const_u16
-string_condense_whitespace(Arena *arena, String_Const_u16 string){
-    u16 split_characters[] = { ' ', '\t', '\n', '\r', '\f', '\v', };
-    List_String_Const_u16 list = string_split(arena, string, split_characters, ArrayCount(split_characters));
-    string_list_insert_separators(arena, &list, SCu16(split_characters, 1), StringSeparator_NoFlags);
     return(string_list_flatten(arena, list, StringFill_NullTerminate));
 }
 
@@ -4919,19 +4359,6 @@ string_list_reverse(List_String_Const_u8 *list){
     Node_String_Const_u8 *first = 0;
     Node_String_Const_u8 *last = list->first;
     for (Node_String_Const_u8 *node = list->first, *next = 0;
-         node != 0;
-         node = next){
-        next = node->next;
-        sll_stack_push(first, node);
-    }
-    list->first = first;
-    list->last = last;
-}
-function void
-string_list_reverse(List_String_Const_u16 *list){
-    Node_String_Const_u16 *first = 0;
-    Node_String_Const_u16 *last = list->first;
-    for (Node_String_Const_u16 *node = list->first, *next = 0;
          node != 0;
          node = next){
         next = node->next;
@@ -5079,7 +4506,7 @@ utf16_write(u16 *str, u32 codepoint){
 ////////////////////////////////
 
 function String_u16
-string_u16_from_string_u8(Arena *arena, String_Const_u8 string, String_Fill_Terminate_Rule rule){
+string_u16_from_string_u8(Arena *arena, String_Const_u8 string, String_Fill_Terminate_Rule rule = StringFill_NullTerminate){
     String_u16 out = {};
     out.cap = string.size;
     if (rule == StringFill_NullTerminate){
@@ -5100,30 +4527,9 @@ string_u16_from_string_u8(Arena *arena, String_Const_u8 string, String_Fill_Term
     return(out);
 }
 
-function String_u32
-string_u32_from_string_u8(Arena *arena, String_Const_u8 string, String_Fill_Terminate_Rule rule){
-    String_u32 out = {};
-    out.cap = string.size;
-    if (rule == StringFill_NullTerminate){
-        out.cap += 1;
-    }
-    out.str = push_array(arena, u32, out.cap);
-    u8 *ptr = string.str;
-    u8 *one_past_last = ptr + string.size;
-    u64 cap = string.size;
-    Character_Consume_Result consume;
-    for (;ptr < one_past_last; ptr += consume.inc, cap -= consume.inc){
-        consume = utf8_consume(ptr, cap);
-        out.str[out.size++] = (consume.codepoint == max_u32)?(u64)'?':(consume.codepoint);
-    }
-    if (rule == StringFill_NullTerminate){
-        string_null_terminate(&out);
-    }
-    return(out);
-}
 
 function String_u8
-string_u8_from_string_u16(Arena *arena, String_Const_u16 string, String_Fill_Terminate_Rule rule){
+string_u8_from_string_u16(Arena *arena, String_Const_u16 string, String_Fill_Terminate_Rule rule = StringFill_NullTerminate){
     String_u8 out = {};
     out.cap = string.size*3;
     if (rule == StringFill_NullTerminate){
@@ -5145,7 +4551,7 @@ string_u8_from_string_u16(Arena *arena, String_Const_u16 string, String_Fill_Ter
 }
 
 function String_u32
-string_u32_from_string_u16(Arena *arena, String_Const_u16 string, String_Fill_Terminate_Rule rule){
+string_u32_from_string_u16(Arena *arena, String_Const_u16 string, String_Fill_Terminate_Rule rule = StringFill_NullTerminate){
     String_u32 out = {};
     out.cap = string.size;
     if (rule == StringFill_NullTerminate){
@@ -5167,7 +4573,7 @@ string_u32_from_string_u16(Arena *arena, String_Const_u16 string, String_Fill_Te
 }
 
 function String_u8
-string_u8_from_string_u32(Arena *arena, String_Const_u32 string, String_Fill_Terminate_Rule rule){
+string_u8_from_string_u32(Arena *arena, String_Const_u32 string, String_Fill_Terminate_Rule rule = StringFill_NullTerminate){
     String_u8 out = {};
     out.cap = string.size*4;
     if (rule == StringFill_NullTerminate){
@@ -5186,7 +4592,7 @@ string_u8_from_string_u32(Arena *arena, String_Const_u32 string, String_Fill_Ter
 }
 
 function String_u16
-string_u16_from_string_u32(Arena *arena, String_Const_u32 string, String_Fill_Terminate_Rule rule){
+string_u16_from_string_u32(Arena *arena, String_Const_u32 string, String_Fill_Terminate_Rule rule = StringFill_NullTerminate){
     String_u16 out = {};
     out.cap = string.size*2;
     if (rule == StringFill_NullTerminate){
@@ -5202,35 +4608,6 @@ string_u16_from_string_u32(Arena *arena, String_Const_u32 string, String_Fill_Te
         string_null_terminate(&out);
     }
     return(out);
-}
-
-////////////////////////////////
-
-function String_u8
-string_u8_from_string_u16(Arena *arena, String_Const_u16 string){
-    return(string_u8_from_string_u16(arena, string, StringFill_NullTerminate));
-}
-function String_u8
-string_u8_from_string_u32(Arena *arena, String_Const_u32 string){
-    return(string_u8_from_string_u32(arena, string, StringFill_NullTerminate));
-}
-
-function String_u16
-string_u16_from_string_u8(Arena *arena, String_Const_u8 string){
-    return(string_u16_from_string_u8(arena, string, StringFill_NullTerminate));
-}
-function String_u16
-string_u16_from_string_u32(Arena *arena, String_Const_u32 string){
-    return(string_u16_from_string_u32(arena, string, StringFill_NullTerminate));
-}
-
-function String_u32
-string_u32_from_string_u8(Arena *arena, String_Const_u8 string){
-    return(string_u32_from_string_u8(arena, string, StringFill_NullTerminate));
-}
-function String_u32
-string_u32_from_string_u16(Arena *arena, String_Const_u16 string){
-    return(string_u32_from_string_u16(arena, string, StringFill_NullTerminate));
 }
 
 ////////////////////////////////
@@ -5289,22 +4666,6 @@ string_replace_list(Arena *arena, String_Const_u8 source, String_Const_u8 needle
     }
     return(list);
 }
-function List_String_Const_u16
-string_replace_list(Arena *arena, String_Const_u16 source, String_Const_u16 needle, String_Const_u16 replacement){
-    List_String_Const_u16 list = {};
-    for (;;){
-        u64 i = string_find_first(source, needle);
-        string_list_push(arena, &list, string_prefix(source, i));
-        if (i < source.size){
-            string_list_push(arena, &list, replacement);
-            source = string_skip(source, i + needle.size);
-        }
-        else{
-            break;
-        }
-    }
-    return(list);
-}
 
 
 function String_Const_u8
@@ -5312,18 +4673,9 @@ string_replace(Arena *arena, String_Const_u8 source, String_Const_u8 needle, Str
     List_String_Const_u8 list = string_replace_list(arena, source, needle, replacement);
     return(string_list_flatten(arena, list, rule));
 }
-function String_Const_u16
-string_replace(Arena *arena, String_Const_u16 source, String_Const_u16 needle, String_Const_u16 replacement, String_Fill_Terminate_Rule rule){
-    List_String_Const_u16 list = string_replace_list(arena, source, needle, replacement);
-    return(string_list_flatten(arena, list, rule));
-}
 
 function String_Const_u8
 string_replace(Arena *arena, String_Const_u8 source, String_Const_u8 needle, String_Const_u8 replacement){
-    return(string_replace(arena, source, needle, replacement, StringFill_NullTerminate));
-}
-function String_Const_u16
-string_replace(Arena *arena, String_Const_u16 source, String_Const_u16 needle, String_Const_u16 replacement){
     return(string_replace(arena, source, needle, replacement, StringFill_NullTerminate));
 }
 
