@@ -1,0 +1,150 @@
+// TODO: Add build commands to config
+
+[config]
+
+// Command Mapping
+// ""                - Leave the bindings unaltered - use this when writing your own customization!
+// "choose"          - Ask 4coder to choose based on platform.
+// "default"         - Use the default keybindings 4coder has always had.
+// "mac-default"     - Use keybindings similar to those found in other Mac applications.
+mapping = ""
+
+bind_by_physical_key = false
+
+// UI
+use_file_bars = true
+hide_file_bar_in_ui = true
+use_error_highlight = true
+use_jump_highlight = true
+use_scope_highlight = true
+use_paren_helper = true
+use_comment_keywords = true
+lister_whole_word_backspace_when_modified = true
+show_line_number_margins = false
+enable_output_wrapping = false
+highlight_line_at_cursor = true
+enable_undo_fade_out = true
+background_margin_width = 0.0
+
+smooth_scroll = true
+
+// cursor_roundess is a value [0,50] setting the radius of
+// the cursor and mark's roundness as a percentage of their width
+// (At 50 the left and right corners will be so round they form a semi-circle,
+//  hence 50 is the max)
+cursor_roundness = 45
+
+// mark_thickness is a pixel count value setting the
+// thickness of the mark wire box in original mode
+mark_thickness = 2
+
+// lister_roundess is a value [0,50] setting the radius of
+// the lister items' roundness as a percentage of their height
+lister_roundness = 20
+lister_item_height = 1.2
+
+// Code Wrapping
+treat_as_code = ".cpp.c.hpp.h.cc.cs.java.rs.glsl.m.mm"
+enable_virtual_whitespace = true
+virtual_whitespace_regular_indent = 4
+enable_code_wrapping = false
+
+// This only applies to code files in code-wrapping mode.
+// Plain text and code files without virtual-whitespace will not be effected.
+automatically_indent_text_on_save = true
+
+// When set to true, all unsaved changes will be saved on a build.
+automatically_save_changes_on_build = true
+
+// Indentation
+indent_with_tabs = false
+indent_width = 4
+default_tab_width = 4
+
+// Theme
+default_theme_name = "4coder"
+
+// Font
+default_font_name = "liberation-mono.ttf"
+default_font_size = 12
+default_font_hinting = false
+
+// aa modes:
+//  8bit - mono-chrome 0-255 opacity channel per pixel
+//  1bit - mono-chrome 0/1 opacity channel per pixel
+default_font_aa_mode = FaceAntialiasingMode_8BitMono // TODO(Krzosa): This doesn't work currently
+
+// User
+user_name = "Krzosa"
+
+// Keyboard AltGr setting
+lalt_lctrl_is_altgr = false
+
+comment_runner_filename_extension = "cpp"
+comment_runner_command = "clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe"
+
+[theme]
+
+bar = 0xFF333337
+base = 0xFFDCDCDC
+pop1 = 0xFFDCDCDC
+pop2 = 0xFF569CD6
+back = 0xFF1E1E1E
+margin = 0xFF1E1E1E
+margin_hover = 0xffff0000
+margin_active = 0xFF1E1E1E
+list_item_1 = 0xFF1E1E1E       list_item_2 = 0xFF1E1E1E
+list_item_hover_1 = 0x22ffffff list_item_hover_2 = 0x22ffffff
+list_item_active_1 = 0x33ffffff list_item_active_2 = 0x33ffffff
+cursor_1 = 0xFFDCDCDC cursor_2 = 0xFFA72822
+
+at_cursor = 0xff000000
+highlight_cursor_line = 0xFF0F0F0F
+highlight = 0x11264F78
+at_highlight = 0xFF264F78
+mark = 0xFFDCDCDC
+text_default = 0xFFDCDCDC
+
+// When panel is inactive it get's masked using a rectangle with this color
+inactive_panel_overlay = 0x22000000
+
+comment = 0xFF608B4E
+
+// Color of a "NOTE" keyword inside a comment
+comment_note = 0xFF569CD6
+
+// Color of a "TODO" keyword inside a comment
+comment_todo = 0xFF569CD6
+
+// Colors of C++ keywords/functions/types etc.
+keyword = 0xFF569CD6
+function = 0xFF4EC9B0
+macro = 0xFFc586c0
+type = 0xFF4EC9B0
+
+str_constant = 0xFFD69D85
+char_constant = 0xFFD69D85
+int_constant = 0xFFB5CEA8
+float_constant = 0xFFB5CEA8
+bool_constant = 0xFF569CD6
+preproc = 0xFF9B9B9B
+include = 0xFFDCDCDC
+special_character = 0xFFDCDCDC
+ghost_character = 0xFFDCDCDC
+highlight_junk = 0xFF3A0000
+highlight_white = 0xFF003A3A
+paste = 0xFFDDEE00
+undo = 0xFF00DDEE
+
+// Colors the '(', '{' nested parenthesis, nested braces.
+// First brace scope uses 1 then next scope uses 2 etc. afterwards it repeats.
+text_cycle_1 = 0xFFD69D85 text_cycle_2 = 0xFF4EC9B0
+text_cycle_3 = 0xFFA6E22E text_cycle_4 = 0xFF967EFB
+
+// Similar to text_cycle but colors the background of a scope,
+// nested blocks of code get different background colors.
+back_cycle_1 = 0x0C4EC9B0 back_cycle_2 = 0x08569CD6
+back_cycle_3 = 0x080000A0 back_cycle_4 = 0x08A0A000
+
+line_numbers_back = 0xFF1E1E1E
+line_numbers_text = 0xFFDCDCDC
