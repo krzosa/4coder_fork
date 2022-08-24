@@ -9,10 +9,7 @@
 
 struct Clipboard{
     Arena arena;
-    Heap heap;
-    String_Const_u8 *clips;
-    u32 clip_index;
-    u32 clip_capacity;
+    String_Const_u8 clip;
 };
 
 #endif //4CODER_CLIPBOARD_H

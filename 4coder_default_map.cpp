@@ -90,11 +90,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(left_adjust_view,            KeyCode_E, KeyCode_Control, KeyCode_Shift);
     Bind(search,                      KeyCode_F, KeyCode_Control);
     Bind(list_all_locations,          KeyCode_F, KeyCode_Control, KeyCode_Shift);
-    // Bind(list_all_substring_locations_case_insensitive, KeyCode_F, KeyCode_Alt);
     Bind(goto_line,                   KeyCode_G, KeyCode_Control);
     Bind(list_all_locations_of_selection,  KeyCode_G, KeyCode_Control, KeyCode_Shift);
-    // Bind(snippet_lister,              KeyCode_J, KeyCode_Control);
-    // Bind(kill_buffer,                 KeyCode_K, KeyCode_Control, KeyCode_Shift);
     Bind(cursor_mark_swap,            KeyCode_E, KeyCode_Control);
     Bind(reopen,                      KeyCode_O, KeyCode_Control, KeyCode_Shift);
 
@@ -103,9 +100,7 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(save,                        KeyCode_S, KeyCode_Control);
     Bind(save_all_dirty_buffers,      KeyCode_S, KeyCode_Control, KeyCode_Shift);
     Bind(search_identifier,           KeyCode_F, KeyCode_Alt);
-    // Bind(list_all_locations_of_identifier, KeyCode_T, KeyCode_Control, KeyCode_Shift);
-    Bind(paste_and_indent,            KeyCode_V, KeyCode_Control, KeyCode_Shift);
-    Bind(paste_next_and_indent,       KeyCode_V, KeyCode_Control);
+    Bind(paste_and_indent,            KeyCode_V, KeyCode_Control);
     Bind(cut,                         KeyCode_X, KeyCode_Control);
     Bind(redo,                        KeyCode_Z, KeyCode_Control, KeyCode_Shift);
     Bind(undo,                        KeyCode_Z, KeyCode_Control);
@@ -123,7 +118,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     Bind(comment_lines,        KeyCode_ForwardSlash, KeyCode_Control);
     Bind(word_complete,              KeyCode_Tab);
     Bind(auto_indent_line_at_cursor, KeyCode_Tab, KeyCode_Shift);
-    // Bind(write_todo,                 KeyCode_T, KeyCode_Alt);
     Bind(write_note,                 KeyCode_Y, KeyCode_Alt);
     Bind(list_all_locations_of_type_definition,               KeyCode_D, KeyCode_Alt);
     Bind(list_all_locations_of_type_definition_of_identifier, KeyCode_T, KeyCode_Alt, KeyCode_Shift);

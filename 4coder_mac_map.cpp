@@ -84,7 +84,6 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     Bind(search_identifier,           KeyCode_T, KeyCode_Command);
     Bind(list_all_locations_of_identifier, KeyCode_T, KeyCode_Command, KeyCode_Shift);
     Bind(paste_and_indent,            KeyCode_V, KeyCode_Command);
-    Bind(paste_next_and_indent,       KeyCode_V, KeyCode_Command, KeyCode_Shift);
     Bind(cut,                         KeyCode_X, KeyCode_Command);
     Bind(redo,                        KeyCode_Y, KeyCode_Command);
     Bind(undo,                        KeyCode_Z, KeyCode_Command);

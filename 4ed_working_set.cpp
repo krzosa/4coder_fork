@@ -204,62 +204,6 @@ get_file_from_identifier(Working_Set *working_set, Buffer_Identifier buffer){
 
 ////////////////////////////////
 
-#if 0
-// TODO(allen): Bring the clipboard fully to the custom side.
-internal void
-working_set_clipboard_clear(Heap *heap, Working_Set *working){
-    String_Const_u8 *str = working->clipboards;
-    for (i32 i = 0; i < working->clipboard_size; i += 1, str += 1){
-        heap_free(heap, str->str);
-        block_zero_struct(str);
-    }
-    working->clipboard_size = 0;
-    working->clipboard_current = 0;
-}
-
-internal String_Const_u8*
-working_set_next_clipboard_string(Heap *heap, Working_Set *working, u64 str_size){
-    i32 clipboard_current = working->clipboard_current;
-    if (working->clipboard_size == 0){
-        clipboard_current = 0;
-        working->clipboard_size = 1;
-    }
-    else{
-        ++clipboard_current;
-        if (clipboard_current >= working->clipboard_max_size){
-            clipboard_current = 0;
-        }
-        else if (working->clipboard_size <= clipboard_current){
-            working->clipboard_size = clipboard_current + 1;
-        }
-    }
-    String_Const_u8 *result = &working->clipboards[clipboard_current];
-    working->clipboard_current = clipboard_current;
-    if (result->str != 0){
-        heap_free(heap, result->str);
-    }
-    u8 *new_str = (u8*)heap_allocate(heap, (i32)(str_size + 1));
-    *result = SCu8(new_str, str_size);
-    return(result);
-}
-
-internal String_Const_u8*
-working_set_clipboard_index(Working_Set *working, i32 index){
-    String_Const_u8 *result = 0;
-    i32 size = working->clipboard_size;
-    i32 current = working->clipboard_current;
-    if (index >= 0 && size > 0){
-        index = index % size;
-        index = current + size - index;
-        index = index % size;
-        result = &working->clipboards[index];
-    }
-    return(result);
-}
-#endif
-
-////////////////////////////////
-
 // TODO(allen): get rid of this???
 internal b32
 get_canon_name(Arena *scratch, String_Const_u8 file_name, Editing_File_Name *canon_name){

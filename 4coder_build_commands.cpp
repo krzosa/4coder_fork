@@ -244,7 +244,7 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
 }
 
 CUSTOM_COMMAND_SIG(python_interpreter_on_comment)
-CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment, result ends up in clipboard")
+CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment")
 {
     Scratch_Block scratch(app);
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
