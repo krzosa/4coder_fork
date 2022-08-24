@@ -53,11 +53,8 @@ delta_apply(App *app, View_ID view,
 }
 
 function Buffer_Point_Delta_Result
-delta_apply(App *app, View_ID view,
-            Delta_Rule_Function *func, String_Const_u8 delta_ctx,
-            f32 dt, Buffer_Scroll scroll){
-    return(delta_apply(app, view, func, delta_ctx,
-                       dt, scroll.position, scroll.target));
+delta_apply(App *app, View_ID view, Delta_Rule_Function *func, String_Const_u8 delta_ctx, f32 dt, Buffer_Scroll scroll){
+    return(delta_apply(app, view, func, delta_ctx, dt, scroll.position, scroll.target));
 }
 
 function Buffer_Point_Delta_Result

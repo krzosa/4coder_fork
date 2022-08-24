@@ -560,7 +560,7 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
     if(is_active_view == 0){
         Rect_f32 view_rect = view_get_screen_rect(app, view_id);
-        ARGB_Color color = 0x22000000;
+        ARGB_Color color = theme_inactive_panel_overlay;
         draw_rectangle(app, view_rect, 0.f, color);
     }
 }
@@ -605,8 +605,8 @@ default_render_caller(App *app, Frame_Info frame_info, View_ID view_id){
 
     Buffer_Scroll scroll = view_get_buffer_scroll(app, view_id);
 
-    Buffer_Point_Delta_Result delta = delta_apply(app, view_id,
-                                                  frame_info.animation_dt, scroll);
+    Buffer_Point_Delta_Result delta = delta_apply(app, view_id, frame_info.animation_dt, scroll);
+    if(!config_smooth_scroll) delta.point = scroll.target;
     if (!block_match_struct(&scroll.position, &delta.point)){
         block_copy_struct(&scroll.position, &delta.point);
         view_set_buffer_scroll(app, view_id, scroll, SetBufferScroll_NoCursorChange);

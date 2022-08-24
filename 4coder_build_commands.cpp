@@ -158,9 +158,6 @@ CUSTOM_DOC("Make it big")
 // TODO(Krzosa): Probably want some injected into code variables like file
 // TODO(Krzosa): Maybe add something like presets? you could bind a command into a number
 //               then you would specify it using something like #1
-// TODO(Krzosa): Probably would want also to add something like precise commands
-//               so you could specify a command to run it inside the comment
-//
 struct Python_Eval_Data{
     Range_i64 range_to_modify;
     Buffer_ID buffer_to_modify;
@@ -270,14 +267,14 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment")
 }
 
 CUSTOM_COMMAND_SIG(python_interpreter_on_all_marked_comments)
-CUSTOM_DOC("Run python interpreter on all comments that start with /*#py")
+CUSTOM_DOC("Run python interpreter on all comments that start with a mark, can be escaped using \"")
 {
     Scratch_Block scratch(app);
 
     int code_file_id = 0;
     python_buffer_data_count = 0; // Zero global
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always); buffer != 0; buffer = get_buffer_next(app, buffer, Access_Always)){
-        i32 seek_pos = 0;
+        i32 seek_pos = -1;
         for(;;){
             //
             // Find the 2 ranges: one with code to run, one optional with previous output
@@ -285,8 +282,14 @@ CUSTOM_DOC("Run python interpreter on all comments that start with /*#py")
             Range_i64 code_range  = {};
             Range_i64 gen_range   = {};
 
+            String_Match escape_char = buffer_seek_string(app, buffer, string_u8_litexpr("#\""), Scan_Forward, seek_pos);
             String_Match code_begin = buffer_seek_string(app, buffer, string_u8_litexpr("/*#"), Scan_Forward, seek_pos);
             if(string_match_found(code_begin)){
+                if(string_match_found(escape_char)){
+                    if(escape_char.range.max == code_begin.range.max + 1){
+                        break;
+                    }
+                }
                 seek_pos = code_begin.range.max;
                 const i32 comment_token_size = 3;
                 code_range.min = code_begin.range.min + comment_token_size;

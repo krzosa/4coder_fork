@@ -1,4 +1,4 @@
-/*
+/*#
 #define _CRT_SECURE_NO_WARNINGS
 #include "4coder_base_types.h"
 #include "4coder_token.h"
@@ -77,7 +77,6 @@ int main(){
 }
 */
 String8 config_mapping = string_u8_litexpr("");
-String8 config_mode = string_u8_litexpr("4coder");
 b32 config_bind_by_physical_key = false;
 b32 config_use_file_bars = true;
 b32 config_hide_file_bar_in_ui = true;
@@ -92,6 +91,8 @@ b32 config_enable_output_wrapping = false;
 b32 config_highlight_line_at_cursor = true;
 b32 config_enable_undo_fade_out = true;
 f32 config_background_margin_width = 0.0;
+b32 config_smooth_scroll = true;
+String8 config_test = string_u8_litexpr("a");
 i64 config_cursor_roundness = 45;
 i64 config_mark_thickness = 2;
 i64 config_lister_roundness = 20;
@@ -136,6 +137,7 @@ u32 theme_highlight = 0x11264F78;
 u32 theme_at_highlight = 0xFF264F78;
 u32 theme_mark = 0xFFDCDCDC;
 u32 theme_text_default = 0xFFDCDCDC;
+u32 theme_inactive_panel_overlay = 0x22000000;
 u32 theme_comment = 0xFF608B4E;
 u32 theme_comment_note = 0xFF569CD6;
 u32 theme_comment_todo = 0xFF569CD6;
@@ -172,11 +174,6 @@ set_config_value(Config_Value *record){
 
         if(string_match(record->name, string_u8_litexpr("mapping"))){
             config_mapping = record->value_str;
-            return;
-        }
-
-        if(string_match(record->name, string_u8_litexpr("mode"))){
-            config_mode = record->value_str;
             return;
         }
 
@@ -247,6 +244,16 @@ set_config_value(Config_Value *record){
 
         if(string_match(record->name, string_u8_litexpr("background_margin_width"))){
             config_background_margin_width = record->value_float;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("smooth_scroll"))){
+            config_smooth_scroll = record->value_bool;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("test"))){
+            config_test = record->value_str;
             return;
         }
 
@@ -469,6 +476,11 @@ set_config_value(Config_Value *record){
 
         if(string_match(record->name, string_u8_litexpr("text_default"))){
             theme_text_default = record->value_u32;
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("inactive_panel_overlay"))){
+            theme_inactive_panel_overlay = record->value_u32;
             return;
         }
 
