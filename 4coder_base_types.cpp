@@ -2629,18 +2629,6 @@ Su32(u32 *str, u64 size, u64 cap){
     return(string);
 }
 
-function String_Any
-Sany(void *str, u64 size, u64 cap, String_Encoding encoding){
-    String_Any string = {encoding};
-    switch (encoding){
-        case StringEncoding_ASCII: string.s_char = Schar((char*)str, size, cap); break;
-        case StringEncoding_UTF8:  string.s_u8 = Su8((u8*)str, size, cap); break;
-        case StringEncoding_UTF16: string.s_u16 = Su16((u16*)str, size, cap); break;
-        case StringEncoding_UTF32: string.s_u32 = Su32((u32*)str, size, cap); break;
-    }
-    return(string);
-}
-
 function String_char
 Schar(char *str, u64 size){
     String_char string = {str, size, size + 1};
@@ -2662,18 +2650,6 @@ Su32(u32 *str, u64 size){
     return(string);
 }
 
-function String_Any
-Sany(void *str, u64 size, String_Encoding encoding){
-    String_Any string = {encoding};
-    switch (encoding){
-        case StringEncoding_ASCII: string.s_char = Schar((char*)str, size); break;
-        case StringEncoding_UTF8:  string.s_u8 = Su8((u8*)str, size); break;
-        case StringEncoding_UTF16: string.s_u16 = Su16((u16*)str, size); break;
-        case StringEncoding_UTF32: string.s_u32 = Su32((u32*)str, size); break;
-    }
-    return(string);
-}
-
 function String_char
 Schar(char *str, char *one_past_last){
     return(Schar(str, (u64)(one_past_last - str)));
@@ -2689,18 +2665,6 @@ Su16(u16 *str, u16 *one_past_last){
 function String_u32
 Su32(u32 *str, u32 *one_past_last){
     return(Su32(str, (u64)(one_past_last - str)));
-}
-
-function String_Any
-Sany(void *str, void *one_past_last, String_Encoding encoding){
-    String_Any string = {encoding};
-    switch (encoding){
-        case StringEncoding_ASCII: string.s_char = Schar((char*)str, (char*)one_past_last); break;
-        case StringEncoding_UTF8:  string.s_u8 = Su8((u8*)str, (u8*)one_past_last); break;
-        case StringEncoding_UTF16: string.s_u16 = Su16((u16*)str, (u16*)one_past_last); break;
-        case StringEncoding_UTF32: string.s_u32 = Su32((u32*)str, (u32*)one_past_last); break;
-    }
-    return(string);
 }
 
 function String_char
@@ -2728,18 +2692,6 @@ Su32(u32 *str){
     return(string);
 }
 
-function String_Any
-Sany(void *str, String_Encoding encoding){
-    String_Any string = {encoding};
-    switch (encoding){
-        case StringEncoding_ASCII: string.s_char = Schar((char*)str); break;
-        case StringEncoding_UTF8:  string.s_u8 = Su8((u8*)str); break;
-        case StringEncoding_UTF16: string.s_u16 = Su16((u16*)str); break;
-        case StringEncoding_UTF32: string.s_u32 = Su32((u32*)str); break;
-    }
-    return(string);
-}
-
 function String_char
 Schar(String_Const_char str, u64 cap){
     String_char string = {str.str, str.size, cap};
@@ -2758,31 +2710,6 @@ Su16(String_Const_u16 str, u64 cap){
 function String_u32
 Su32(String_Const_u32 str, u64 cap){
     String_u32 string = {str.str, str.size, cap};
-    return(string);
-}
-
-function String_Any
-SCany(String_char str){
-    String_Any string = {StringEncoding_ASCII};
-    string.s_char = str;
-    return(string);
-}
-function String_Any
-SCany(String_u8 str){
-    String_Any string = {StringEncoding_UTF8};
-    string.s_u8 = str;
-    return(string);
-}
-function String_Any
-SCany(String_u16 str){
-    String_Any string = {StringEncoding_UTF16};
-    string.s_u16 = str;
-    return(string);
-}
-function String_Any
-SCany(String_u32 str){
-    String_Any string = {StringEncoding_UTF32};
-    string.s_u32 = str;
     return(string);
 }
 
@@ -5332,18 +5259,6 @@ string_u32_push(Arena *arena, u64 size){
     return(string);
 }
 
-function String_Any
-string_any_push(Arena *arena, u64 size, String_Encoding encoding){
-    String_Any string = {};
-    switch (encoding){
-        case StringEncoding_ASCII: string.s_char = string_char_push(arena, size); break;
-        case StringEncoding_UTF8:  string.s_u8   = string_u8_push  (arena, size); break;
-        case StringEncoding_UTF16: string.s_u16  = string_u16_push (arena, size); break;
-        case StringEncoding_UTF32: string.s_u32  = string_u32_push (arena, size); break;
-    }
-    return(string);
-}
-
 #define push_string_u8 string_u8_push
 #define push_string_u16 string_u16_push
 #define push_string_u32 string_u32_push
@@ -6791,18 +6706,6 @@ string_u32_from_any(Arena *arena, String_Const_Any string){
         case StringEncoding_UTF8:  result = string_u32_from_string_u8  (arena, string.s_u8  ).string; break;
         case StringEncoding_UTF16: result = string_u32_from_string_u16 (arena, string.s_u16 ).string; break;
         case StringEncoding_UTF32: result = string.s_u32; break;
-    }
-    return(result);
-}
-
-function String_Const_Any
-string_any_from_any(Arena *arena, String_Encoding encoding, String_Const_Any string){
-    String_Const_Any result = {encoding};
-    switch (encoding){
-        case StringEncoding_ASCII: result.s_char = string_char_from_any(arena, string); break;
-        case StringEncoding_UTF8:  result.s_u8   = string_u8_from_any  (arena, string); break;
-        case StringEncoding_UTF16: result.s_u16  = string_u16_from_any (arena, string); break;
-        case StringEncoding_UTF32: result.s_u32  = string_u32_from_any (arena, string); break;
     }
     return(result);
 }

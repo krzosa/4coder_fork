@@ -1075,21 +1075,6 @@ struct String_u32{
     u64 cap;
 };
 
-struct String_Any{
-    String_Encoding encoding;
-    union{
-        struct{
-            void *str;
-            u64 size;
-            u64 cap;
-        };
-        String_char s_char;
-        String_u8 s_u8;
-        String_u16 s_u16;
-        String_u32 s_u32;
-    };
-};
-
 typedef i32 Line_Ending_Kind;
 enum{
     LineEndingKind_Binary,

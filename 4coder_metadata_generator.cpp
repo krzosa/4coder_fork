@@ -25,10 +25,10 @@
 #include <stdint.h>
 
 #ifdef OS_LINUX
-    #include <inttypes.h>
-    #define FMTi64 PRIi64
+#include <inttypes.h>
+#define FMTi64 PRIi64
 #else
-    #define FMTi64 "lld"
+#define FMTi64 "lld"
 #endif
 
 ///////////////////////////////
@@ -674,7 +674,7 @@ parse_custom_id(Arena *arena, Meta_Command_Entry_Arrays *arrays, Reader *reader)
     arrays->id_count += 1;
 
     return(true);
-    }
+}
 
 ///////////////////////////////
 
@@ -695,29 +695,29 @@ parse_text(Arena *arena, Meta_Command_Entry_Arrays *entry_arrays, u8 *source_nam
                 if (string_match(lexeme, string_u8_litexpr("CUSTOM_DOC"))){
                     Temp_Read temp_read = begin_temp_read(reader);
 
-                b32 found_start_pos = false;
-                for (i32 R = 0; R < 12; ++R){
-                    Token p_token = prev_token(reader);
-                    if (p_token.kind == TokenBaseKind_Identifier){
-                        String_Const_u8 p_lexeme = token_str(text, p_token);
-                        if (string_match(p_lexeme, string_u8_litexpr("CUSTOM_COMMAND"))){
-                            found_start_pos = true;
+                    b32 found_start_pos = false;
+                    for (i32 R = 0; R < 12; ++R){
+                        Token p_token = prev_token(reader);
+                        if (p_token.kind == TokenBaseKind_Identifier){
+                            String_Const_u8 p_lexeme = token_str(text, p_token);
+                            if (string_match(p_lexeme, string_u8_litexpr("CUSTOM_COMMAND"))){
+                                found_start_pos = true;
+                                break;
+                            }
+                        }
+                        if (p_token.kind == TokenBaseKind_EOF){
                             break;
                         }
                     }
-                    if (p_token.kind == TokenBaseKind_EOF){
-                        break;
-                    }
-                }
 
-                if (!found_start_pos){
-                    end_temp_read(temp_read);
-                }
-                else{
-                    if (!parse_documented_command(arena, entry_arrays, reader)){
+                    if (!found_start_pos){
                         end_temp_read(temp_read);
                     }
-                }
+                    else{
+                        if (!parse_documented_command(arena, entry_arrays, reader)){
+                            end_temp_read(temp_read);
+                        }
+                    }
                 }
                 else if (string_match(lexeme, string_u8_litexpr("CUSTOM_ID"))){
                     Temp_Read temp_read = begin_temp_read(reader);
@@ -760,6 +760,18 @@ parse_files_by_pattern(Arena *arena, Meta_Command_Entry_Arrays *entry_arrays, Fi
 
         String_Const_Any info_name = SCany(info->name, info->len);
         Temp_Memory temp = begin_temp(arena);
+
+        String_Const_u8 result = {};
+
+        // NOTE(Krzosa): This was inlined while deleting String_Any !!! Probably need to cleanup !!
+        // not sure if this even can be anythin other then UTF8 !
+        switch (info->len){
+            case StringEncoding_ASCII: result = string_u8_from_string_char(arena, {(char *)info->name, (u64)info->len}).string; break;
+            case StringEncoding_UTF8:  result = {(u8 *)info->name, (u64)info->len}; break;
+            case StringEncoding_UTF16: result = string_u8_from_string_u16(arena, {(u16 *)info->name, (u64)info->len}).string; break;
+            case StringEncoding_UTF32: result = string_u8_from_string_u32(arena, {(u32 *)info->name, (u64)info->len}).string; break;
+        }
+
         String_Const_u8 info_name_ascii = string_u8_from_any(arena, info_name);
         b32 is_generated = string_match(info_name_ascii, string_u8_litexpr("4coder_generated"));
         end_temp(temp);
@@ -852,8 +864,8 @@ main(int argc, char **argv){
     out_directory = string_skip_chop_whitespace(out_directory);
 
     String_Const_u8 cmd_out_name = push_u8_stringf(arena, "%.*s/%s",
-                                                        string_expand(out_directory),
-                                                        COMMAND_METADATA_OUT);
+                                                   string_expand(out_directory),
+                                                   COMMAND_METADATA_OUT);
     FILE *cmd_out = fopen((char*)cmd_out_name.str, "wb");
 
     if (cmd_out != 0){
