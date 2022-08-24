@@ -127,7 +127,7 @@ struct Models{
     u32 next_animate_delay;
     b32 animate_next_frame;
 
-    Profile_Global_List profile_list;
+    //Profile_Global_List profile_list;
 
     // Last frame state
     Vec2_i32 prev_p;

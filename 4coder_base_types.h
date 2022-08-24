@@ -1347,8 +1347,8 @@ struct Temp_Memory{
 };
 
 ////////////////////////////////
-
-typedef u64 Profile_ID;
+// NOTE(Krzosa): Deleted profile code:
+/*typedef u64 Profile_ID;
 struct Profile_Record{
     Profile_Record *next;
     Profile_ID id;
@@ -1374,7 +1374,7 @@ enum{
 
 // NOTE(allen): full definition in 4coder_profile.h, due to dependency on System_Mutex.
 struct Profile_Global_List;
-
+*/
 ////////////////////////////////
 
 typedef i32 Thread_Kind;
@@ -1399,12 +1399,12 @@ struct Thread_Context{
     Arena_Node *used_last;
     Arena_Node *free_arenas;
 
-    Base_Allocator *prof_allocator;
-    Profile_ID prof_id_counter;
-    Arena prof_arena;
-    Profile_Record *prof_first;
-    Profile_Record *prof_last;
-    i32 prof_record_count;
+    // NOTE(Krzosa): Deleted profile code: Base_Allocator *prof_allocator;
+    // NOTE(Krzosa): Deleted profile code: Profile_ID prof_id_counter;
+    // NOTE(Krzosa): Deleted profile code: Arena prof_arena;
+    // NOTE(Krzosa): Deleted profile code: Profile_Record *prof_first;
+    // NOTE(Krzosa): Deleted profile code: Profile_Record *prof_last;
+    // NOTE(Krzosa): Deleted profile code: i32 prof_record_count;
 
     void *user_data;
 };

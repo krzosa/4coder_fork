@@ -1616,10 +1616,10 @@ unpack_color(ARGB_Color color){
 function ARGB_Color
 pack_color(Vec4_f32 color){
     ARGB_Color result =
-        ((u8)(color.a*255) << 24) |
-        ((u8)(color.r*255) << 16) |
-        ((u8)(color.g*255) << 8) |
-        ((u8)(color.b*255) << 0);
+    ((u8)(color.a*255) << 24) |
+    ((u8)(color.r*255) << 16) |
+    ((u8)(color.g*255) << 8) |
+    ((u8)(color.b*255) << 0);
     return(result);
 }
 
@@ -3268,9 +3268,9 @@ thread_ctx_init(Thread_Context *tctx, Thread_Kind kind, Base_Allocator *allocato
     tctx->allocator = allocator;
     tctx->node_arena = make_arena(allocator, KB(4), 8);
 
-    tctx->prof_allocator = prof_allocator;
-    tctx->prof_id_counter = 1;
-    tctx->prof_arena = make_arena(prof_allocator, KB(16));
+    // NOTE(Krzosa): Deleted profile code: tctx->prof_allocator = prof_allocator;
+    // NOTE(Krzosa): Deleted profile code: tctx->prof_id_counter = 1;
+    // NOTE(Krzosa): Deleted profile code: tctx->prof_arena = make_arena(prof_allocator, KB(16));
 }
 
 function void

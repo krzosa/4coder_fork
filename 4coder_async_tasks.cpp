@@ -79,8 +79,8 @@ async_task_thread(void *thread_ptr){
     app.tctx = tctx;
     app.cmd_context = async_system->cmd_context;
 
-    Profile_Global_List *list = get_core_profile_list(&app);
-    ProfileThreadName(tctx, list, string_u8_litexpr("async"));
+    // NOTE(Krzosa): Deleted profile code: Profile_Global_List *list = get_core_profile_list(&app);
+    // NOTE(Krzosa): Deleted profile code: ProfileThreadName(tctx, list, string_u8_litexpr("async"));
 
     Async_Context ctx = {&app, thread};
 

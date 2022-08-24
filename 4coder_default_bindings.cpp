@@ -23,8 +23,8 @@ custom_layer_init(App *app){
     async_task_handler_init(app, &global_async_system);
     code_index_init();
     buffer_modified_set_init();
-    Profile_Global_List *list = get_core_profile_list(app);
-    ProfileThreadName(tctx, list, string_u8_litexpr("main"));
+    // NOTE(Krzosa): Deleted profile code: Profile_Global_List *list = get_core_profile_list(app);
+    // NOTE(Krzosa): Deleted profile code: ProfileThreadName(tctx, list, string_u8_litexpr("main"));
     initialize_managed_id_metadata(app);
     heap_init(&global_heap, tctx->allocator);
     global_permanent_arena = make_arena_system();

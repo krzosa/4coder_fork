@@ -63,7 +63,7 @@ set_line_indents(App *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, i64 
 
 internal Token*
 find_anchor_token(App *app, Buffer_ID buffer, Token_Array *tokens, i64 invalid_line){
-    ProfileScope(app, "find anchor token");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "find anchor token");
     Token *result = 0;
 
     if (tokens != 0 && tokens->tokens != 0){
@@ -152,7 +152,7 @@ indent__unfinished_statement(Token *token, Nest *current_nest){
 function void
 line_indent_cache_update(App *app, Buffer_ID buffer, i32 tab_width, Indent_Line_Cache *line_cache){
     if (line_cache->line_number_for_cached_indent != line_cache->where_token_starts){
-        ProfileScope(app, "get indent info");
+        // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "get indent info");
         line_cache->line_number_for_cached_indent = line_cache->where_token_starts;
         line_cache->start_pos = get_line_start_pos(app, buffer, line_cache->where_token_starts);
         Range_i64 range = Ii64(line_cache->start_pos, line_cache->one_past_last_pos);
@@ -162,7 +162,7 @@ line_indent_cache_update(App *app, Buffer_ID buffer, i32 tab_width, Indent_Line_
 
 internal i64*
 get_indentation_array(App *app, Arena *arena, Buffer_ID buffer, Range_i64 lines, Indent_Flag flags, i32 tab_width, i32 indent_width){
-    ProfileScope(app, "get indentation array");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "get indentation array");
     i64 count = lines.max - lines.min + 1;
     i64 *indentations = push_array(arena, i64, count);
     i64 *shifted_indentations = indentations - lines.first;
@@ -202,7 +202,7 @@ get_indentation_array(App *app, Arena *arena, Buffer_ID buffer, Range_i64 lines,
 
             if (line_cache.where_token_starts == 0 ||
                 token->pos >= line_cache.one_past_last_pos){
-                ProfileScope(app, "get line number");
+                // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "get line number");
                 line_cache.where_token_starts = get_line_number_from_pos(app, buffer, token->pos);
                 line_cache.one_past_last_pos = get_line_end_pos(app, buffer, line_cache.where_token_starts);
             }
@@ -356,7 +356,7 @@ actual_indent = N; )
 
 internal b32
 auto_indent_buffer(App *app, Buffer_ID buffer, Range_i64 pos, Indent_Flag flags, i32 tab_width, i32 indent_width){
-    ProfileScope(app, "auto indent buffer");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "auto indent buffer");
     Token_Array token_array = get_token_array_from_buffer(app, buffer);
     Token_Array *tokens = &token_array;
 
@@ -443,7 +443,7 @@ CUSTOM_DOC("Auto-indents the range between the cursor and the mark.")
 CUSTOM_COMMAND_SIG(write_text_and_auto_indent)
 CUSTOM_DOC("Inserts text and auto-indents the line on which the cursor sits if any of the text contains 'layout punctuation' such as ;:{}()[]# and new lines.")
 {
-    ProfileScope(app, "write and auto indent");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "write and auto indent");
     User_Input in = get_current_input(app);
     String_Const_u8 insert = to_writable(&in);
     if (insert.str != 0 && insert.size > 0){

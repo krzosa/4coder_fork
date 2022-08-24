@@ -11,7 +11,7 @@ CUSTOM_COMMAND_SIG(load_project_file);
 CUSTOM_COMMAND_SIG(default_startup)
 CUSTOM_DOC("Default command for responding to a startup event")
 {
-    ProfileScope(app, "default startup");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "default startup");
     User_Input input = get_current_input(app);
     if (match_core_code(&input, CoreCode_Startup)){
         String_Const_u8_Array file_names = input.event.core.file_names;
@@ -191,7 +191,7 @@ CUSTOM_DOC("Input consumption loop for default view behavior")
             break;
         }
 
-        ProfileScopeNamed(app, "before view input", view_input_profile);
+        // NOTE(Krzosa): Deleted profile code: ProfileScopeNamed(app, "before view input", view_input_profile);
 
         // NOTE(allen): Mouse Suppression
         Event_Property event_properties = get_event_properties(&input.event);
@@ -211,9 +211,9 @@ CUSTOM_DOC("Input consumption loop for default view behavior")
 
         // NOTE(allen): Run the command and pre/post command stuff
         default_pre_command(app, scope);
-        ProfileCloseNow(view_input_profile);
+        // NOTE(Krzosa): Deleted profile code: ProfileCloseNow(view_input_profile);
         map_result.command(app);
-        ProfileScope(app, "after view input");
+        // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "after view input");
         default_post_command(app, scope);
     }
 }
@@ -368,7 +368,7 @@ function void
 default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                       Buffer_ID buffer, Text_Layout_ID text_layout_id,
                       Rect_f32 rect){
-    ProfileScope(app, "render buffer");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "render buffer");
 
     Scratch_Block scratch(app);
     View_ID active_view = get_active_view(app, Access_Always);
@@ -579,7 +579,7 @@ default_draw_query_bars(App *app, Rect_f32 region, View_ID view_id, Face_ID face
 
 function void
 default_render_caller(App *app, Frame_Info frame_info, View_ID view_id){
-    ProfileScope(app, "default render caller");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "default render caller");
     Rect_f32 region = draw_background_and_margin(app, view_id);
     Rect_f32 prev_clip = draw_set_clip(app, region);
 
@@ -657,7 +657,7 @@ HOOK_SIG(default_view_adjust){
 }
 
 BUFFER_NAME_RESOLVER_SIG(default_buffer_name_resolution){
-    ProfileScope(app, "default buffer name resolution");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "default buffer name resolution");
     if (conflict_count > 1){
         // List of unresolved conflicts
         Scratch_Block scratch(app);
@@ -771,14 +771,14 @@ BUFFER_NAME_RESOLVER_SIG(default_buffer_name_resolution){
 function void
 do_full_lex_async__inner(Async_Context *actx, Buffer_ID buffer_id){
     App *app = actx->app;
-    ProfileScope(app, "async lex");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "async lex");
     Scratch_Block scratch(app);
 
     String_Const_u8 contents = {};
     {
-        ProfileBlock(app, "async lex contents (before mutex)");
+        // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "async lex contents (before mutex)");
         acquire_global_frame_mutex(app);
-        ProfileBlock(app, "async lex contents (after mutex)");
+        // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "async lex contents (after mutex)");
         contents = push_whole_buffer(app, scratch, buffer_id);
         release_global_frame_mutex(app);
     }
@@ -791,7 +791,7 @@ do_full_lex_async__inner(Async_Context *actx, Buffer_ID buffer_id){
     Lex_State_Cpp state = {};
     lex_full_input_cpp_init(&state, contents);
     for (;;){
-        ProfileBlock(app, "async lex block");
+        // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "async lex block");
         if (lex_full_input_cpp_breaks(scratch, &list, &state, limit_factor)){
             break;
         }
@@ -802,9 +802,9 @@ do_full_lex_async__inner(Async_Context *actx, Buffer_ID buffer_id){
     }
 
     if (!canceled){
-        ProfileBlock(app, "async lex save results (before mutex)");
+        // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "async lex save results (before mutex)");
         acquire_global_frame_mutex(app);
-        ProfileBlock(app, "async lex save results (after mutex)");
+        // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "async lex save results (after mutex)");
         Managed_Scope scope = buffer_get_managed_scope(app, buffer_id);
         if (scope != 0){
             Base_Allocator *allocator = managed_scope_allocator(app, scope);
@@ -832,7 +832,7 @@ do_full_lex_async(Async_Context *actx, String_Const_u8 data){
 
 function String_Const_u8_Array
 parse_extension_line_to_extension_list(App *app, Arena *arena, String_Const_u8 str){
-    ProfileScope(app, "parse extension line to extension list");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "parse extension line to extension list");
     i32 count = 0;
     for (u64 i = 0; i < str.size; i += 1){
         if (str.str[i] == '.'){
@@ -858,7 +858,7 @@ parse_extension_line_to_extension_list(App *app, Arena *arena, String_Const_u8 s
 }
 
 BUFFER_HOOK_SIG(default_begin_buffer){
-    ProfileScope(app, "begin buffer");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "begin buffer");
 
     Scratch_Block scratch(app);
 
@@ -960,7 +960,7 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     }
 
     if (use_lexer){
-        ProfileBlock(app, "begin buffer kick off lexer");
+        // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "begin buffer kick off lexer");
         Async_Task *lex_task_ptr = scope_attachment(app, scope, buffer_lex_task, Async_Task);
         *lex_task_ptr = async_task_no_dep(&global_async_system, do_full_lex_async, make_data_struct(&buffer_id));
     }
@@ -1001,7 +1001,7 @@ BUFFER_HOOK_SIG(default_new_file){
 }
 
 BUFFER_HOOK_SIG(default_file_save){
-    ProfileScope(app, "default file save");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "default file save");
 
     b32 auto_indent = config_automatically_indent_text_on_save;
     b32 is_virtual = config_enable_virtual_whitespace;
@@ -1029,7 +1029,7 @@ BUFFER_HOOK_SIG(default_file_save){
 
 BUFFER_EDIT_RANGE_SIG(default_buffer_edit_range){
     // buffer_id, new_range, original_size
-    ProfileScope(app, "default edit range");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "default edit range");
 
     Range_i64 old_range = Ii64(old_cursor_range.min.pos, old_cursor_range.max.pos);
 
@@ -1064,7 +1064,7 @@ BUFFER_EDIT_RANGE_SIG(default_buffer_edit_range){
 
     Token_Array *ptr = scope_attachment(app, scope, attachment_tokens, Token_Array);
     if (ptr != 0 && ptr->tokens != 0){
-        ProfileBlockNamed(app, "attempt resync", profile_attempt_resync);
+        // NOTE(Krzosa): Deleted profile code: ProfileBlockNamed(app, "attempt resync", profile_attempt_resync);
 
         i64 token_index_first = token_relex_first(ptr, old_range.first, 1);
         i64 token_index_resync_guess =
@@ -1087,13 +1087,13 @@ BUFFER_EDIT_RANGE_SIG(default_buffer_edit_range){
 
             Token_Relex relex = token_relex(relex_list, relex_range.first - text_shift, ptr->tokens, token_index_first, token_index_resync_guess);
 
-            ProfileCloseNow(profile_attempt_resync);
+            // NOTE(Krzosa): Deleted profile code: ProfileCloseNow(profile_attempt_resync);
 
             if (!relex.successful_resync){
                 do_full_relex = true;
             }
             else{
-                ProfileBlock(app, "apply resync");
+                // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "apply resync");
 
                 i64 token_index_resync = relex.first_resync_index;
 

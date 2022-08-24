@@ -7,7 +7,7 @@ moving the cursor, which work even without the default 4coder framework.
 
 function void
 write_text(App *app, String_Const_u8 insert){
-    ProfileScope(app, "write character");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "write character");
     if (insert.str != 0 && insert.size > 0){
         View_ID view = get_active_view(app, Access_ReadWriteVisible);
 
@@ -182,7 +182,7 @@ current_view_snipe_delete(App *app, Scan_Direction direction, Boundary_Function_
 }
 
 CUSTOM_COMMAND_SIG(snipe_backward_whitespace_or_token_boundary)
-CUSTOM_DOC("Delete a single, whole token on or to the left of the cursor and post it to the clipboard.")
+CUSTOM_DOC("Delete a single, whole token on or to the left of the cursor.")
 {
     Scratch_Block scratch(app);
     current_view_snipe_delete(app, Scan_Backward,
@@ -190,7 +190,7 @@ CUSTOM_DOC("Delete a single, whole token on or to the left of the cursor and pos
 }
 
 CUSTOM_COMMAND_SIG(snipe_forward_whitespace_or_token_boundary)
-CUSTOM_DOC("Delete a single, whole token on or to the right of the cursor and post it to the clipboard.")
+CUSTOM_DOC("Delete a single, whole token on or to the right of the cursor.")
 {
     Scratch_Block scratch(app);
     current_view_snipe_delete(app, Scan_Forward,
@@ -289,7 +289,7 @@ CUSTOM_DOC("Reads the scroll wheel value from the mouse state and scrolls accord
 
 internal void
 move_vertical_pixels(App *app, View_ID view, f32 pixels){
-    ProfileScope(app, "move vertical pixels");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "move vertical pixels");
     i64 pos = view_get_cursor_pos(app, view);
     Buffer_Cursor cursor = view_compute_cursor(app, view, seek_pos(pos));
     Rect_f32 r = view_padded_box_of_pos(app, view, cursor.line, pos);
@@ -592,7 +592,7 @@ enum{
 
 function void
 clean_all_lines_buffer(App *app, Buffer_ID buffer, Clean_All_Lines_Mode mode){
-    ProfileScope(app, "clean all lines");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "clean all lines");
     Scratch_Block scratch(app);
     Batch_Edit *batch_first = 0;
     Batch_Edit *batch_last = 0;
@@ -653,7 +653,7 @@ clean_all_lines_buffer(App *app, Buffer_ID buffer, Clean_All_Lines_Mode mode){
 CUSTOM_COMMAND_SIG(clean_all_lines)
 CUSTOM_DOC("Removes trailing whitespace from all lines and removes all blank lines in the current buffer.")
 {
-    ProfileScope(app, "clean all lines");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "clean all lines");
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     clean_all_lines_buffer(app, buffer, CleanAllLinesMode_RemoveBlankLines);
@@ -662,7 +662,7 @@ CUSTOM_DOC("Removes trailing whitespace from all lines and removes all blank lin
 CUSTOM_COMMAND_SIG(clean_trailing_whitespace)
 CUSTOM_DOC("Removes trailing whitespace from all lines in the current buffer.")
 {
-    ProfileScope(app, "clean all lines");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "clean all lines");
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
     clean_all_lines_buffer(app, buffer, CleanAllLinesMode_LeaveBlankLines);

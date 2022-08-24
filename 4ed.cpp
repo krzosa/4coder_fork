@@ -201,7 +201,7 @@ App_Init_Sig(app_init){
 
     models->virtual_event_arena = make_arena_system();
 
-    profile_init(&models->profile_list);
+    // NOTE(Krzosa): Deleted profile code: profile_init(&models->profile_list);
 
     managed_ids_init(tctx->allocator, &models->managed_id_set);
 

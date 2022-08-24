@@ -271,7 +271,7 @@ get_complete_list_raw(App *app, Arena *arena, Buffer_ID buffer,
 
 function void
 word_complete_list_extend_from_raw(App *app, Arena *arena, String_Match_List *matches, List_String_Const_u8 *list, Table_Data_u64 *used_table){
-    ProfileScope(app, "word complete list extend from raw");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "word complete list extend from raw");
     Scratch_Block scratch(app);
     for (String_Match *node = matches->first; node != 0; node = node->next){
         String_Const_u8 s = push_buffer_range(app, scratch, node->buffer, node->range);
@@ -437,7 +437,7 @@ Memes(word_complete)
 CUSTOM_COMMAND_SIG(word_complete)
 CUSTOM_DOC("Iteratively tries completing the word to the left of the cursor with other words in open buffers that have the same prefix string.")
 {
-    ProfileScope(app, "word complete");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "word complete");
 
     View_ID view = get_active_view(app, Access_ReadWriteVisible);
     Buffer_ID buffer = view_get_buffer(app, view, Access_ReadWriteVisible);
@@ -457,7 +457,7 @@ CUSTOM_DOC("Iteratively tries completing the word to the left of the cursor with
         local_persist Range_i64 range = {};
 
         if (first_completion || !initialized){
-            ProfileBlock(app, "word complete state init");
+            // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "word complete state init");
             initialized = false;
             i64 pos = view_get_cursor_pos(app, view);
             Range_i64 needle_range = get_word_complete_needle_range(app, buffer, pos);
@@ -469,7 +469,7 @@ CUSTOM_DOC("Iteratively tries completing the word to the left of the cursor with
         }
 
         if (initialized){
-            ProfileBlock(app, "word complete apply");
+            // NOTE(Krzosa): Deleted profile code: ProfileBlock(app, "word complete apply");
 
             word_complete_iter_next(it);
             String_Const_u8 str = word_complete_iter_read(it);

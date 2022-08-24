@@ -19,7 +19,7 @@
 
 function Thread_Context* get_thread_context(App *app);
 function void print_message(App *app, String_Const_u8 message);
-function Profile_Global_List* get_core_profile_list(App *app);
+// function Profile_Global_List* get_core_profile_list(App *app);
 
 #include "4coder_string_match.h"
 #include "4coder_token.h"
@@ -33,7 +33,7 @@ function Profile_Global_List* get_core_profile_list(App *app);
 #define DYNAMIC_LINK_API
 #include "generated/font_api.h"
 
-#include "4coder_profile.h"
+// #include "4coder_profile.h"
 #include "4coder_command_map.h"
 
 #include "4ed_render_target.h"
@@ -73,8 +73,8 @@ function Profile_Global_List* get_core_profile_list(App *app);
 #include "4coder_system_helpers.cpp"
 #include "4coder_app_links_allocator.cpp"
 #include "4coder_system_allocator.cpp"
-#include "4coder_profile.cpp"
-#include "4coder_profile_static_enable.cpp"
+//#include "4coder_profile.cpp"
+//#include "4coder_profile_static_enable.cpp"
 #include "4coder_hash_functions.cpp"
 #include "4coder_table.cpp"
 #include "4coder_buffer_seek_constructors.cpp"

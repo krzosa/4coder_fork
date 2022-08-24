@@ -1206,7 +1206,7 @@ struct Active_View_Info{
 };
 function Active_View_Info
 get_active_view_info(App *app, Access_Flag access){
-    ProfileScope(app, "get_active_view_info");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "get_active_view_info");
 
     Active_View_Info result = {};
     Panel *panel = layout_get_active_panel(&app->cmd_context->layout);
@@ -3262,14 +3262,6 @@ buffer_find_all_matches(App *app, Arena *arena, Buffer_ID buffer,
         }
     }
     return(list);
-}
-
-////////////////////////////////
-
-function Profile_Global_List*
-get_core_profile_list(App *app){
-    Models *models = (Models*)app->cmd_context;
-    return(&models->profile_list);
 }
 
 // BOTTOM

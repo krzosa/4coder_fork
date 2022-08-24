@@ -237,7 +237,7 @@ edit__apply(Thread_Context *tctx, Models *models, Editing_File *file, Range_i64 
 
     // NOTE(allen): history update
     if (!behaviors.do_not_post_to_history){
-        ProfileTLBlock(tctx, &models->profile_list, "edit apply history");
+        // NOTE(Krzosa): Deleted profile code: ProfileTLBlock(tctx, &models->profile_list, "edit apply history");
         history_record_edit(&models->global_history, &file->state.history, buffer,
                             behaviors.pos_before_edit, edit);
         file->state.current_record_index =
@@ -245,7 +245,7 @@ edit__apply(Thread_Context *tctx, Models *models, Editing_File *file, Range_i64 
     }
 
     {
-        ProfileTLBlock(tctx, &models->profile_list, "edit apply replace range");
+        // NOTE(Krzosa): Deleted profile code: ProfileTLBlock(tctx, &models->profile_list, "edit apply replace range");
         i64 shift_amount = replace_range_shift(edit.range, (i64)edit.text.size);
         buffer_replace_range(buffer, edit.range, edit.text, shift_amount);
     }
@@ -417,8 +417,8 @@ edit_merge_history_range(Thread_Context *tctx, Models *models, Editing_File *fil
 }
 
 function b32
-edit_batch_check(Thread_Context *tctx, Profile_Global_List *list, Batch_Edit *batch){
-    ProfileTLScope(tctx, list, "batch check");
+edit_batch_check(Thread_Context *tctx, Batch_Edit *batch){
+    // NOTE(Krzosa): Deleted profile code: ProfileTLScope(tctx, list, "batch check");
     b32 result = true;
     Range_i64 prev_range = Ii64(-1, 0);
     for (;batch != 0;
@@ -437,11 +437,11 @@ edit_batch(Thread_Context *tctx, Models *models, Editing_File *file,
            Batch_Edit *batch, Edit_Behaviors behaviors){
     b32 result = true;
     if (batch != 0){
-        if (!edit_batch_check(tctx, &models->profile_list, batch)){
+        if (!edit_batch_check(tctx, batch)){
             result = false;
         }
         else{
-            ProfileTLScope(tctx, &models->profile_list, "batch apply");
+            // NOTE(Krzosa): Deleted profile code: ProfileTLScope(tctx, &models->profile_list, "batch apply");
 
             pre_edit_state_change(models, file);
             pre_edit_history_prep(file, behaviors);
@@ -451,7 +451,7 @@ edit_batch(Thread_Context *tctx, Models *models, Editing_File *file,
                 start_index = file->state.current_record_index;
             }
 
-            ProfileTLBlockNamed(tctx, &models->profile_list, "batch text edits", profile_edits);
+            // NOTE(Krzosa): Deleted profile code: ProfileTLBlockNamed(tctx, &models->profile_list, "batch text edits", profile_edits);
 
             Range_i64 old_range = {};
             old_range.min = batch->edit.range.min;
@@ -498,7 +498,7 @@ edit_batch(Thread_Context *tctx, Models *models, Editing_File *file,
                     break;
                 }
             }
-            ProfileCloseNow(profile_edits);
+            // NOTE(Krzosa): Deleted profile code: ProfileCloseNow(profile_edits);
 
             if (history_is_activated(&file->state.history)){
                 History_Record_Index last_index = file->state.current_record_index;

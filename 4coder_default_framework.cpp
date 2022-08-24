@@ -397,7 +397,7 @@ create_or_switch_to_buffer_and_clear_by_name(App *app, String_Const_u8 name_stri
 
 function void
 save_all_dirty_buffers_with_postfix(App *app, String_Const_u8 postfix){
-    ProfileScope(app, "save all dirty buffers");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "save all dirty buffers");
     Scratch_Block scratch(app);
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_ReadWriteVisible);
          buffer != 0;
@@ -689,13 +689,13 @@ initialize_managed_id_metadata(App *app);
 
 function void
 default_input_handler_init(App *app, Arena *arena){
-    Thread_Context *tctx = get_thread_context(app);
+    // NOTE(Krzosa): Deleted profile code: Thread_Context *tctx = get_thread_context(app);
 
     View_ID view = get_this_ctx_view(app, Access_Always);
-    String_Const_u8 name = push_u8_stringf(arena, "view %d", view);
+    // NOTE(Krzosa): Deleted profile code: String_Const_u8 name = push_u8_stringf(arena, "view %d", view);
 
-    Profile_Global_List *list = get_core_profile_list(app);
-    ProfileThreadName(tctx, list, name);
+    // NOTE(Krzosa): Deleted profile code: Profile_Global_List *list = get_core_profile_list(app);
+    // NOTE(Krzosa): Deleted profile code: ProfileThreadName(tctx, list, name);
 
     View_Context ctx = view_current_context(app, view);
     ctx.mapping = &framework_mapping;

@@ -7,14 +7,14 @@
 
 function void
 rewrite_lines_to_crlf(App *app, Buffer_ID buffer){
-    ProfileScope(app, "rewrite lines to crlf");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "rewrite lines to crlf");
     Scratch_Block scratch(app);
     i64 size = buffer_get_size(app, buffer);
 
     Batch_Edit *first = 0;
     Batch_Edit *last = 0;
 
-    ProfileBlockNamed(app, "build batch edit", profile_batch);
+    // NOTE(Krzosa): Deleted profile code: ProfileBlockNamed(app, "build batch edit", profile_batch);
     i64 pos = -1;
     Character_Predicate pred_cr = character_predicate_from_character('\r');
     Character_Predicate pred_lf = character_predicate_from_character('\n');
@@ -47,20 +47,20 @@ rewrite_lines_to_crlf(App *app, Buffer_ID buffer){
             edit->edit.range = Ii64(pos);
         }
     }
-    ProfileCloseNow(profile_batch);
+    // NOTE(Krzosa): Deleted profile code: ProfileCloseNow(profile_batch);
 
     buffer_batch_edit(app, buffer, first);
 }
 
 function void
 rewrite_lines_to_lf(App *app, Buffer_ID buffer){
-    ProfileScope(app, "rewrite lines to lf");
+    // NOTE(Krzosa): Deleted profile code: ProfileScope(app, "rewrite lines to lf");
     Scratch_Block scratch(app);
 
     Batch_Edit *first = 0;
     Batch_Edit *last = 0;
 
-    ProfileBlockNamed(app, "build batch edit", profile_batch);
+    // NOTE(Krzosa): Deleted profile code: ProfileBlockNamed(app, "build batch edit", profile_batch);
     i64 pos = -1;
     Character_Predicate pred = character_predicate_from_character('\r');
     for (;;){
@@ -76,7 +76,7 @@ rewrite_lines_to_lf(App *app, Buffer_ID buffer){
         edit->edit.text = string_u8_litexpr("");
         edit->edit.range = match.range;
     }
-    ProfileCloseNow(profile_batch);
+    // NOTE(Krzosa): Deleted profile code: ProfileCloseNow(profile_batch);
 
 	buffer_batch_edit(app, buffer, first);
 }
@@ -92,7 +92,7 @@ CUSTOM_DOC("Puts the buffer in crlf line ending mode.")
     Line_Ending_Kind *eol_setting = scope_attachment(app, scope, buffer_eol_setting,
                                                      Line_Ending_Kind);
     if (eol_setting != 0){
-    *eol_setting = LineEndingKind_CRLF;
+        *eol_setting = LineEndingKind_CRLF;
     }
 }
 
@@ -105,7 +105,7 @@ CUSTOM_DOC("Puts the buffer in lf line ending mode.")
     Line_Ending_Kind *eol_setting = scope_attachment(app, scope, buffer_eol_setting,
                                                      Line_Ending_Kind);
     if (eol_setting != 0){
-    *eol_setting = LineEndingKind_LF;
+        *eol_setting = LineEndingKind_LF;
     }
 }
 
