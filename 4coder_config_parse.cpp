@@ -5,7 +5,10 @@ struct Config_Value{
     String8 type;
     String8 name;
     String8 value_specifier;
-    String8 value_str;
+
+    String8 value_str[4];
+    i32 value_str_count;
+
     bool value_bool;
     f32  value_float;
     i64  value_int;
@@ -70,7 +73,7 @@ parse_config(Arena *scratch, Arena *string_arena, String8 text, String8 default_
             if(match_token(&it, TokenCppKind_Eq)){
                 Token *value    = next_token(&it);
                 Config_Value *v = values + values_count++;
-                v->value_str    = get_token_string(text, value);
+                v->value_str[0] = get_token_string(text, value);
                 v->name         = string;
                 v->section      = section;
                 v->subsection[0] = subsections[0];
@@ -85,21 +88,37 @@ parse_config(Arena *scratch, Arena *string_arena, String8 text, String8 default_
                     }Break;
 
                     Case(TokenCppKind_LiteralString){
+                        v->value_str_count = 1;
                         v->type = string_u8_litexpr("String8");
-                        v->value_str.str += 1; v->value_str.size -= 2;
-                        v->value_specifier = string_u8_litexpr("value_str");
-                        v->value_str = push_string_copy(string_arena, v->value_str);
+                        v->value_specifier = string_u8_litexpr("value_str[0]");
+
+                        //
+                        // Can have more then one value
+                        //
+                        for(int i = 0; i < 4; i++){
+                            v->value_str[i].str += 1; v->value_str[i].size -= 2;
+                            v->value_str[i] = push_string_copy(string_arena, v->value_str[i]);
+                            if(match_token(&it, TokenCppKind_Comma)){
+                                Token *next_value = next_token(&it);
+                                if(next_value->kind == TokenBaseKind_LiteralString){
+                                    value = next_value;
+                                    v->value_specifier = string_u8_litexpr("value_str");
+                                    v->value_str[v->value_str_count] = get_token_string(text, value);
+                                    v->value_str_count += 1;
+                                } else break;
+                            } else break;
+                        }
                     }Break;
 
                     Case(TokenCppKind_LiteralInteger){
                         v->type = string_u8_litexpr("i64");
-                        v->value_int = string_to_integer(v->value_str, 10);
+                        v->value_int = string_to_integer(v->value_str[0], 10);
                         v->value_specifier = string_u8_litexpr("value_int");
                     }Break;
 
                     Case(TokenCppKind_LiteralIntegerHex){
                         v->type      = string_u8_litexpr("u32");
-                        String8 hex  = string_skip(v->value_str, 2);
+                        String8 hex  = string_skip(v->value_str[0], 2);
                         v->value_u32 = string_to_integer(hex, 16);
                         v->value_specifier = string_u8_litexpr("value_u32");
                     }Break;
@@ -113,7 +132,7 @@ parse_config(Arena *scratch, Arena *string_arena, String8 text, String8 default_
                     case TokenCppKind_LiteralFloat64:
                     Case(TokenCppKind_LiteralFloat32){
                         v->type = string_u8_litexpr("f32");
-                        v->value_float = atof((char *)v->value_str.str);
+                        v->value_float = atof((char *)v->value_str[0].str);
                         v->value_specifier = string_u8_litexpr("value_float");
                     }Break;
 

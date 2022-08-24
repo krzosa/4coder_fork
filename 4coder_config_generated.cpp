@@ -39,21 +39,38 @@ int main(){
     string_u8_litexpr("theme"),
   };
 
-
-    for(i32 i = 0; i < values_count; i++){
-      Config_Value *v = values + i;
-
-      b32 is_string = false;
-      if(string_match(string_u8_litexpr("String8"), v->type)) is_string = true;
-
-      printf("%.*s ", string_expand(v->type));
-      printf("%.*s_%.*s = ", string_expand(v->section), string_expand(v->name));
-      if(is_string == true) printf("string_u8_litexpr(\"");
-      printf("%.*s", string_expand(v->value_str));
-      if(is_string == true) printf("\")");
-      printf(";\n");
+  for(int i = 0; i < values_count; i++){
+    Config_Value *v = values + i;
+    if(!string_match(v->section, string_u8_litexpr("binding"))){
+      continue;
     }
 
+    printf("%.*s ", string_expand(v->type));
+    printf("%.*s_%.*s[] = {", string_expand(v->section), string_expand(v->name));
+    for(int j = 0; j < v->value_str_count; j++){
+      printf("string_u8_litexpr(\"%.*s\"),", string_expand(v->value_str[j]));
+    }
+    printf("};\n");
+  }
+  printf("\n");
+
+  for(i32 i = 0; i < values_count; i++){
+    Config_Value *v = values + i;
+
+    if(string_match(v->section, string_u8_litexpr("binding"))){
+      continue;
+    }
+
+    b32 is_string = false;
+    if(string_match(string_u8_litexpr("String8"), v->type)) is_string = true;
+
+    printf("%.*s ", string_expand(v->type));
+    printf("%.*s_%.*s = ", string_expand(v->section), string_expand(v->name));
+    if(is_string == true) printf("string_u8_litexpr(\"");
+    printf("%.*s", string_expand(v->value_str[0]));
+    if(is_string == true) printf("\")");
+    printf(";\n");
+  }
 
   printf("function void\nset_config_value(Config_Value *record){\n");
   for(int section_index = 0; section_index < ArrayCount(section_loaders); section_index++){
@@ -76,6 +93,19 @@ int main(){
 
 }
 */
+String8 binding_keyboard_macro_switch_recording[] = {string_u8_litexpr("M"),string_u8_litexpr("Alt"),};
+String8 binding_keyboard_macro_replay[] = {string_u8_litexpr("M"),string_u8_litexpr("Control"),};
+String8 binding_change_active_panel[] = {string_u8_litexpr("1"),string_u8_litexpr("Control"),};
+String8 binding_change_active_panel_backwards[] = {string_u8_litexpr("2"),string_u8_litexpr("Control"),};
+String8 binding_command_lister[] = {string_u8_litexpr("P"),string_u8_litexpr("Control"),string_u8_litexpr("Shift"),};
+String8 binding_interactive_switch_buffer[] = {string_u8_litexpr("P"),string_u8_litexpr("Control"),};
+String8 binding_interactive_open_or_new[] = {string_u8_litexpr("O"),string_u8_litexpr("Control"),};
+String8 binding_goto_next_jump[] = {string_u8_litexpr("N"),string_u8_litexpr("Control"),};
+String8 binding_goto_prev_jump[] = {string_u8_litexpr("N"),string_u8_litexpr("Control"),string_u8_litexpr("Shift"),};
+String8 binding_save_all_dirty_buffers[] = {string_u8_litexpr("S"),string_u8_litexpr("Control"),string_u8_litexpr("Shift"),};
+String8 binding_quick_swap_buffer[] = {string_u8_litexpr("Tab"),string_u8_litexpr("Control"),};
+String8 binding_jump_to_definition[] = {string_u8_litexpr("I"),string_u8_litexpr("Control"),};
+
 String8 config_mapping = string_u8_litexpr("");
 b32 config_bind_by_physical_key = false;
 b32 config_use_file_bars = true;
@@ -105,7 +135,6 @@ b32 config_automatically_save_changes_on_build = true;
 b32 config_indent_with_tabs = false;
 i64 config_indent_width = 4;
 i64 config_default_tab_width = 4;
-String8 config_default_theme_name = string_u8_litexpr("4coder");
 String8 config_default_font_name = string_u8_litexpr("liberation-mono.ttf");
 i64 config_default_font_size = 12;
 b32 config_default_font_hinting = false;
@@ -172,7 +201,7 @@ set_config_value(Config_Value *record){
     if(string_match(string_u8_litexpr("config"), record->section)){
 
         if(string_match(record->name, string_u8_litexpr("mapping"))){
-            config_mapping = record->value_str;
+            config_mapping = record->value_str[0];
             return;
         }
 
@@ -272,7 +301,7 @@ set_config_value(Config_Value *record){
         }
 
         if(string_match(record->name, string_u8_litexpr("treat_as_code"))){
-            config_treat_as_code = record->value_str;
+            config_treat_as_code = record->value_str[0];
             return;
         }
 
@@ -316,13 +345,8 @@ set_config_value(Config_Value *record){
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("default_theme_name"))){
-            config_default_theme_name = record->value_str;
-            return;
-        }
-
         if(string_match(record->name, string_u8_litexpr("default_font_name"))){
-            config_default_font_name = record->value_str;
+            config_default_font_name = record->value_str[0];
             return;
         }
 
@@ -342,7 +366,7 @@ set_config_value(Config_Value *record){
         }
 
         if(string_match(record->name, string_u8_litexpr("user_name"))){
-            config_user_name = record->value_str;
+            config_user_name = record->value_str[0];
             return;
         }
 

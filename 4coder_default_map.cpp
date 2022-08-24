@@ -8,7 +8,6 @@ function void
 setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id){
     MappingScope();
     SelectMapping(mapping);
-
     SelectMap(global_id);
     Bind(keyboard_macro_switch_recording , KeyCode_M, KeyCode_Alt);
     Bind(keyboard_macro_replay,           KeyCode_M, KeyCode_Control);

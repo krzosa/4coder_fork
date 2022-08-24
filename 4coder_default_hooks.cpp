@@ -4,8 +4,7 @@
 
 // TOP
 
-CUSTOM_COMMAND_SIG(reload_config);
-CUSTOM_COMMAND_SIG(load_project_file);
+CUSTOM_COMMAND_SIG(load_config_files);
 
 
 CUSTOM_COMMAND_SIG(default_startup)
@@ -19,9 +18,8 @@ CUSTOM_DOC("Default command for responding to a startup event")
 
         Scratch_Block scratch(app);
         extern Arena config_string_arena;
-        config_string_arena = make_arena_system(MB(1));
-        reload_config(app);
-        load_project_file(app);
+        config_string_arena = make_arena_system(KB(32));
+        load_config_files(app);
 
         b32 lalt_lctrl_is_altgr = config_lalt_lctrl_is_altgr;
         global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
