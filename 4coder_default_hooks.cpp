@@ -557,6 +557,12 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     draw_text_layout_default(app, text_layout_id);
 
     draw_set_clip(app, prev_clip);
+
+    if(is_active_view == 0){
+        Rect_f32 view_rect = view_get_screen_rect(app, view_id);
+        ARGB_Color color = 0x22000000;
+        draw_rectangle(app, view_rect, 0.f, color);
+    }
 }
 
 function Rect_f32
