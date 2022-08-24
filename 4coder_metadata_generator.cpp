@@ -542,6 +542,57 @@ parse_command_kind(String_Const_u8 kind){
     return(result);
 }
 
+
+function String_Const_u8
+string_interpret_escapes(Arena *arena, String_Const_u8 string){
+    u8 *space = push_array(arena, u8, string.size + 1);
+    String_u8 result = Su8(space, 0, string.size);
+    for (;;){
+        u64 back_slash_pos = string_find_first(string, '\\');
+        string_append(&result, string_prefix(string, back_slash_pos));
+        string = string_skip(string, back_slash_pos + 1);
+        if (string.size == 0){
+            break;
+        }
+        switch (string.str[0]){
+            case '\\':
+            {
+                string_append_character(&result, '\\');
+            }break;
+
+            case 'n':
+            {
+                string_append_character(&result, '\n');
+            }break;
+
+            case 't':
+            {
+                string_append_character(&result, '\t');
+            }break;
+
+            case '"':
+            {
+                string_append_character(&result, '\"');
+            }break;
+
+            case '0':
+            {
+                string_append_character(&result, '\0');
+            }break;
+
+            default:
+            {
+                u8 c[2] = {'\\'};
+                c[1] = string.str[0];
+                string_append(&result, SCu8(c, 2));
+            }break;
+        }
+    }
+    result.str[result.size] = 0;
+    pop_array(arena, u8, result.cap - result.size);
+    return(result.string);
+}
+
 static b32
 parse_documented_command(Arena *arena, Meta_Command_Entry_Arrays *arrays, Reader *reader){
     String_Const_u8 name = {};
@@ -623,6 +674,7 @@ parse_documented_command(Arena *arena, Meta_Command_Entry_Arrays *arrays, Reader
     doc = string_chop(string_skip(doc, 1), 1);
 
     String_Const_u8 file_name_unquoted = string_chop(string_skip(file_name, 1), 1);
+
     String_Const_u8 source_name = string_interpret_escapes(arena, file_name_unquoted);
 
     Meta_Command_Entry *new_entry = push_array(arena, Meta_Command_Entry, 1);
@@ -764,7 +816,7 @@ parse_files_by_pattern(Arena *arena, Meta_Command_Entry_Arrays *entry_arrays, Fi
         // NOTE(Krzosa): This was inlined while deleting String_Any !!! Probably need to cleanup !!
         // not sure if this even can be anythin other then UTF8 !
         switch (info->len){
-            case StringEncoding_ASCII: info_name_ascii = string_u8_from_string_char(arena, {(char *)info->name, (u64)info->len}).string; break;
+            case StringEncoding_ASCII: info_name_ascii = string_u8_from_string_char(arena, (char *)info->name, (u64)info->len, StringFill_NullTerminate).string; break;
             case StringEncoding_UTF8:  info_name_ascii = {(u8 *)info->name, (u64)info->len}; break;
             case StringEncoding_UTF16: info_name_ascii = string_u8_from_string_u16(arena, {(u16 *)info->name, (u64)info->len}).string; break;
             case StringEncoding_UTF32: info_name_ascii = string_u8_from_string_u32(arena, {(u32 *)info->name, (u64)info->len}).string; break;

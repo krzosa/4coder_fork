@@ -903,10 +903,6 @@ enum{
     StringMatch_CaseInsensitive = 1,
 };
 
-struct String_Const_char{
-    char *str;
-    u64 size;
-};
 struct String_Const_u8{
     u8 *str;
     u64 size;
@@ -922,13 +918,6 @@ struct String_Const_u32{
 
 typedef String_Const_u8 String8;
 
-struct String_Const_char_Array{
-    union{
-        String_Const_char *strings;
-        String_Const_char *vals;
-    };
-    i32 count;
-};
 struct String_Const_u8_Array{
     union{
         String_Const_u8 *strings;
@@ -965,10 +954,6 @@ enum{
 #define string_litinit(s) {(u8*)(s), sizeof(s) - 1}
 #define string_u8_litinit(s) {(u8*)(s), sizeof(s) - 1}
 
-struct Node_String_Const_char{
-    Node_String_Const_char *next;
-    String_Const_char string;
-};
 struct Node_String_Const_u8{
     Node_String_Const_u8 *next;
     String_Const_u8 string;
@@ -981,12 +966,7 @@ struct Node_String_Const_u32{
     Node_String_Const_u32 *next;
     String_Const_u32 string;
 };
-struct List_String_Const_char{
-    Node_String_Const_char *first;
-    Node_String_Const_char *last;
-    u64 total_size;
-    i32 node_count;
-};
+
 struct List_String_Const_u8{
     Node_String_Const_u8 *first;
     Node_String_Const_u8 *last;
@@ -1009,16 +989,6 @@ struct List_String_Const_u32{
 typedef Node_String_Const_u8 String8Node;
 typedef List_String_Const_u8 String8List;
 
-struct String_char{
-    union{
-        String_Const_char string;
-        struct{
-            char *str;
-            u64 size;
-        };
-    };
-    u64 cap;
-};
 struct String_u8{
     union{
         String_Const_u8 string;

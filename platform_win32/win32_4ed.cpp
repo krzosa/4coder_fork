@@ -410,9 +410,9 @@ win32_read_clipboard_contents(Thread_Context *tctx, Arena *arena){
             if (clip_data != 0){
                 char *clip_ascii_ptr = (char*)GlobalLock(clip_data);
                 if (clip_ascii_ptr != 0){
-                    String_Const_char clip_ascii = SCchar(clip_ascii_ptr);
+                    int size = cstring_length(clip_ascii_ptr);
                     got_result = true;
-                    result = string_u8_from_string_char(arena, clip_ascii, StringFill_NullTerminate).string;
+                    result = string_u8_from_string_char(arena, clip_ascii_ptr, size, StringFill_NullTerminate).string;
                 }
                 GlobalUnlock(clip_data);
             }

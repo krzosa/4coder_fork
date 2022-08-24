@@ -43,21 +43,6 @@ push_u8_stringf(Arena *arena, char *format, ...){
 }
 
 function void
-string_list_pushfv(Arena *arena, List_String_Const_char *list, char *format, va_list args){
-    String_Const_u8 string = push_stringfv(arena, format, args);
-    if (arena->alignment < sizeof(u64)){
-        push_align(arena, sizeof(u64));
-    }
-    string_list_push(arena, list, SCchar(string));
-}
-function void
-string_list_pushf(Arena *arena, List_String_Const_char *list, char *format, ...){
-    va_list args;
-    va_start(args, format);
-    string_list_pushfv(arena, list, format, args);
-    va_end(args);
-}
-function void
 string_list_pushfv(Arena *arena, List_String_Const_u8 *list, char *format, va_list args){
     String_Const_u8 string = push_u8_stringfv(arena, format, args);
     if (arena->alignment < sizeof(u64)){
@@ -194,14 +179,14 @@ date_time_format(Arena *arena, List_String_Const_u8 *list, String_Const_u8 forma
                     break;
                 }
             }
-            
+
             String_Const_u8 field = SCu8(start, ptr);
             for (; field.size > 0;){
                 if (string_match(string_prefix(field, 5), string_u8_litexpr("month"))){
                     field = string_skip(field, 5);
                     push_month_name(arena, list, date_time->mon);
                 }
-                
+
                 else if (string_match(string_prefix(field, 4), string_u8_litexpr("yyyy"))){
                     field = string_skip(field, 4);
                     push_year_full(arena, list, date_time->year);
@@ -218,7 +203,7 @@ date_time_format(Arena *arena, List_String_Const_u8 *list, String_Const_u8 forma
                     field = string_skip(field, 4);
                     push_minute_zeroes(arena, list, date_time->min);
                 }
-                
+
                 else if (string_match(string_prefix(field, 3), string_u8_litexpr("mon"))){
                     field = string_skip(field, 3);
                     push_month_abrev(arena, list, date_time->mon);
@@ -231,7 +216,7 @@ date_time_format(Arena *arena, List_String_Const_u8 *list, String_Const_u8 forma
                     field = string_skip(field, 3);
                     push_hour_24(arena, list, date_time->hour);
                 }
-                
+
                 else if (string_match(string_prefix(field, 2), string_u8_litexpr("yy"))){
                     field = string_skip(field, 2);
                     push_year_abrev(arena, list, date_time->year);
@@ -260,7 +245,7 @@ date_time_format(Arena *arena, List_String_Const_u8 *list, String_Const_u8 forma
                     field = string_skip(field, 2);
                     push_millisecond_zeroes(arena, list, date_time->msec);
                 }
-                
+
                 else if (string_match(string_prefix(field, 1), string_u8_litexpr("m"))){
                     field = string_skip(field, 1);
                     push_month_num(arena, list, date_time->mon);
@@ -277,7 +262,7 @@ date_time_format(Arena *arena, List_String_Const_u8 *list, String_Const_u8 forma
                     field = string_skip(field, 1);
                     push_second(arena, list, date_time->sec);
                 }
-                
+
                 else{
                     string_list_push(arena, list, SCu8(start, ptr));
                     break;
