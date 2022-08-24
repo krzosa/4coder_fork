@@ -5,7 +5,7 @@
 // TOP
 
 function void
-setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
+setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id){
     MappingScope();
     SelectMapping(mapping);
 
@@ -109,8 +109,6 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id)
     BindMouse(jump_to_hiperlink_at_cursor, MouseCode_Left, KeyCode_Control);
     BindMouse(jump_to_hiperlink_at_cursor_other_panel, MouseCode_Left, KeyCode_Control, KeyCode_Shift);
 
-    SelectMap(code_id);
-    ParentMap(file_id);
     Bind(move_left_alpha_numeric_boundary,           KeyCode_Left, KeyCode_Control);
     Bind(move_right_alpha_numeric_boundary,          KeyCode_Right, KeyCode_Control);
     Bind(move_left_alpha_numeric_or_camel_boundary,  KeyCode_Left, KeyCode_Alt);

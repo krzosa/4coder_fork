@@ -47,14 +47,6 @@ CUSTOM_DOC("Default command for responding to a startup event")
         }
 
 
-        // CLEANUP(Krzosa)
-        // TODO(Krzosa) Load config, load theme, load keybindings they overwrite so can load here
-        // Example:
-        // String_ID global_map_id = vars_save_string_lit("keys_global");
-        // String_ID file_map_id = vars_save_string_lit("keys_file");
-        // String_ID code_map_id = vars_save_string_lit("keys_code");
-        // setup_built_in_mapping(app, mapping, &framework_mapping, global_map_id, file_map_id, code_map_id);
-
         // open command line files
         String_Const_u8 hot_directory = push_hot_directory(app, scratch);
         for (i32 i = 0; i < file_names.count; i += 1){
@@ -150,6 +142,8 @@ CUSTOM_DOC("Default command for responding to a try-exit event")
     }
 }
 
+
+// MAPPING(Krzosa): Seems like here is the code to run key bindings
 function Implicit_Map_Result
 default_implicit_map(App *app, String_ID lang, String_ID mode, Input_Event *event){
     Implicit_Map_Result result = {};
@@ -189,6 +183,8 @@ CUSTOM_DOC("Input consumption loop for default view behavior")
         if (suppressing_mouse && (event_properties & EventPropertyGroup_AnyMouseEvent) != 0){
             continue;
         }
+
+        // MAPPING(Krzosa): Seems like here is the code to run key bindings
 
         // NOTE(allen): Get binding
         if (implicit_map_function == 0){
@@ -933,9 +929,8 @@ BUFFER_HOOK_SIG(default_begin_buffer){
     }
 
     String_ID file_map_id = vars_save_string_lit("keys_file");
-    String_ID code_map_id = vars_save_string_lit("keys_code");
 
-    Command_Map_ID map_id = (treat_as_code)?(code_map_id):(file_map_id);
+    Command_Map_ID map_id = file_map_id;
     Managed_Scope scope = buffer_get_managed_scope(app, buffer_id);
     Command_Map_ID *map_id_ptr = scope_attachment(app, scope, buffer_map_id, Command_Map_ID);
     *map_id_ptr = map_id;

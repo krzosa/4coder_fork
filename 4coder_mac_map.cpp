@@ -5,7 +5,7 @@
 // TOP
 
 function void
-setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
+setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id){
     MappingScope();
     SelectMapping(mapping);
 
@@ -94,7 +94,6 @@ setup_mac_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
     // Bind(if_read_only_goto_position_same_panel, KeyCode_Return, KeyCode_Shift);
     Bind(view_jump_list_with_lister,  KeyCode_Period, KeyCode_Command, KeyCode_Shift);
 
-    SelectMap(code_id);
     Bind(move_left_alpha_numeric_boundary,           KeyCode_Left, KeyCode_Command);
     Bind(move_right_alpha_numeric_boundary,          KeyCode_Right, KeyCode_Command);
     Bind(move_left_alpha_numeric_or_camel_boundary,  KeyCode_Left, KeyCode_Control);

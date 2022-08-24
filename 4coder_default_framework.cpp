@@ -480,7 +480,7 @@ CUSTOM_DOC("Toggle fullscreen mode on or off.  The change(s) do not take effect 
 ////////////////////////////////
 
 function void
-setup_essential_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
+setup_essential_mapping(Mapping *mapping, i64 global_id, i64 file_id){
     MappingScope();
     SelectMapping(mapping);
 
@@ -499,31 +499,28 @@ setup_essential_mapping(Mapping *mapping, i64 global_id, i64 file_id, i64 code_i
     BindCore(click_set_cursor_and_mark, CoreCode_ClickActivateView);
     BindMouseMove(click_set_cursor_if_lbutton);
 
-    SelectMap(code_id);
-    ParentMap(file_id);
-    BindTextInput(write_text_and_auto_indent);
 }
 
 function void
-setup_built_in_mapping(App *app, String_Const_u8 name, Mapping *mapping, i64 global_id, i64 file_id, i64 code_id){
+setup_built_in_mapping(App *app, String_Const_u8 name, Mapping *mapping, i64 global_id, i64 file_id){
     Thread_Context *tctx = get_thread_context(app);
     if (string_match(name, string_u8_litexpr("default"))){
         mapping_release(tctx, mapping);
         mapping_init(tctx, mapping);
-        setup_default_mapping(mapping, global_id, file_id, code_id);
+        setup_default_mapping(mapping, global_id, file_id);
     }
     else if (string_match(name, string_u8_litexpr("mac-default"))){
         mapping_release(tctx, mapping);
         mapping_init(tctx, mapping);
-        setup_mac_mapping(mapping, global_id, file_id, code_id);
+        setup_mac_mapping(mapping, global_id, file_id);
     }
     else if (string_match(name, string_u8_litexpr("choose"))){
         mapping_release(tctx, mapping);
         mapping_init(tctx, mapping);
 #if OS_MAC
-        setup_mac_mapping(mapping, global_id, file_id, code_id);
+        setup_mac_mapping(mapping, global_id, file_id);
 #else
-        setup_default_mapping(mapping, global_id, file_id, code_id);
+        setup_default_mapping(mapping, global_id, file_id);
 #endif
     }
 }
