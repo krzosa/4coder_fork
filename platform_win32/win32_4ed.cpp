@@ -396,7 +396,7 @@ win32_read_clipboard_contents(Thread_Context *tctx, Arena *arena){
         if (!got_result){
             HANDLE clip_data = GetClipboardData(CF_UNICODETEXT);
             if (clip_data != 0){
-                u16 *clip_16_ptr = (u16*)GlobalLock(clip_data);
+                wchar_t *clip_16_ptr = (wchar_t *)GlobalLock(clip_data);
                 if (clip_16_ptr != 0){
                     String_Const_u16 clip_16 = SCu16(clip_16_ptr);
                     got_result = true;
@@ -1243,7 +1243,7 @@ win32_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                 c = '\n';
             }
             if (c > 127 || (' ' <= c && c <= '~') || c == '\t' || c == '\n'){
-                String_Const_u16 str_16 = SCu16(&c, 1);
+                String_Const_u16 str_16 = {&c, 1};
                 String_Const_u8 str_8 = string_u8_from_string_u16(&win32vars.frame_arena, str_16).string;
                 Input_Event *event = push_input_event(&win32vars.frame_arena, &win32vars.input_chunk.trans.event_list);
                 event->kind = InputEventKind_TextInsert;
@@ -1699,7 +1699,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
 
     // NOTE(allen): context setup
     Thread_Context _tctx = {};
-    thread_ctx_init(&_tctx, ThreadKind_Main, get_base_allocator_system(), get_base_allocator_system());
+    thread_ctx_init(&_tctx, ThreadKind_Main, get_base_allocator_system());
 
     block_zero_struct(&win32vars);
     win32vars.tctx = &_tctx;

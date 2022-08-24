@@ -73,7 +73,7 @@ system_memory_allocate_sig(){
 internal
 system_memory_set_protection_sig(){
     DWORD protect = 0;
-    
+
     switch (flags & 0x7){
         case 0:                                                   protect = PAGE_NOACCESS; break;
         case MemProtect_Read:                                     protect = PAGE_READONLY; break;
@@ -84,10 +84,10 @@ system_memory_set_protection_sig(){
         case MemProtect_Execute|MemProtect_Write:                 /* below */
         case MemProtect_Execute|MemProtect_Write|MemProtect_Read: protect = PAGE_EXECUTE_READWRITE; break;
     }
-    
+
     Memory_Annotation_Tracker_Node *node = (Memory_Annotation_Tracker_Node*)ptr;
     node -= 1;
-    
+
     DWORD old_protect = 0;
     b32 result = VirtualProtect(node, (SIZE_T)size, protect, &old_protect);
     return(result);
@@ -102,7 +102,7 @@ internal
 system_memory_annotation_sig(){
     Memory_Annotation result = {};
     EnterCriticalSection(&memory_tracker_mutex);
-    
+
     for (Memory_Annotation_Tracker_Node *node = memory_tracker.first;
          node != 0;
          node = node->next){
@@ -113,7 +113,7 @@ system_memory_annotation_sig(){
         r_node->address = node + 1;
         r_node->size = node->size;
     }
-    
+
     LeaveCriticalSection(&memory_tracker_mutex);
     return(result);
 }
@@ -138,7 +138,7 @@ system_get_path_sig(){
             size = GetCurrentDirectory_utf8(arena, size, out);
             result = SCu8(out, size);
         }break;
-        
+
         case SystemPath_Binary:
         {
             local_persist b32 has_stashed_4ed_path = false;
@@ -154,7 +154,7 @@ system_get_path_sig(){
             }
             result = push_string_copy(arena, win32vars.binary_path);
         }break;
-        
+
         case SystemPath_UserDirectory:
         {
             if (w32_override_user_directory.size == 0){
@@ -163,7 +163,7 @@ system_get_path_sig(){
                 GetUserProfileDirectoryW(current_process_token, 0, &size);
                 u16 *buffer_u16 = push_array(arena, u16, size);
                 if (GetUserProfileDirectoryW(current_process_token, (WCHAR*)buffer_u16, &size)){
-                    String8 path = string_u8_from_string_u16(arena, SCu16(buffer_u16, size), StringFill_NullTerminate).string;
+                    String8 path = string_u8_from_string_u16(arena, {buffer_u16, size}, StringFill_NullTerminate).string;
                     result = push_stringf(arena, "%.*s\\4coder\\", string_expand(path));
                 }
             }
@@ -206,13 +206,13 @@ system_get_canonical_sig(){
     if ((character_is_alpha(string_get_character(name, 0)) &&
          string_get_character(name, 1) == ':') ||
         string_match(string_prefix(name, 2), string_u8_litexpr("\\\\"))){
-        
+
         u8 *c_name = push_array(arena, u8, name.size + 1);
         block_copy(c_name, name.str, name.size);
         c_name[name.size] = 0;
         HANDLE file = CreateFile_utf8(arena, c_name, GENERIC_READ, 0, 0, OPEN_EXISTING,
                                       FILE_ATTRIBUTE_NORMAL, 0);
-        
+
         if (file != INVALID_HANDLE_VALUE){
             DWORD capacity = GetFinalPathNameByHandle_utf8(arena, file, 0, 0, 0);
             u8 *buffer = push_array(arena, u8, capacity);
@@ -227,16 +227,16 @@ system_get_canonical_sig(){
         else{
             String_Const_u8 path = string_remove_front_of_path(name);
             String_Const_u8 front = string_front_of_path(name);
-            
+
             u8 *c_path = push_array(arena, u8, path.size + 1);
             block_copy(c_path, path.str, path.size);
             c_path[path.size] = 0;
-            
+
             HANDLE dir = CreateFile_utf8(arena, c_path, FILE_LIST_DIRECTORY,
                                          FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0,
                                          OPEN_EXISTING,
                                          FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, 0);
-            
+
             if (dir != INVALID_HANDLE_VALUE){
                 DWORD capacity = GetFinalPathNameByHandle_utf8(arena, dir, 0, 0, 0);
                 u8 *buffer = push_array(arena, u8, capacity + front.size + 1);
@@ -295,25 +295,24 @@ system_get_file_list_sig(){
     else{
         search_pattern = push_u8_stringf(arena, "%.*s\\*", string_expand(directory));
     }
-    
+
     WIN32_FIND_DATA find_data = {};
     HANDLE search = FindFirstFile_utf8(arena, search_pattern.str, &find_data);
     if (search != INVALID_HANDLE_VALUE){
         File_Info *first = 0;
         File_Info *last = 0;
         i32 count = 0;
-        
+
         for (;;){
-            String_Const_u16 file_name_utf16 = SCu16(find_data.cFileName);
-            if (!(string_match(file_name_utf16, string_u16_litexpr(L".")) ||
-                  string_match(file_name_utf16, string_u16_litexpr(L"..")))){
-                String_Const_u8 file_name = string_u8_from_string_u16(arena, file_name_utf16,
-                                                                      StringFill_NullTerminate).string;
-                
+            bool single_dot = find_data.cFileName[0] == L'.' && find_data.cFileName[1] == 0;
+            bool double_dot = find_data.cFileName[0] == L'.' && find_data.cFileName[1] == L'.' && find_data.cFileName[2] == 0;
+            if(!single_dot && !double_dot){
+                String_Const_u8 file_name = string_u8_from_string_u16(arena, SCu16(find_data.cFileName), StringFill_NullTerminate).string;
+
                 File_Info *info = push_array(arena, File_Info, 1);
                 sll_queue_push(first, last, info);
                 count += 1;
-                
+
                 info->file_name = file_name;
                 info->attributes.size = win32_u64_from_u32_u32(find_data.nFileSizeHigh,
                                                                find_data.nFileSizeLow);
@@ -324,10 +323,10 @@ system_get_file_list_sig(){
                 break;
             }
         }
-        
+
         result.infos = push_array(arena, File_Info*, count);
         result.count = count;
-        
+
         i32 counter = 0;
         for (File_Info *node = first;
              node != 0;
@@ -337,7 +336,7 @@ system_get_file_list_sig(){
         }
         FindClose(search);
     }
-    
+
     return(result);
 }
 
@@ -396,12 +395,12 @@ system_load_close_sig(){
 internal
 system_save_file_sig(){
     File_Attributes result = {};
-    
+
     HANDLE file = CreateFile_utf8(scratch, (u8*)file_name, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-    
+
     if (file != INVALID_HANDLE_VALUE){
         u64 written_total = 0;
-        
+
         b32 success = true;
         for (;written_total < data.size;){
             DWORD read_size = max_u32;
@@ -415,14 +414,14 @@ system_save_file_sig(){
             }
             written_total += write_size;
         }
-        
+
         if (success){
             result = win32_file_attributes_from_HANDLE(file);
         }
-        
+
         CloseHandle(file);
     }
-    
+
     return(result);
 }
 
@@ -454,12 +453,12 @@ color_picker_hook(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam){
             CHOOSECOLORW *win32_params = (CHOOSECOLORW *)LParam;
             Color_Picker *picker = (Color_Picker*)win32_params->lCustData;
             SetWindowLongPtr(Window, GWLP_USERDATA, (LONG_PTR)LParam);
-            
+
             Scratch_Block scratch(win32vars.tctx);
             String_u16 temp = string_u16_from_string_u8(scratch, picker->title, StringFill_NullTerminate);
             SetWindowTextW(Window, (LPCWSTR)temp.str);
         } break;
-        
+
         case WM_CTLCOLORSTATIC:
         {
             // NOTE(casey): I can't believe I'm 42 years old and I still have to do
@@ -479,7 +478,7 @@ color_picker_hook(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam){
                 if(win32_params)
                 {
                     Color_Picker *picker = (Color_Picker*)win32_params->lCustData;
-                    
+
                     RECT rect;
                     GetClientRect(swatch_window, &rect);
                     HDC swatch_dc = (HDC)WParam;
@@ -488,7 +487,7 @@ color_picker_hook(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam){
                                               (rect.top + rect.bottom)/2);
                     ARGB_Color new_color =
                         int_color_from_colorref(Probe, *picker->dest);
-                    
+
                     if(*picker->dest != new_color)
                     {
                         *picker->dest = new_color;
@@ -497,7 +496,7 @@ color_picker_hook(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam){
                 }
             }
         } break;
-        
+
         default:
         {
 #if 0
@@ -508,7 +507,7 @@ color_picker_hook(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam){
 #endif
         } break;
     }
-    
+
     return(result);
 }
 
@@ -517,14 +516,14 @@ internal DWORD WINAPI
 color_picker_thread(LPVOID Param)
 {
     Color_Picker *picker = (Color_Picker*)Param;
-    
+
     ARGB_Color color = 0;
     if (picker->dest){
         color = *picker->dest;
     }
-    
+
     COLORREF custom_colors[16] = {};
-    
+
     CHOOSECOLORW win32_params = {};
     win32_params.lStructSize = sizeof(win32_params);
     //win32_params.hwndOwner = win32vars.window_handle;
@@ -534,21 +533,21 @@ color_picker_thread(LPVOID Param)
     win32_params.Flags = CC_RGBINIT | CC_FULLOPEN | CC_ANYCOLOR | CC_ENABLEHOOK;
     win32_params.lCustData = (LPARAM)picker;
     win32_params.lpfnHook = color_picker_hook;
-    
+
     if (ChooseColorW(&win32_params)){
         color = int_color_from_colorref(win32_params.rgbResult, color);
     }
-    
+
     if(picker->dest){
         *picker->dest = color;
     }
-    
+
     if (picker->finished){
         *picker->finished = true;
     }
-    
+
     system_memory_free(picker, sizeof(*picker));
-    
+
     return(0);
 }
 
@@ -560,7 +559,7 @@ system_open_color_picker_sig(){
     // over here on the 4coder threads.
     Color_Picker *perm = (Color_Picker*)system_memory_allocate(sizeof(Color_Picker), string_u8_litexpr(file_name_line_number));
     *perm = *picker;
-    
+
     HANDLE ThreadHandle = CreateThread(0, 0, color_picker_thread, perm, 0, 0);
     CloseHandle(ThreadHandle);
 }

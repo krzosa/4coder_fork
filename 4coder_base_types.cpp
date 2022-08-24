@@ -2620,6 +2620,12 @@ Su8(u8 *str, u64 size){
     return(string);
 }
 
+function String_Const_u16
+SCu16(wchar_t *str){
+    u64 size = cstring_length((u16 *)str);
+    String_Const_u16 string = {(u16 *)str, size};
+    return(string);
+}
 
 function String_u8
 Su8(u8 *str, u8 *one_past_last){
@@ -2682,7 +2688,7 @@ SCu8(char *str){
 }
 
 
-#define string_litexpr(s) SCchar((s), sizeof(s) - 1)
+#define string_u16_litexpr(s) String_Const_u16{(u16*)(s), (u64)(sizeof(s)/2 - 1)}
 #define string_u8_litexpr(s) SCu8((u8*)(s), (u64)(sizeof(s) - 1))
 
 #define string_expand(s) (i32)(s).size, (char*)(s).str
@@ -2962,16 +2968,11 @@ end_temp(Temp_Memory temp){
 ////////////////////////////////
 
 function void
-thread_ctx_init(Thread_Context *tctx, Thread_Kind kind, Base_Allocator *allocator,
-                Base_Allocator *prof_allocator){
+thread_ctx_init(Thread_Context *tctx, Thread_Kind kind, Base_Allocator *allocator){
     block_zero_struct(tctx);
     tctx->kind = kind;
     tctx->allocator = allocator;
     tctx->node_arena = make_arena(allocator, KB(4), 8);
-
-    // NOTE(Krzosa): Deleted profile code: tctx->prof_allocator = prof_allocator;
-    // NOTE(Krzosa): Deleted profile code: tctx->prof_id_counter = 1;
-    // NOTE(Krzosa): Deleted profile code: tctx->prof_arena = make_arena(prof_allocator, KB(16));
 }
 
 function void

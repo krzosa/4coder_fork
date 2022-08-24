@@ -24,22 +24,22 @@ CreateFile_utf8(Arena *scratch, u8 *name, DWORD access, DWORD share, LPSECURITY_
 internal DWORD
 GetFinalPathNameByHandle_utf8(Arena *scratch, HANDLE file, u8 *file_path_out, DWORD path_max, DWORD flags){
     DWORD result = 0;
-    
+
     if (file_path_out == 0){
         result = GetFinalPathNameByHandleW(file, 0, 0, flags);
         result *= 2;
     }
     else{
         Temp_Memory temp = begin_temp(scratch);
-        
+
         u32 path_16_max = KB(32);
         u16 *path_16 = push_array(scratch, u16, path_16_max);
-        
+
         DWORD length_16 = GetFinalPathNameByHandleW(file, (LPWSTR)path_16, path_16_max, flags);
-        
+
         if (length_16 != 0 && length_16 < path_16_max){
             b32 convert_error = false;
-            String_Const_u16 path_16_str = SCu16(path_16, length_16);
+            String_Const_u16 path_16_str = {path_16, length_16};
             String_u8 path_8 = string_u8_from_string_u16(scratch, path_16_str, StringFill_NullTerminate);
             if (path_8.size + 1 <= path_max && !convert_error){
                 block_copy(file_path_out, path_8.str, path_8.size + 1);
@@ -49,10 +49,10 @@ GetFinalPathNameByHandle_utf8(Arena *scratch, HANDLE file, u8 *file_path_out, DW
                 result = (DWORD)path_8.size + 1;
             }
         }
-        
+
         end_temp(temp);
     }
-    
+
     return(result);
 }
 
@@ -80,7 +80,7 @@ GetModuleFileName_utf8(Arena *scratch, HMODULE module, u8 *file_out, DWORD max){
     u32 file_16_max = KB(40);
     u16 *file_16 = push_array(scratch, u16, file_16_max);
     DWORD file_16_len = GetModuleFileNameW(module, (LPWSTR)file_16, file_16_max);
-    String_u8 file_8 = string_u8_from_string_u16(scratch, SCu16(file_16, file_16_len), StringFill_NullTerminate);
+    String_u8 file_8 = string_u8_from_string_u16(scratch, {file_16, file_16_len}, StringFill_NullTerminate);
     DWORD result = 0;
     if (file_8.size + 1 <= max){
         block_copy(file_out, file_8.str, file_8.size + 1);
@@ -104,13 +104,13 @@ CreateProcess_utf8(Arena *scratch, u8 *app_name, u8 *command, LPSECURITY_ATTRIBU
 internal DWORD
 GetCurrentDirectory_utf8(Arena *scratch, DWORD max, u8 *buffer){
     DWORD result = 0;
-    
+
     if (buffer != 0){
         Temp_Memory temp = begin_temp(scratch);
         u32 buffer_16_max = KB(40);
         u16 *buffer_16 = push_array(scratch, u16, buffer_16_max);
         DWORD buffer_16_len = GetCurrentDirectoryW(buffer_16_max, (LPWSTR)buffer_16);
-        String_u8 curdir_8 = string_u8_from_string_u16(scratch, SCu16(buffer_16, buffer_16_len), StringFill_NullTerminate);
+        String_u8 curdir_8 = string_u8_from_string_u16(scratch, {buffer_16, buffer_16_len}, StringFill_NullTerminate);
         if (curdir_8.size + 1 <= max){
             block_copy(buffer, curdir_8.str, curdir_8.size + 1);
             result = (DWORD)curdir_8.size;
@@ -124,7 +124,7 @@ GetCurrentDirectory_utf8(Arena *scratch, DWORD max, u8 *buffer){
         result = GetCurrentDirectoryW(0, 0);
         result *= 2;
     }
-    
+
     return(result);
 }
 
