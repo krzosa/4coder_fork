@@ -1280,7 +1280,7 @@ win32_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                     c= '\n';
                 }
                 if (c > 127 || (' ' <= c && c <= '~') || c == '\t' || c == '\n'){
-                    String_Const_u32 str_32 = SCu32(&c, 1);
+                    String_Const_u32 str_32 = {&c, 1};
                     String_Const_u8 str_8 = string_u8_from_string_u32(&win32vars.frame_arena, str_32).string;
                     Input_Event event = {};
                     event.kind = InputEventKind_TextInsert;
