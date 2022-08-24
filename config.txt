@@ -80,11 +80,11 @@ user_name = "Krzosa"
 // Keyboard AltGr setting
 lalt_lctrl_is_altgr = false
 
+[build]
 comment_runner_filename_extension = "cpp"
 comment_runner_command = "clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe"
 
 [theme]
-
 bar = 0xFF333337
 base = 0xFFDCDCDC
 pop1 = 0xFFDCDCDC

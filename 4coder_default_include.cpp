@@ -42,8 +42,6 @@
 #include "4coder_function_list.h"
 #include "4coder_scope_commands.h"
 #include "4coder_combined_write_commands.h"
-// #include "4coder_log_parser.h"
-// #include "4coder_profile_inspect.h"
 #include "4coder_search_list.h"
 
 ////////////////////////////////
@@ -76,14 +74,12 @@
 #include "4coder_jump_sticky.cpp"
 #include "4coder_jump_lister.cpp"
 #include "4coder_code_index_listers.cpp"
-// #include "4coder_log_parser.cpp"
 #include "4coder_keyboard_macro.cpp"
 #include "4coder_cli_command.cpp"
 #include "4coder_build_commands.cpp"
 #include "4coder_function_list.cpp"
 #include "4coder_scope_commands.cpp"
 #include "4coder_combined_write_commands.cpp"
-// #include "4coder_profile_inspect.cpp"
 #include "4coder_variables.cpp"
 #include "4coder_default_hooks.cpp"
 #include "4coder_config_load.cpp"

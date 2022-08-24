@@ -218,14 +218,14 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
         string.size -= 1;
     }
 
-    String8 ext = config_comment_runner_filename_extension;
+    String8 ext = build_comment_runner_filename_extension;
     String8 buffer_name = push_stringf(scratch, "__buffer_gen%d.%.*s", id, string_expand(ext));
     String8 name = push_stringf(scratch, "__gen%d.%.*s", id, string_expand(ext));
     String8 dir = push_hot_directory(app, scratch);
     String8 file = push_stringf(scratch, "%.*s/%.*s\0", string_expand(dir), string_expand(name));
     system_save_file(scratch, (char *)file.str, string);
 
-    String8 command_to_run = config_comment_runner_command;
+    String8 command_to_run = build_comment_runner_command;
     command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{file}"), file);
     command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{id}"), push_stringf(scratch, "%d", id));
 

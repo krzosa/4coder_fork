@@ -1,6 +1,7 @@
 
 struct Config_Value{
     String8 section;
+    String8 subsection[2];
     String8 type;
     String8 name;
     String8 value_specifier;
@@ -22,6 +23,7 @@ parse_config(Arena *scratch, Arena *string_arena, String8 text, String8 default_
     Config_Value *values = push_array(scratch, Config_Value, 256);
     i32 values_count = 0;
 
+    String8 subsections[2] = {};
     String8 section = default_section;
     Token_Iterator_List it = token_iterator(0, &token_list);
     for(;;){
@@ -37,6 +39,22 @@ parse_config(Arena *scratch, Arena *string_arena, String8 text, String8 default_
             token = match_token(&it, TokenBaseKind_Identifier);
             if(token){
                 section = get_token_string(text, token);
+
+                // Subsections
+                if(match_token(&it, TokenCppKind_Colon)){
+                    for(int i = 0; i < 2; i++){
+                        // TODO(Krzosa): Errors, require token
+                        Token *subsection = match_token(&it, TokenBaseKind_Identifier);
+                        if(subsection){
+                            subsections[i] = get_token_string(text, subsection);
+                            if(!match_token(&it, TokenCppKind_Comma)){
+                                break;
+                            }
+                        }
+                        else break;
+                    }
+                }
+
                 match_token(&it, TokenCppKind_BrackCl);
             }
             else{
@@ -55,6 +73,8 @@ parse_config(Arena *scratch, Arena *string_arena, String8 text, String8 default_
                 v->value_str    = get_token_string(text, value);
                 v->name         = string;
                 v->section      = section;
+                v->subsection[0] = subsections[0];
+                v->subsection[1] = subsections[1];
 
                 switch(value->sub_kind){
                     case TokenCppKind_LiteralFalse:

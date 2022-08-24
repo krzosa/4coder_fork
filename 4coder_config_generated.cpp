@@ -92,7 +92,6 @@ b32 config_highlight_line_at_cursor = true;
 b32 config_enable_undo_fade_out = true;
 f32 config_background_margin_width = 0.0;
 b32 config_smooth_scroll = true;
-String8 config_test = string_u8_litexpr("a");
 i64 config_cursor_roundness = 45;
 i64 config_mark_thickness = 2;
 i64 config_lister_roundness = 20;
@@ -113,8 +112,8 @@ b32 config_default_font_hinting = false;
 i64 config_default_font_aa_mode = FaceAntialiasingMode_8BitMono;
 String8 config_user_name = string_u8_litexpr("Krzosa");
 b32 config_lalt_lctrl_is_altgr = false;
-String8 config_comment_runner_filename_extension = string_u8_litexpr("cpp");
-String8 config_comment_runner_command = string_u8_litexpr("clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe");
+String8 build_comment_runner_filename_extension = string_u8_litexpr("cpp");
+String8 build_comment_runner_command = string_u8_litexpr("clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe");
 u32 theme_bar = 0xFF333337;
 u32 theme_base = 0xFFDCDCDC;
 u32 theme_pop1 = 0xFFDCDCDC;
@@ -252,11 +251,6 @@ set_config_value(Config_Value *record){
             return;
         }
 
-        if(string_match(record->name, string_u8_litexpr("test"))){
-            config_test = record->value_str;
-            return;
-        }
-
         if(string_match(record->name, string_u8_litexpr("cursor_roundness"))){
             config_cursor_roundness = record->value_int;
             return;
@@ -354,16 +348,6 @@ set_config_value(Config_Value *record){
 
         if(string_match(record->name, string_u8_litexpr("lalt_lctrl_is_altgr"))){
             config_lalt_lctrl_is_altgr = record->value_bool;
-            return;
-        }
-
-        if(string_match(record->name, string_u8_litexpr("comment_runner_filename_extension"))){
-            config_comment_runner_filename_extension = record->value_str;
-            return;
-        }
-
-        if(string_match(record->name, string_u8_litexpr("comment_runner_command"))){
-            config_comment_runner_command = record->value_str;
             return;
         }
     }

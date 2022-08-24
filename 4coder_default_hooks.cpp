@@ -15,13 +15,9 @@ CUSTOM_DOC("Default command for responding to a startup event")
     User_Input input = get_current_input(app);
     if (match_core_code(&input, CoreCode_Startup)){
         String_Const_u8_Array file_names = input.event.core.file_names;
-        // CLEANUP(Krzosa)
-        // load_themes_default_folder(app);
 
 
         Scratch_Block scratch(app);
-
-
         extern Arena config_string_arena;
         config_string_arena = make_arena_system(MB(1));
         reload_config(app);
@@ -29,11 +25,6 @@ CUSTOM_DOC("Default command for responding to a startup event")
 
         b32 lalt_lctrl_is_altgr = config_lalt_lctrl_is_altgr;
         global_set_setting(app, GlobalSetting_LAltLCtrlIsAltGr, lalt_lctrl_is_altgr);
-
-        // Themes
-        // String_Const_u8 default_theme_name = def_get_config_string(scratch, vars_save_string_lit("default_theme_name"));
-        // Color_Table *colors = get_color_table_by_name(default_theme_name);
-        // set_active_color(colors);
 
         Face_Description description = {};
         description.parameters.pt_size = (i32)config_default_font_size;
