@@ -130,9 +130,6 @@ char *gl__fragment = R"foo(
         shape_value *= has_thickness;
 
         out_color = vec4(fragment_color.xyz, fragment_color.a*(sample_value + shape_value));
-        out_color.r = pow(out_color.r, 1.0/2.2);
-        out_color.g = pow(out_color.g, 1.0/2.2);
-        out_color.b = pow(out_color.b, 1.0/2.2);
         }
         )foo";
 
@@ -302,16 +299,15 @@ gl_render(Render_Target *t){
         scissor_box.y1 = clamp_bot(0, scissor_box.y1);
         glScissor(scissor_box.x0, scissor_box.y0, scissor_box.x1, scissor_box.y1);
 
+        glEnable(GL_FRAMEBUFFER_SRGB);
         i32 vertex_count = group->vertex_list.vertex_count;
         if (vertex_count > 0){
             Face *face = font_set_face_from_id(font_set, group->face_id);
             if (face != 0){
                 gl__bind_texture(t, face->texture);
-                // glEnable(GL_FRAMEBUFFER_SRGB);
             }
             else{
                 gl__bind_any_texture(t);
-                // glDisable(GL_FRAMEBUFFER_SRGB);
             }
 
             glBufferData(GL_ARRAY_BUFFER, vertex_count*sizeof(Render_Vertex), 0, GL_STREAM_DRAW);
