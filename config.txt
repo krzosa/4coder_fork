@@ -96,14 +96,31 @@ jump_to_definition = "I", "Control"
 exit_4coder = "F4", "Alt"
 
 [theme]
+
+// Background color of the bar with file information(filename, row, col etc.)
 bar = 0xFF333337
+
+// Text color used on the bat with file information
 base = 0xFFDCDCDC
+
+// Color of text inside a query, lister that describes the action
 pop1 = 0xFFDCDCDC
+
+// Color of text inside the lister that says whether file is loaded, color of mark that
+// says if the file was modified but not saved
 pop2 = 0xFF569CD6
+
+// Background color of the buffer
 back = 0xFF1E1E1E
+
+// Color of the buffer margins, it's a space between main space where you type and edges
+// of the window. Buffers can be in different states and hover/active reflect that.
+// Buffer that is not fouced has a different color to differentiate etc.
 margin = 0xFF1E1E1E
 margin_hover = 0xffff0000
 margin_active = 0xFF1E1E1E
+
+
 list_item_1 = 0xFF1E1E1E       list_item_2 = 0xFF1E1E1E
 list_item_hover_1 = 0x22ffffff list_item_hover_2 = 0x22ffffff
 list_item_active_1 = 0x33ffffff list_item_active_2 = 0x33ffffff
@@ -113,7 +130,10 @@ at_cursor = 0xff000000
 highlight_cursor_line = 0xFF0F0F0F
 highlight = 0x11264F78
 at_highlight = 0xFF264F78
+
 mark = 0xFFDCDCDC
+
+// Main text color
 text_default = 0xFFDCDCDC
 
 // When panel is inactive it get's masked using a rectangle with this color
@@ -143,6 +163,9 @@ include = 0xFFDCDCDC
 special_character = 0xFFDCDCDC
 ghost_character = 0xFFDCDCDC
 highlight_junk = 0xFF3A0000
+
+// Color of a line with a found search when doing searches using a jump buffer
+// (for example: goto compilation error)
 highlight_white = 0xFF003A3A
 
 // Color of a fade that happens when you copy / paste something
