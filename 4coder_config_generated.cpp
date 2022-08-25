@@ -105,6 +105,7 @@ String8 binding_goto_prev_jump[] = {string_u8_litexpr("N"),string_u8_litexpr("Co
 String8 binding_save_all_dirty_buffers[] = {string_u8_litexpr("S"),string_u8_litexpr("Control"),string_u8_litexpr("Shift"),};
 String8 binding_quick_swap_buffer[] = {string_u8_litexpr("Tab"),string_u8_litexpr("Control"),};
 String8 binding_jump_to_definition[] = {string_u8_litexpr("I"),string_u8_litexpr("Control"),};
+String8 binding_exit_4coder[] = {string_u8_litexpr("F4"),string_u8_litexpr("Alt"),};
 
 String8 config_mapping = string_u8_litexpr("");
 b32 config_bind_by_physical_key = false;
@@ -138,7 +139,7 @@ i64 config_default_tab_width = 4;
 String8 config_default_font_name = string_u8_litexpr("liberation-mono.ttf");
 i64 config_default_font_size = 12;
 b32 config_default_font_hinting = false;
-i64 config_default_font_aa_mode = FaceAntialiasingMode_8BitMono;
+i64 config_default_font_aa_mode = 0;
 String8 config_user_name = string_u8_litexpr("Krzosa");
 b32 config_lalt_lctrl_is_altgr = false;
 String8 build_comment_runner_filename_extension = string_u8_litexpr("cpp");

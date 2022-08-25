@@ -17,7 +17,6 @@ CUSTOM_DOC("Default command for responding to a startup event")
 
 
         Scratch_Block scratch(app);
-        extern Arena config_string_arena;
         config_string_arena = make_arena_system(KB(32));
         load_config_files(app);
 
@@ -50,16 +49,14 @@ CUSTOM_DOC("Default command for responding to a startup event")
         for (i32 i = 0; i < file_names.count; i += 1){
             Temp_Memory_Block temp(scratch);
             String_Const_u8 input_name = file_names.vals[i];
-            String_Const_u8 full_name = push_u8_stringf(scratch, "%.*s/%.*s",
-                                                        string_expand(hot_directory),
-                                                        string_expand(input_name));
+            String_Const_u8 full_name = push_u8_stringf(scratch, "%.*s/%.*s", string_expand(hot_directory), string_expand(input_name));
             Buffer_ID new_buffer = create_buffer(app, full_name, BufferCreate_NeverNew|BufferCreate_MustAttachToFile);
             if (new_buffer == 0){
                 create_buffer(app, input_name, 0);
             }
         }
 
-        if(app->cmd_context->settings.open_code_in_current_dir){
+        if(app->cmd_context->settings.open_code_in_current_dir || project_path.size){
             open_code_files_in_current_directory(app);
         }
 
@@ -460,12 +457,12 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
 
                 f32 scale = 0.8f;
                 if(cursor_is_over_token){
-                    scale += 3.f;
+                    scale += 0.8f;
                 }
 
                 // Emphesise hiperlink over clickable link
                 if(mouse_is_over_token){
-                    scale += 3.f;
+                    scale += 0.8f;
                 }
 
                 if(scale < 1.f){

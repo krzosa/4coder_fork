@@ -1030,6 +1030,11 @@ isearch(App *app, Scan_Direction start_scan, i64 first_pos,
                 Mapping *mapping = ctx.mapping;
                 Command_Map *map = mapping_get_map(mapping, ctx.map_id);
                 Command_Binding binding = map_get_binding_recursive(mapping, map, &in.event);
+
+                // MAPPING(Krzosa):
+                // NEW_Mapping *map = NEW_get_mapping(ctx.map_id);
+                // NEW_Binding *binding = NEW_get_binding(map, &in.event);
+
                 if (binding.custom != 0){
                     if (binding.custom == search){
                         change_scan = Scan_Forward;

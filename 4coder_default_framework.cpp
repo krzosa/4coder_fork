@@ -686,14 +686,7 @@ initialize_managed_id_metadata(App *app);
 
 function void
 default_input_handler_init(App *app, Arena *arena){
-    // NOTE(Krzosa): Deleted profile code: Thread_Context *tctx = get_thread_context(app);
-
     View_ID view = get_this_ctx_view(app, Access_Always);
-    // NOTE(Krzosa): Deleted profile code: String_Const_u8 name = push_u8_stringf(arena, "view %d", view);
-
-    // NOTE(Krzosa): Deleted profile code: Profile_Global_List *list = get_core_profile_list(app);
-    // NOTE(Krzosa): Deleted profile code: ProfileThreadName(tctx, list, name);
-
     View_Context ctx = view_current_context(app, view);
     ctx.mapping = &framework_mapping;
     ctx.map_id = vars_save_string_lit("keys_global");

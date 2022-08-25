@@ -52,6 +52,7 @@
 #include "4coder_default_map.cpp"
 #include "4coder_mac_map.cpp"
 
+#include "4coder_config_load.cpp"
 #include "4coder_default_framework_variables.cpp"
 #include "4coder_helper.cpp"
 #include "4coder_delta_rule.cpp"
@@ -82,7 +83,6 @@
 #include "4coder_combined_write_commands.cpp"
 #include "4coder_variables.cpp"
 #include "4coder_default_hooks.cpp"
-#include "4coder_config_load.cpp"
 #include "4coder_remedybg_driver.cpp"
 
 #endif
