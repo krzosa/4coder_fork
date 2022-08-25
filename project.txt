@@ -3,10 +3,8 @@ bar  = 0xFF555555
 base = 0xFFFFFFFF
 pop1 = 0xFFFFFFFF
 pop2 = 0xFFFFFFFF
-back = 0xFF000000
-margin = 0xFF1E1E1E
-margin_hover = 0xffff0000
-margin_active = 0xFF1E1E1E
+back = 0xFF7f7f7f
+
 list_item_1 = 0xFF1E1E1E       list_item_2 = 0xFF1E1E1E
 list_item_hover_1 = 0x22ffffff list_item_hover_2 = 0x22ffffff
 list_item_active_1 = 0x33ffffff list_item_active_2 = 0x33ffffff

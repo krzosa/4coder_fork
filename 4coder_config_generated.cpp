@@ -80,12 +80,22 @@ int main(){
     for(i32 i = 0; i < values_count; i++){
       Config_Value *v = values + i;
       if(!string_match(section, v->section)) continue;
-      printf(R"==(
-      if(string_match(record->name, string_u8_litexpr("%.*s"))){
-        %.*s_%.*s = record->%.*s;
-        return;
+
+      printf("\nif(string_match(record->name, string_u8_litexpr(\"%.*s\"))){\n", string_expand(v->name));
+      if(string_match(v->section, string_u8_litexpr("theme"))){
+        printf("Vec4_f32 color = unpack_color(record->%.*s);\n", string_expand(v->value_specifier));
+        printf("color.r = powf(color.r, 2.2f);\n");
+        printf("color.g = powf(color.g, 2.2f);\n");
+        printf("color.b = powf(color.b, 2.2f);\n");
+        printf("u32 packed_color = pack_color(color);\n");
+
+        printf("%.*s_%.*s = packed_color;\n", string_expand(v->section), string_expand(v->name));
       }
-      )==", string_expand(v->name), string_expand(v->section), string_expand(v->name), string_expand(v->value_specifier));
+      else{
+        printf("%.*s_%.*s = ", string_expand(v->section), string_expand(v->name));
+        printf("record->%.*s;", string_expand(v->value_specifier));
+      }
+      printf("\nreturn;\n}");
     }
     printf("}\n");
   }
@@ -205,444 +215,674 @@ set_config_value(Config_Value *record){
             config_mapping = record->value_str[0];
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("bind_by_physical_key"))){
             config_bind_by_physical_key = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("use_file_bars"))){
             config_use_file_bars = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("hide_file_bar_in_ui"))){
             config_hide_file_bar_in_ui = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("use_error_highlight"))){
             config_use_error_highlight = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("use_jump_highlight"))){
             config_use_jump_highlight = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("use_scope_highlight"))){
             config_use_scope_highlight = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("use_paren_helper"))){
             config_use_paren_helper = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("use_comment_keywords"))){
             config_use_comment_keywords = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("lister_whole_word_backspace_when_modified"))){
             config_lister_whole_word_backspace_when_modified = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("show_line_number_margins"))){
             config_show_line_number_margins = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("enable_output_wrapping"))){
             config_enable_output_wrapping = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("highlight_line_at_cursor"))){
             config_highlight_line_at_cursor = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("enable_undo_fade_out"))){
             config_enable_undo_fade_out = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("background_margin_width"))){
             config_background_margin_width = record->value_float;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("smooth_scroll"))){
             config_smooth_scroll = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("cursor_roundness"))){
             config_cursor_roundness = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("mark_thickness"))){
             config_mark_thickness = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("lister_roundness"))){
             config_lister_roundness = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("lister_item_height"))){
             config_lister_item_height = record->value_float;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("treat_as_code"))){
             config_treat_as_code = record->value_str[0];
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("enable_virtual_whitespace"))){
             config_enable_virtual_whitespace = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("virtual_whitespace_regular_indent"))){
             config_virtual_whitespace_regular_indent = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("enable_code_wrapping"))){
             config_enable_code_wrapping = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("automatically_indent_text_on_save"))){
             config_automatically_indent_text_on_save = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("automatically_save_changes_on_build"))){
             config_automatically_save_changes_on_build = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("indent_with_tabs"))){
             config_indent_with_tabs = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("indent_width"))){
             config_indent_width = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("default_tab_width"))){
             config_default_tab_width = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("default_font_name"))){
             config_default_font_name = record->value_str[0];
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("default_font_size"))){
             config_default_font_size = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("default_font_hinting"))){
             config_default_font_hinting = record->value_bool;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("default_font_aa_mode"))){
             config_default_font_aa_mode = record->value_int;
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("user_name"))){
             config_user_name = record->value_str[0];
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("lalt_lctrl_is_altgr"))){
             config_lalt_lctrl_is_altgr = record->value_bool;
             return;
-        }
-    }
+        }}
     if(string_match(string_u8_litexpr("theme"), record->section)){
 
         if(string_match(record->name, string_u8_litexpr("bar"))){
-            theme_bar = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_bar = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("base"))){
-            theme_base = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_base = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("pop1"))){
-            theme_pop1 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_pop1 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("pop2"))){
-            theme_pop2 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_pop2 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("back"))){
-            theme_back = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_back = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("margin"))){
-            theme_margin = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_margin = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("margin_hover"))){
-            theme_margin_hover = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_margin_hover = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("margin_active"))){
-            theme_margin_active = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_margin_active = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("list_item_1"))){
-            theme_list_item_1 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_list_item_1 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("list_item_2"))){
-            theme_list_item_2 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_list_item_2 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("list_item_hover_1"))){
-            theme_list_item_hover_1 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_list_item_hover_1 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("list_item_hover_2"))){
-            theme_list_item_hover_2 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_list_item_hover_2 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("list_item_active_1"))){
-            theme_list_item_active_1 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_list_item_active_1 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("list_item_active_2"))){
-            theme_list_item_active_2 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_list_item_active_2 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("cursor_1"))){
-            theme_cursor_1 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_cursor_1 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("cursor_2"))){
-            theme_cursor_2 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_cursor_2 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("at_cursor"))){
-            theme_at_cursor = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_at_cursor = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("highlight_cursor_line"))){
-            theme_highlight_cursor_line = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_highlight_cursor_line = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("highlight"))){
-            theme_highlight = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_highlight = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("at_highlight"))){
-            theme_at_highlight = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_at_highlight = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("mark"))){
-            theme_mark = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_mark = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("text_default"))){
-            theme_text_default = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_text_default = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("inactive_panel_overlay"))){
-            theme_inactive_panel_overlay = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_inactive_panel_overlay = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("comment"))){
-            theme_comment = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_comment = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("comment_note"))){
-            theme_comment_note = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_comment_note = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("comment_todo"))){
-            theme_comment_todo = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_comment_todo = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("keyword"))){
-            theme_keyword = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_keyword = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("function"))){
-            theme_function = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_function = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("macro"))){
-            theme_macro = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_macro = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("type"))){
-            theme_type = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_type = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("str_constant"))){
-            theme_str_constant = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_str_constant = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("char_constant"))){
-            theme_char_constant = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_char_constant = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("int_constant"))){
-            theme_int_constant = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_int_constant = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("float_constant"))){
-            theme_float_constant = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_float_constant = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("bool_constant"))){
-            theme_bool_constant = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_bool_constant = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("preproc"))){
-            theme_preproc = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_preproc = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("include"))){
-            theme_include = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_include = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("special_character"))){
-            theme_special_character = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_special_character = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("ghost_character"))){
-            theme_ghost_character = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_ghost_character = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("highlight_junk"))){
-            theme_highlight_junk = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_highlight_junk = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("highlight_white"))){
-            theme_highlight_white = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_highlight_white = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("paste"))){
-            theme_paste = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_paste = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("undo"))){
-            theme_undo = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_undo = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("text_cycle_1"))){
-            theme_text_cycle_1 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_text_cycle_1 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("text_cycle_2"))){
-            theme_text_cycle_2 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_text_cycle_2 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("text_cycle_3"))){
-            theme_text_cycle_3 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_text_cycle_3 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("text_cycle_4"))){
-            theme_text_cycle_4 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_text_cycle_4 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("back_cycle_1"))){
-            theme_back_cycle_1 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_back_cycle_1 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("back_cycle_2"))){
-            theme_back_cycle_2 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_back_cycle_2 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("back_cycle_3"))){
-            theme_back_cycle_3 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_back_cycle_3 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("back_cycle_4"))){
-            theme_back_cycle_4 = record->value_u32;
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_back_cycle_4 = packed_color;
+
             return;
         }
-
         if(string_match(record->name, string_u8_litexpr("line_numbers_back"))){
-            theme_line_numbers_back = record->value_u32;
-            return;
-        }
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_line_numbers_back = packed_color;
 
-        if(string_match(record->name, string_u8_litexpr("line_numbers_text"))){
-            theme_line_numbers_text = record->value_u32;
             return;
         }
-    }
+        if(string_match(record->name, string_u8_litexpr("line_numbers_text"))){
+            Vec4_f32 color = unpack_color(record->value_u32);
+            color.r = powf(color.r, 2.2f);
+            color.g = powf(color.g, 2.2f);
+            color.b = powf(color.b, 2.2f);
+            u32 packed_color = pack_color(color);
+            theme_line_numbers_text = packed_color;
+
+            return;
+        }}
 }
 /*END*/
 
