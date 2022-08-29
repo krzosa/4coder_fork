@@ -168,6 +168,8 @@ include = 0xFFDCDCDC
 
 special_character = 0xFFDCDCDC
 ghost_character = 0xFFDCDCDC
+
+// Line highlight with compilation error
 highlight_junk = 0xFF3A0000
 
 // Color of a line with a found search when doing searches using a jump buffer

@@ -481,16 +481,22 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
     }
 
 
-    // NOTE(Krzosa): Color tokens based on the scope
-    Code_Index_File *code_index_file = code_index_get_file(buffer);
-    if(code_index_file) recursive_nest_highlight(app, text_layout_id, visible_range, code_index_file);
 
+    // NOTE(allen): Color parens and '{'
+    b32 use_paren_helper = config_use_paren_helper;
+    if (use_paren_helper){
+        ARGB_Color colors[] = {theme_text_cycle_1, theme_text_cycle_2, theme_text_cycle_3, theme_text_cycle_4};
+        draw_paren_scope_token_highlight(app, buffer, text_layout_id, cursor_pos, colors, ArrayCount(colors));
+    }
+
+#if 0
     // NOTE(allen): Scope highlight
     b32 use_scope_highlight = config_use_scope_highlight;
     if (use_scope_highlight){
         ARGB_Color colors[] = {theme_back_cycle_1, theme_back_cycle_2, theme_back_cycle_3, theme_back_cycle_4};
-        draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors, 4);
+        draw_scope_highlight(app, buffer, text_layout_id, cursor_pos, colors, ArrayCount(colors));
     }
+#endif
 
     b32 use_error_highlight = config_use_error_highlight;
     b32 use_jump_highlight = config_use_jump_highlight;
@@ -509,13 +515,6 @@ default_render_buffer(App *app, View_ID view_id, Face_ID face_id,
                 draw_jump_highlights(app, buffer, text_layout_id, jump_buffer, theme_highlight_white);
             }
         }
-    }
-
-    // NOTE(allen): Color parens
-    b32 use_paren_helper = config_use_paren_helper;
-    if (use_paren_helper){
-        ARGB_Color colors[] = {theme_text_cycle_1, theme_text_cycle_2, theme_text_cycle_3, theme_text_cycle_4};
-        draw_paren_highlight(app, buffer, text_layout_id, cursor_pos, colors, 4);
     }
 
     // NOTE(allen): Whitespace highlight

@@ -657,20 +657,19 @@ draw_scope_highlight(App *app, Buffer_ID buffer, Text_Layout_ID text_layout_id,
 }
 
 function void
-draw_paren_highlight(App *app, Buffer_ID buffer, Text_Layout_ID text_layout_id,
-                     i64 pos, ARGB_Color *colors, i32 color_count){
+draw_paren_scope_token_highlight(App *app, Buffer_ID buffer, Text_Layout_ID text_layout_id,
+                                 i64 pos, ARGB_Color *colors, i32 color_count){
     Token_Array token_array = get_token_array_from_buffer(app, buffer);
     if (token_array.tokens != 0){
         Token_Iterator_Array it = token_iterator_pos(0, &token_array, pos);
         Token *token = token_it_read(&it);
-        if (token != 0 && token->kind == TokenBaseKind_ParentheticalOpen){
+        if (token != 0 && (token->kind == TokenBaseKind_ParentheticalOpen || token->kind == TokenBaseKind_ScopeOpen)){
             pos = token->pos + token->size;
         }
         else{
             if (token_it_dec_all(&it)){
                 token = token_it_read(&it);
-                if (token->kind == TokenBaseKind_ParentheticalClose &&
-                    pos == token->pos + token->size){
+                if ((token->kind == TokenBaseKind_ParentheticalClose || token->kind == TokenBaseKind_ScopeClose) && pos == token->pos + token->size){
                     pos = token->pos;
                 }
             }
@@ -678,6 +677,9 @@ draw_paren_highlight(App *app, Buffer_ID buffer, Text_Layout_ID text_layout_id,
     }
     draw_enclosures(app, text_layout_id, buffer,
                     pos, FindNest_Paren, RangeHighlightKind_CharacterHighlight,
+                    0, 0, colors, color_count);
+    draw_enclosures(app, text_layout_id, buffer,
+                    pos, FindNest_Scope, RangeHighlightKind_CharacterHighlight,
                     0, 0, colors, color_count);
 }
 
