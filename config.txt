@@ -79,6 +79,12 @@ lalt_lctrl_is_altgr = false
 comment_runner_filename_extension = "cpp"
 comment_runner_command = "clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe"
 
+comment_runner_filename_extension_1 = "py"
+comment_runner_command_1 = "python {file}"
+
+comment_runner_filename_extension_2 = ""
+comment_runner_command_2 = ""
+
 
 [binding,global]
 keyboard_macro_switch_recording = "M", "Alt"

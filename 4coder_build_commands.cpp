@@ -206,26 +206,40 @@ Child_Process_End_Sig(python_eval_callback){
 }
 
 function void
-create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scratch, int id, Buffer_ID buffer_with_code, Range_i64 code_range, Range_i64 range_to_modify){
+create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scratch, int id, Buffer_ID buffer_with_code, Range_i64 code_range, Range_i64 range_to_modify, int command_number = 0){
+
+    // Figure out command to use
+    String8 command_to_run = build_comment_runner_command;
+    String8 ext            = build_comment_runner_filename_extension;
+    if(command_number == 1) {
+        command_to_run = build_comment_runner_command_1;
+        ext            = build_comment_runner_filename_extension_1;
+    }
+    if(command_number == 2) {
+        command_to_run = build_comment_runner_command_2;
+        ext            = build_comment_runner_filename_extension_2;
+    }
+
     //
     // Dump comment code to file
     //
     String_Const_u8 string = push_buffer_range(app, scratch, buffer_with_code, code_range);
 
     // Skip the run all comments marker
-    if(string.size && string.str[0] == '#'){
-        string.str  += 1;
-        string.size -= 1;
+    if(string.str[0] == '#'){
+        string = string_skip(string, 1);
+    }
+    if(string.str[0] == '1' || string.str[0] == '2'){
+        string = string_skip(string, 1);
     }
 
-    String8 ext = build_comment_runner_filename_extension;
+
     String8 buffer_name = push_stringf(scratch, "__buffer_gen%d.%.*s", id, string_expand(ext));
     String8 name = push_stringf(scratch, "__gen%d.%.*s", id, string_expand(ext));
     String8 dir = push_hot_directory(app, scratch);
     String8 file = push_stringf(scratch, "%.*s/%.*s\0", string_expand(dir), string_expand(name));
     system_save_file(scratch, (char *)file.str, string);
 
-    String8 command_to_run = build_comment_runner_command;
     command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{file}"), file);
     command_to_run = string_replace(scratch, command_to_run, string_u8_litexpr("{id}"), push_stringf(scratch, "%d", id));
 
@@ -240,8 +254,8 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
     exec_system_command(app, global_compilation_view, {(char *)buffer_name.str, (i32)buffer_name.size}, dir, command_to_run, CLI_SendEndSignal|CLI_OverlapWithConflict, python_eval_callback, py);
 }
 
-CUSTOM_COMMAND_SIG(python_interpreter_on_comment)
-CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment")
+CUSTOM_COMMAND_SIG(evaluate_comment)
+CUSTOM_DOC("")
 {
     Scratch_Block scratch(app);
     Active_View_Info a = get_active_view_info(app, Access_ReadWriteVisible);
@@ -251,6 +265,20 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment")
     seek_string_backward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("/*"), &range.min);
     seek_string_forward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("*/"), &range.max);
     range.min += 2;
+
+    //
+    // Figure out command number
+    //
+    int command_to_use = 0;
+    String8 determine_marking = push_buffer_range(app, scratch, a.buffer, {range.min+1, range.min+2});
+    if(determine_marking.str[0] == '1'){
+        command_to_use = 1;
+    }
+    else if(determine_marking.str[0] == '2'){
+        command_to_use = 2;
+    }
+
+
 
     Range_i64 mod_range = {range.max+2, range.max+2};
     String_Match end_block_match = buffer_seek_string(app, a.buffer, string_u8_litexpr("/*END*/"), Scan_Forward, a.cursor.pos);
@@ -263,15 +291,16 @@ CUSTOM_DOC("Call python interpreter 'python' and feed it text inside a comment")
         }
     }
 
-    create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, 0, a.buffer, range, mod_range);
+    create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, 0, a.buffer, range, mod_range, command_to_use);
 }
 
-CUSTOM_COMMAND_SIG(python_interpreter_on_all_marked_comments)
-CUSTOM_DOC("Run python interpreter on all comments that start with a mark, can be escaped using \"")
+CUSTOM_COMMAND_SIG(evaluate_all_marked_comments)
+CUSTOM_DOC("")
 {
     Scratch_Block scratch(app);
 
     int code_file_id = 0;
+    int command_to_use = 0;
     python_buffer_data_count = 0; // Zero global
     for (Buffer_ID buffer = get_buffer_next(app, 0, Access_Always); buffer != 0; buffer = get_buffer_next(app, buffer, Access_Always)){
         i32 seek_pos = -1;
@@ -290,6 +319,15 @@ CUSTOM_DOC("Run python interpreter on all comments that start with a mark, can b
                         break;
                     }
                 }
+
+                String8 determine_marking = push_buffer_range(app, scratch, buffer, {code_begin.range.max, code_begin.range.max+1});
+                if(determine_marking.str[0] == '1'){
+                    command_to_use = 1;
+                }
+                else if(determine_marking.str[0] == '2'){
+                    command_to_use = 2;
+                }
+
                 seek_pos = code_begin.range.max;
                 const i32 comment_token_size = 3;
                 code_range.min = code_begin.range.min + comment_token_size;
@@ -331,7 +369,7 @@ CUSTOM_DOC("Run python interpreter on all comments that start with a mark, can b
                 }
             }
 
-            create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, code_file_id++, buffer, code_range, gen_range);
+            create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, code_file_id++, buffer, code_range, gen_range, command_to_use);
         }
     }
 }

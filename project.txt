@@ -3,7 +3,7 @@ bar  = 0xFF555555
 base = 0xFFFFFFFF
 pop1 = 0xFFFFFFFF
 pop2 = 0xFFFFFFFF
-back = 0xFF000000
+back = 0xFF222222
 margin = 0xFF1E1E1E
 margin_hover = 0xffff0000
 margin_active = 0xFF1E1E1E
@@ -23,13 +23,13 @@ text_default = 0xFFFFFFFF
 // When panel is inactive it get's masked using a rectangle with this color
 inactive_panel_overlay = 0x22000000
 
-comment = 0xFF00FF00
+comment = 0xFF55FF55
 
 // Color of a "NOTE" keyword inside a comment
-comment_note = 0xFF00FF00
+comment_note = 0xFF55FF55
 
 // Color of a "TODO" keyword inside a comment
-comment_todo = 0xFF00FF00
+comment_todo = 0xFF55FF55
 
 // Colors of C++ keywords/functions/types etc.
 keyword = 0xFFFFFFFF
@@ -37,7 +37,7 @@ function = 0xFFFFFFFF
 macro = 0xFFFFFFFF
 type = 0xFFFFFFFF
 
-str_constant = 0xFFFFFFFF
+str_constant = 0xFFFFFF55
 char_constant = 0xFFFFFFFF
 int_constant = 0xFFFFFFFF
 float_constant = 0xFFFFFFFF
@@ -55,13 +55,13 @@ undo = 0xFFFFFF00
 
 // Colors the '(', '{' nested parenthesis, nested braces.
 // First brace scope uses 1 then next scope uses 2 etc. afterwards it repeats.
-text_cycle_1 = 0xFF9999FF text_cycle_2 = 0xFFFFFF99
-text_cycle_3 = 0xFF99FF88 text_cycle_4 = 0xFFFF77FF
+back_cycle_1 = 0xFF55FFFF back_cycle_2 = 0xFFFFFF55
+back_cycle_3 = 0xFFFF5555 back_cycle_4 = 0xFFFFFFFF
 
 // Similar to text_cycle but colors the background of a scope,
 // nested blocks of code get different background colors.
-back_cycle_1 = 0x3399FFFF back_cycle_2 = 0x33FFFF99
-back_cycle_3 = 0x33FF8888 back_cycle_4 = 0x33FF77FF
+back_cycle_1 = 0x2A55FFFF back_cycle_2 = 0xFF330000
+back_cycle_3 = 0x2AFFFF99 back_cycle_4 = 0xFF002200
 
 line_numbers_back = 0xFF1E1E1E
 line_numbers_text = 0xFFDCDCDC
