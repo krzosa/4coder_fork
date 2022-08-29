@@ -60,7 +60,7 @@ gl__error_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsiz
         {
             // NOTE(allen): performance warning, do nothing.
         }break;
-
+        
         default:
         {
             InvalidPath;
@@ -107,20 +107,20 @@ char *gl__fragment = R"foo(
         smooth in float half_thickness;
         uniform sampler2DArray sampler;
         out vec4 out_color;
-
+        
         float rectangle_sd(vec2 p, vec2 b){
         vec2 d = abs(p) - b;
         return(length(max(d, vec2(0.0, 0.0))) + min(max(d.x, d.y), 0.0));
         }
-
+        
         void main(void)
         {
         float has_thickness = (step(0.49, half_thickness));
         float does_not_have_thickness = 1.0 - has_thickness;
-
+        
         float sample_value = texture(sampler, uvw).r;
         sample_value *= does_not_have_thickness;
-
+        
         vec2 center = uvw.xy;
         float roundness = uvw.z;
         float sd = rectangle_sd(xy - center, adjusted_half_dim);
@@ -128,7 +128,7 @@ char *gl__fragment = R"foo(
         sd = abs(sd + half_thickness) - half_thickness;
         float shape_value = 1.0 - smoothstep(-1.0, 0.0, sd);
         shape_value *= has_thickness;
-
+        
         out_color = vec4(fragment_color.xyz, fragment_color.a*(sample_value + shape_value));
         }
         )foo";
@@ -159,23 +159,23 @@ gl__make_program(char *header, char *vertex, char *fragment){
     if (header == 0){
         header = "";
     }
-
+    
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     GLchar *vertex_source_array[] = { header, vertex };
     glShaderSource(vertex_shader, ArrayCount(vertex_source_array), vertex_source_array, 0);
     glCompileShader(vertex_shader);
-
+    
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     GLchar *fragment_source_array[] = { header, fragment };
     glShaderSource(fragment_shader, ArrayCount(fragment_source_array), fragment_source_array, 0);
     glCompileShader(fragment_shader);
-
+    
     GLuint program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);
     glValidateProgram(program);
-
+    
     GLint success = false;
     glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (!success){
@@ -191,10 +191,10 @@ gl__make_program(char *header, char *vertex, char *fragment){
 #endif
         InvalidPath;
     }
-
+    
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
-
+    
     GL_Program result = {};
     result.program = program;
 #define GetAttributeLocation(N) result.N = glGetAttribLocation(program, #N);
@@ -212,14 +212,14 @@ gl__make_program(char *header, char *vertex, char *fragment){
 internal void
 gl_render(Render_Target *t){
     Font_Set *font_set = (Font_Set*)t->font_set;
-
+    
     local_persist b32 first_opengl_call = true;
     local_persist u32 attribute_buffer = 0;
     local_persist GL_Program gpu_program = {};
-
+    
     if (first_opengl_call){
         first_opengl_call = false;
-
+        
 #if !SHIP_MODE
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -229,54 +229,54 @@ gl_render(Render_Target *t){
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_MEDIUM, 0, 0, true);
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0, 0, true);
         }
-
+        
         if (glDebugMessageCallback){
             glDebugMessageCallback(gl__error_callback, 0);
         }
 #endif
-
+        
         ////////////////////////////////
-
+        
         GLuint dummy_vao = 0;
         glGenVertexArrays(1, &dummy_vao);
         glBindVertexArray(dummy_vao);
-
+        
         ////////////////////////////////
-
+        
         glGenBuffers(1, &attribute_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, attribute_buffer);
-
+        
         ////////////////////////////////
-
+        
         glEnable(GL_SCISSOR_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+        
         ////////////////////////////////
-
+        
         gpu_program = gl__make_program(gl__header, gl__vertex, gl__fragment);
         glUseProgram(gpu_program.program);
-
+        
         ////////////////////////////////
-
+        
         {
             t->fallback_texture_id = gl__get_texture(V3i32(2, 2, 1), TextureKind_Mono);
             u8 white_block[] = { 0xFF, 0xFF, 0xFF, 0xFF, };
             gl__fill_texture(TextureKind_Mono, 0, V3i32(0, 0, 0), V3i32(2, 2, 1), white_block);
         }
     }
-
+    
     i32 width = t->width;
     i32 height = t->height;
-
+    
     glViewport(0, 0, width, height);
     glScissor(0, 0, width, height);
     glClearColor(1.f, 0.f, 1.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
-
+    
     glBindTexture(GL_TEXTURE_2D, 0);
     t->bound_texture = 0;
-
+    
     for (Render_Free_Texture *free_texture = t->free_texture_first;
          free_texture != 0;
          free_texture = free_texture->next){
@@ -284,12 +284,12 @@ gl_render(Render_Target *t){
     }
     t->free_texture_first = 0;
     t->free_texture_last = 0;
-
+    
     for (Render_Group *group = t->group_first;
          group != 0;
          group = group->next){
         Rect_i32 box = Ri32(group->clip_box);
-
+        
         Rect_i32 scissor_box = {
             box.x0, height - box.y1, box.x1 - box.x0, box.y1 - box.y0,
         };
@@ -298,8 +298,7 @@ gl_render(Render_Target *t){
         scissor_box.x1 = clamp_bot(0, scissor_box.x1);
         scissor_box.y1 = clamp_bot(0, scissor_box.y1);
         glScissor(scissor_box.x0, scissor_box.y0, scissor_box.x1, scissor_box.y1);
-
-        glEnable(GL_FRAMEBUFFER_SRGB);
+        
         i32 vertex_count = group->vertex_list.vertex_count;
         if (vertex_count > 0){
             Face *face = font_set_face_from_id(font_set, group->face_id);
@@ -309,7 +308,7 @@ gl_render(Render_Target *t){
             else{
                 gl__bind_any_texture(t);
             }
-
+            
             glBufferData(GL_ARRAY_BUFFER, vertex_count*sizeof(Render_Vertex), 0, GL_STREAM_DRAW);
             i32 cursor = 0;
             for (Render_Vertex_Array_Node *node = group->vertex_list.first;
@@ -319,12 +318,12 @@ gl_render(Render_Target *t){
                 glBufferSubData(GL_ARRAY_BUFFER, cursor, size, node->vertices);
                 cursor += size;
             }
-
+            
             glEnableVertexAttribArray(gpu_program.vertex_p);
             glEnableVertexAttribArray(gpu_program.vertex_t);
             glEnableVertexAttribArray(gpu_program.vertex_c);
             glEnableVertexAttribArray(gpu_program.vertex_ht);
-
+            
             glVertexAttribPointer(gpu_program.vertex_p, 2, GL_FLOAT, true, sizeof(Render_Vertex),
                                   GLOffset(Render_Vertex, xy));
             glVertexAttribPointer(gpu_program.vertex_t, 3, GL_FLOAT, true, sizeof(Render_Vertex),
@@ -333,7 +332,7 @@ gl_render(Render_Target *t){
                                    GLOffset(Render_Vertex, color));
             glVertexAttribPointer(gpu_program.vertex_ht, 1, GL_FLOAT, true, sizeof(Render_Vertex),
                                   GLOffset(Render_Vertex, half_thickness));
-
+            
             glUniform2f(gpu_program.view_t, width/2.f, height/2.f);
             f32 m[4] = {
                 2.f/width, 0.f,
@@ -341,7 +340,7 @@ gl_render(Render_Target *t){
             };
             glUniformMatrix2fv(gpu_program.view_m, 1, GL_FALSE, m);
             glUniform1i(gpu_program.sampler, 0);
-
+            
             glDrawArrays(GL_TRIANGLES, 0, vertex_count);
             glDisableVertexAttribArray(gpu_program.vertex_p);
             glDisableVertexAttribArray(gpu_program.vertex_t);
@@ -349,7 +348,7 @@ gl_render(Render_Target *t){
             glDisableVertexAttribArray(gpu_program.vertex_ht);
         }
     }
-
+    
     glFlush();
 }
 
