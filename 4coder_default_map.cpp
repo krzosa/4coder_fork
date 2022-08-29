@@ -42,8 +42,8 @@ setup_default_mapping(Mapping *mapping, i64 global_id, i64 file_id){
     Bind(exit_4coder,          KeyCode_F4, KeyCode_Alt);
 
     SelectMap(file_id);
-    Bind(python_interpreter_on_comment, KeyCode_L, KeyCode_Control);
-    Bind(python_interpreter_on_all_marked_comments, KeyCode_L, KeyCode_Control, KeyCode_Shift);
+    Bind(evaluate_comment, KeyCode_L, KeyCode_Control);
+    Bind(evaluate_all_marked_comments, KeyCode_L, KeyCode_Control, KeyCode_Shift);
 
     Bind(put_new_line_below,  KeyCode_Return, KeyCode_Control);
     Bind(move_line_up, KeyCode_Up, KeyCode_Alt);

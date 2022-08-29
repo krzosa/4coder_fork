@@ -36,6 +36,7 @@ int main(){
 
   String8 section_loaders[] = {
     string_u8_litexpr("config"),
+    string_u8_litexpr("build"),
     string_u8_litexpr("theme"),
   };
 
@@ -144,6 +145,10 @@ String8 config_user_name = string_u8_litexpr("Krzosa");
 b32 config_lalt_lctrl_is_altgr = false;
 String8 build_comment_runner_filename_extension = string_u8_litexpr("cpp");
 String8 build_comment_runner_command = string_u8_litexpr("clang {file} -Wno-writable-strings -g -o __gen{id}.exe && __gen{id}.exe");
+String8 build_comment_runner_filename_extension_1 = string_u8_litexpr("py");
+String8 build_comment_runner_command_1 = string_u8_litexpr("python {file}");
+String8 build_comment_runner_filename_extension_2 = string_u8_litexpr("");
+String8 build_comment_runner_command_2 = string_u8_litexpr("");
 u32 theme_bar = 0xFF333337;
 u32 theme_base = 0xFFDCDCDC;
 u32 theme_pop1 = 0xFFDCDCDC;
@@ -373,6 +378,38 @@ set_config_value(Config_Value *record){
 
         if(string_match(record->name, string_u8_litexpr("lalt_lctrl_is_altgr"))){
             config_lalt_lctrl_is_altgr = record->value_bool;
+            return;
+        }
+    }
+    if(string_match(string_u8_litexpr("build"), record->section)){
+
+        if(string_match(record->name, string_u8_litexpr("comment_runner_filename_extension"))){
+            build_comment_runner_filename_extension = record->value_str[0];
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("comment_runner_command"))){
+            build_comment_runner_command = record->value_str[0];
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("comment_runner_filename_extension_1"))){
+            build_comment_runner_filename_extension_1 = record->value_str[0];
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("comment_runner_command_1"))){
+            build_comment_runner_command_1 = record->value_str[0];
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("comment_runner_filename_extension_2"))){
+            build_comment_runner_filename_extension_2 = record->value_str[0];
+            return;
+        }
+
+        if(string_match(record->name, string_u8_litexpr("comment_runner_command_2"))){
+            build_comment_runner_command_2 = record->value_str[0];
             return;
         }
     }
