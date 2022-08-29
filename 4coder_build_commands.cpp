@@ -226,9 +226,11 @@ create_eval_process_and_set_a_callback_to_insert_code_block(App *app, Arena *scr
     String_Const_u8 string = push_buffer_range(app, scratch, buffer_with_code, code_range);
 
     // Skip the run all comments marker
-    if(string.size && string.str[0] == '#'){
-        string.str  += 1;
-        string.size -= 1;
+    if(string.str[0] == '#'){
+        string = string_skip(string, 1);
+    }
+    if(string.str[0] == '1' || string.str[0] == '2'){
+        string = string_skip(string, 1);
     }
 
 
@@ -264,6 +266,20 @@ CUSTOM_DOC("")
     seek_string_forward(app, a.buffer, a.cursor.pos, 0, string_u8_litexpr("*/"), &range.max);
     range.min += 2;
 
+    //
+    // Figure out command number
+    //
+    int command_to_use = 0;
+    String8 determine_marking = push_buffer_range(app, scratch, a.buffer, {range.min+1, range.min+2});
+    if(determine_marking.str[0] == '1'){
+        command_to_use = 1;
+    }
+    else if(determine_marking.str[0] == '2'){
+        command_to_use = 2;
+    }
+
+
+
     Range_i64 mod_range = {range.max+2, range.max+2};
     String_Match end_block_match = buffer_seek_string(app, a.buffer, string_u8_litexpr("/*END*/"), Scan_Forward, a.cursor.pos);
     String_Match next_comment_match = buffer_seek_string(app, a.buffer, string_u8_litexpr("/*"), Scan_Forward, a.cursor.pos);
@@ -275,7 +291,7 @@ CUSTOM_DOC("")
         }
     }
 
-    create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, 0, a.buffer, range, mod_range);
+    create_eval_process_and_set_a_callback_to_insert_code_block(app, scratch, 0, a.buffer, range, mod_range, command_to_use);
 }
 
 CUSTOM_COMMAND_SIG(evaluate_all_marked_comments)
