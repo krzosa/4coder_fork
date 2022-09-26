@@ -469,7 +469,7 @@ edit_batch(Thread_Context *tctx, Models *models, Editing_File *file,
             Range_i64 new_range = Ii64_neg_inf;
             Gap_Buffer *buffer = &file->state.buffer;
 
-            i32 batch_count = 0;
+            // i32 batch_count = 0; // @Was_Unused
             i64 shift = 0;
             for (Batch_Edit *edit = batch;
                  edit != 0;
@@ -491,7 +491,7 @@ edit_batch(Thread_Context *tctx, Models *models, Editing_File *file,
                     edit__apply(tctx, models, file, edit_range, insert_string,
                                 behaviors);
                     shift += replace_range_shift(edit_range, insert_string.size);
-                    batch_count += 1;
+                    // batch_count += 1; // @Was_Unused
                 }
                 else{
                     result = false;

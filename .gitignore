@@ -10,6 +10,9 @@ vc120.pdb
 *.lib
 *.obj
 *.i
+*.out
+*.so
+ship_files/config.txt
 __*
 
 generated/command_metadata.h

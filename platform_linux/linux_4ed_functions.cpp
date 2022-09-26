@@ -570,6 +570,8 @@ system_thread_join(System_Thread thread){
     Linux_Object* object = *(Linux_Object**)&thread;
     void* retval_ignored;
     int result = pthread_join(object->thread.pthread, &retval_ignored);
+    Assert(result == 0);
+    Unused(result);
 }
 
 internal void

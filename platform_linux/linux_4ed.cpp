@@ -51,7 +51,6 @@
 #include "4coder_events.cpp"
 #include "4coder_hash_functions.cpp"
 #include "4coder_table.cpp"
-#include "4coder_log.cpp"
 
 #include "4coder_hash_functions.cpp"
 #include "4coder_system_allocator.cpp"
@@ -240,7 +239,7 @@ enum {
 
 internal Epoll_Kind epoll_tag_step_timer = EPOLL_STEP_TIMER;
 internal Epoll_Kind epoll_tag_x11 = EPOLL_X11;
-internal Epoll_Kind epoll_tag_x11_internal = EPOLL_X11_INTERNAL;
+// internal Epoll_Kind epoll_tag_x11_internal = EPOLL_X11_INTERNAL;
 internal Epoll_Kind epoll_tag_cli_pipe = EPOLL_CLI_PIPE;
 
 ////////////////////////////
@@ -667,20 +666,20 @@ glx_error_handler(Display* dpy, XErrorEvent* ev){
 }
 
 typedef GLXContext (glXCreateContextAttribsARB_Function)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
-typedef void       (glXSwapIntervalEXT_Function)        (Display *dpy, GLXDrawable drawable, int interval);
-typedef int        (glXSwapIntervalMESA_Function)       (unsigned int interval);
-typedef int        (glXGetSwapIntervalMESA_Function)    (void);
-typedef int        (glXSwapIntervalSGI_Function)        (int interval);
+// typedef void       (glXSwapIntervalEXT_Function)        (Display *dpy, GLXDrawable drawable, int interval);
+// typedef int        (glXSwapIntervalMESA_Function)       (unsigned int interval);
+// typedef int        (glXGetSwapIntervalMESA_Function)    (void);
+// typedef int        (glXSwapIntervalSGI_Function)        (int interval);
 
 internal b32
 glx_create_context(GLXFBConfig fb_config){
-    const char *glx_exts = glXQueryExtensionsString(linuxvars.dpy, DefaultScreen(linuxvars.dpy));
+    // const char *glx_exts = glXQueryExtensionsString(linuxvars.dpy, DefaultScreen(linuxvars.dpy));
 
     glXCreateContextAttribsARB_Function *glXCreateContextAttribsARB = 0;
-    glXSwapIntervalEXT_Function         *glXSwapIntervalEXT = 0;
-    glXSwapIntervalMESA_Function        *glXSwapIntervalMESA = 0;
-    glXGetSwapIntervalMESA_Function     *glXGetSwapIntervalMESA = 0;
-    glXSwapIntervalSGI_Function         *glXSwapIntervalSGI = 0;
+    // glXSwapIntervalEXT_Function         *glXSwapIntervalEXT = 0;
+    // glXSwapIntervalMESA_Function        *glXSwapIntervalMESA = 0;
+    // glXGetSwapIntervalMESA_Function     *glXGetSwapIntervalMESA = 0;
+//     glXSwapIntervalSGI_Function         *glXSwapIntervalSGI = 0;
 
 #define GLXLOAD(f) f = (f##_Function*) glXGetProcAddressARB((const GLubyte*) #f);
     GLXLOAD(glXCreateContextAttribsARB);
@@ -1399,7 +1398,7 @@ linux_numlock_convert(KeyCode in){
 
 internal void
 linux_handle_x11_events() {
-    static XEvent prev_event = {};
+    // static XEvent prev_event = {}; // @Was_Unused
     b32 should_step = false;
 
     while (XPending(linuxvars.dpy)) {
@@ -1414,7 +1413,7 @@ linux_handle_x11_events() {
             }
         }
 
-        u64 event_id = (u64)event.xkey.serial << 32 | event.xkey.time;
+        // u64 event_id = (u64)event.xkey.serial << 32 | event.xkey.time;// @Was_Unused
 
         switch(event.type) {
             case KeyPress: {
@@ -1757,7 +1756,7 @@ main(int argc, char **argv){
     // NOTE(allen): context setup
     {
         Base_Allocator* alloc = get_base_allocator_system();
-        thread_ctx_init(&linuxvars.tctx, ThreadKind_Main, alloc, alloc);
+        thread_ctx_init(&linuxvars.tctx, ThreadKind_Main, alloc);
     }
 
     API_VTable_system system_vtable = {};
@@ -1815,9 +1814,6 @@ main(int argc, char **argv){
 
     // NOTE(allen): send system vtable to core
     app.load_vtables(&system_vtable, &font_vtable, &graphics_vtable);
-    // get_logger calls log_init which is needed.
-    //app.get_logger();
-    linuxvars.log_string = app.get_logger();
 
     // NOTE(allen): init & command line parameters
     Plat_Settings plat_settings = {};
@@ -1848,62 +1844,6 @@ main(int argc, char **argv){
         lnx_override_user_directory = plat_settings.user_directory;
     }
 
-    // NOTE(allen): load custom layer
-    System_Library custom_library = {};
-    Custom_API custom = {};
-    {
-        char custom_not_found_msg[] = "Did not find a library for the custom layer.";
-        char custom_fail_load_msg[] = "Failed to load custom code due to missing version information.  Try rebuilding with buildsuper.";
-        char custom_fail_version_msg[] = "Failed to load custom code due to a version mismatch.  Try rebuilding with buildsuper.";
-        char custom_fail_init_apis[] = "Failed to load custom code due to missing 'init_apis' symbol.  Try rebuilding with buildsuper";
-
-        Scratch_Block scratch(&linuxvars.tctx);
-        String_Const_u8 default_file_name = string_u8_litexpr("4ed_custom.so");
-        List_String_Const_u8 search_list = {};
-        def_search_list_add_system_path(scratch, &search_list, SystemPath_UserDirectory);
-        def_search_list_add_system_path(scratch, &search_list, SystemPath_Binary);
-        String_Const_u8 custom_file_names[2] = {};
-        i32 custom_file_count = 1;
-        if (plat_settings.custom_dll != 0){
-            custom_file_names[0] = SCu8(plat_settings.custom_dll);
-            if (!plat_settings.custom_dll_is_strict){
-                custom_file_names[1] = default_file_name;
-                custom_file_count += 1;
-            }
-        }
-        else{
-            custom_file_names[0] = default_file_name;
-        }
-        String_Const_u8 custom_file_name = {};
-        for (i32 i = 0; i < custom_file_count; i += 1){
-            custom_file_name = def_search_get_full_path(scratch, &search_list, custom_file_names[i]);
-            if (custom_file_name.size > 0){
-                break;
-            }
-        }
-        b32 has_library = false;
-        if (custom_file_name.size > 0){
-            if (system_load_library(scratch, custom_file_name, &custom_library)){
-                has_library = true;
-            }
-        }
-
-        if (!has_library){
-            system_error_box(custom_not_found_msg);
-        }
-        custom.get_version = (_Get_Version_Type*)system_get_proc(custom_library, "get_version");
-        if (custom.get_version == 0){
-            system_error_box(custom_fail_load_msg);
-        }
-        else if (custom.get_version(MAJOR, MINOR, PATCH) == 0){
-            system_error_box(custom_fail_version_msg);
-        }
-        custom.init_apis = (_Init_APIs_Type*)system_get_proc(custom_library, "init_apis");
-        if (custom.init_apis == 0){
-            system_error_box(custom_fail_init_apis);
-        }
-    }
-
     linux_x11_init(argc, argv, &plat_settings);
     linux_keycode_init(linuxvars.dpy);
     linux_epoll_init();
@@ -1914,7 +1854,7 @@ main(int argc, char **argv){
     {
         Scratch_Block scratch(&linuxvars.tctx);
         String_Const_u8 curdir = system_get_path(scratch, SystemPath_CurrentDirectory);
-        app.init(&linuxvars.tctx, &render_target, base_ptr, curdir, custom);
+        app.init(&linuxvars.tctx, &render_target, base_ptr, curdir);
     }
 
     linuxvars.global_frame_mutex = system_mutex_make();
@@ -1922,7 +1862,7 @@ main(int argc, char **argv){
 
     linux_schedule_step();
     b32 first_step = true;
-    u64 timer_start = system_now_time();
+    // u64 timer_start = system_now_time();// @Was_Unused
 
     for (;;) {
 

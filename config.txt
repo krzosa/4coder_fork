@@ -61,7 +61,7 @@ default_tab_width = 4
 
 // Font
 default_font_name = "liberation-mono.ttf"
-default_font_size = 12
+default_font_size = 20
 default_font_hinting = false
 
 // aa modes:
@@ -102,7 +102,6 @@ jump_to_definition = "I", "Control"
 exit_4coder = "F4", "Alt"
 
 [theme]
-
 // Background color of the bar with file information(filename, row, col etc.)
 bar = 0xFF333337
 

@@ -370,13 +370,13 @@ App_Step_Sig(app_step){
 
             // TODO(allen): do(call a 'child process updated hook' let that hook populate the buffer if it so chooses)
 
-            b32 edited_file = false;
+            // b32 edited_file = false; // @Was_Unused
             u32 amount = 0;
             system_cli_begin_update(cli);
             if (system_cli_update_step(cli, dest, max, &amount)){
                 if (file != 0 && amount > 0){
                     output_file_append(tctx, models, file, SCu8(dest, amount));
-                    edited_file = true;
+                    // edited_file = true; // @Was_Unused
                 }
             }
 
@@ -389,7 +389,7 @@ App_Step_Sig(app_step){
 
                     String_Const_u8 str = push_u8_stringf(scratch, "exited with code %d", cli->exit);
                     output_file_append(tctx, models, file, str);
-                    edited_file = true;
+                    // edited_file = true; // @Was_Unused
                 }
                 processes_to_free[processes_to_free_count++] = child_process;
                 child_process_set_return_code(models, child_processes, child_process->id, cli->exit);
@@ -858,7 +858,7 @@ App_Step_Sig(app_step){
     return(app_result);
 }
 
-extern "C" __declspec(dllexport) App_Get_Functions_Sig(app_get_functions){
+export App_Get_Functions_Sig(app_get_functions){
     App_Functions result = {};
 
     result.load_vtables = app_load_vtables;

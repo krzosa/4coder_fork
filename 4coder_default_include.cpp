@@ -47,7 +47,6 @@
 ////////////////////////////////
 
 #include "4coder_config_generated.cpp"
-#include "4coder_file.cpp"
 #include "4coder_async_tasks.cpp"
 #include "4coder_default_map.cpp"
 #include "4coder_mac_map.cpp"
