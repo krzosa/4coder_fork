@@ -259,14 +259,14 @@ function Variable_Handle
 vars_new_variable(Variable_Handle var, String_ID key){
     Variable_Handle handle = vars_get_nil();
     if (var.ptr != &vars_nil){
-        Variable *prev = vars_get_nil().ptr;
+        // Variable *prev = vars_get_nil().ptr; // @Was_Unused
         Variable *node = var.ptr->first;
         for (; !vars_is_nil(node);
              node = node->next){
             if (node->key == key){
                 break;
             }
-            prev = node;
+            // prev = node;// @Was_Unused
         }
 
         if (!vars_is_nil(node)){

@@ -656,21 +656,6 @@ buffer_invert_edit_shift(Arena *arena, Gap_Buffer *buffer, Edit edit, Edit *inv,
     return(string);
 }
 
-internal b32
-buffer_invert_batch(Arena *arena, Gap_Buffer *buffer, Edit *edits, Edit *inverse, i64 count){
-    b32 result = false;
-    i64 pos = 0;
-    i64 shift_amount = 0;
-    Edit *edit = edits;
-    Edit *inv_edit = inverse;
-    for (i64 i = 0; i < count; i += 1, edit += 1, inv_edit += 1){
-        String_Const_u8 inv_str = buffer_invert_edit_shift(arena, buffer, *edit, inv_edit, shift_amount);
-        shift_amount += replace_range_shift(edit->range, edit->text.size);
-        pos += inv_str.size;
-    }
-    return(result);
-}
-
 internal Buffer_Chunk_Position
 buffer_get_chunk_position(String_Const_u8_Array chunks, i64 buffer_size, i64 real_pos){
     Buffer_Chunk_Position pos = {};

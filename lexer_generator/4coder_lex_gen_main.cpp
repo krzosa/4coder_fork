@@ -3126,9 +3126,9 @@ debug_print_keyword_table_metrics(Keyword_Layout key_layout, i32 keyword_count){
     printf("used count: %d\n", keyword_count);
     printf("slot count: %d\n", key_layout.slot_count);
     printf("table load factor: %f\n", (f32)keyword_count/(f32)key_layout.slot_count);
-    printf("error score: %llu\n", key_layout.error_score);
+    printf("error score: %" PRIu64 "\n", key_layout.error_score);
     printf("error per lookup: %f\n", key_layout.iterations_per_lookup);
-    printf("max single error score: %llu\n", key_layout.max_single_error_score);
+    printf("max single error score: %" PRIu64 "\n", key_layout.max_single_error_score);
     for (i32 i = 0; i < key_layout.slot_count; i += 1){
         Keyword *keyword = key_layout.slots[i];
         if (keyword == 0){
@@ -3188,7 +3188,7 @@ gen_keyword_table(Arena *scratch, Token_Kind_Set tokens, Keyword_Set keywords, F
             fprintf(out, "0x%016x,", 0);
         }
         else{
-            fprintf(out, "0x%016llx,", (u64)((u64)(key_layout.hashes[i]) | 1));
+            fprintf(out, "0x%016" PRIx64 ",", (u64)((u64)(key_layout.hashes[i]) | 1));
         }
         if (i % 4 == 3 || i + 1 == key_layout.slot_count){
             fprintf(out, "\n");
@@ -3215,7 +3215,7 @@ gen_keyword_table(Arena *scratch, Token_Kind_Set tokens, Keyword_Set keywords, F
             fprintf(out, "{0, 0},\n");
         }
         else{
-            fprintf(out, "{" LANG_NAME_LOWER_STR "_%.*s_key_array_%d, %llu},\n",
+            fprintf(out, "{" LANG_NAME_LOWER_STR "_%.*s_key_array_%d, %" PRIu64 "},\n",
                     string_expand(keywords.pretty_name), i, key_layout.slots[i]->lexeme.size);
         }
     }
@@ -3247,7 +3247,7 @@ gen_keyword_table(Arena *scratch, Token_Kind_Set tokens, Keyword_Set keywords, F
 
     fprintf(out, "i32 " LANG_NAME_LOWER_STR "_%.*s_slot_count = %d;\n",
             string_expand(keywords.pretty_name), key_layout.slot_count);
-    fprintf(out, "u64 " LANG_NAME_LOWER_STR "_%.*s_seed = 0x%016llx;\n",
+    fprintf(out, "u64 " LANG_NAME_LOWER_STR "_%.*s_seed = 0x%016" PRIx64 ";\n",
             string_expand(keywords.pretty_name), key_layout.seed);
 
     end_temp(temp);

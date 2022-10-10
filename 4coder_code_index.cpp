@@ -694,7 +694,7 @@ function Code_Index_Nest *generic_parse_paren(Code_Index_File *index, Generic_Pa
     result->close           = Ii64(max_i64);
     result->file            = index;
 
-    i64 manifested_characters_on_line = 0;
+    // i64 manifested_characters_on_line = 0; // @Was_Unused
     {
         u8 *ptr     = state->prev_line_start;
         u8 *end_ptr = state->contents.str + token->pos;
@@ -705,7 +705,7 @@ function Code_Index_Nest *generic_parse_paren(Code_Index_File *index, Generic_Pa
             }
         }
         // NOTE(allen): Manifested characters
-        manifested_characters_on_line = (i64)(end_ptr - ptr) + token->size;
+        // manifested_characters_on_line = (i64)(end_ptr - ptr) + token->size; // @Was_Unused
     }
 
     state->paren_counter += 1;

@@ -1870,10 +1870,10 @@ view_set_highlight_range(App *app, View_ID view, Range_i64 range){
 function void
 view_look_at_region(App *app, View_ID view, i64 major_pos, i64 minor_pos){
     Range_i64 range = Ii64(major_pos, minor_pos);
-    b32 bottom_major = false;
-    if (major_pos == range.max){
-        bottom_major = true;
-    }
+    // b32 bottom_major = false;
+    // if (major_pos == range.max){
+    //     bottom_major = true;
+    // } // @Was_Unused
 
     Buffer_Cursor top = view_compute_cursor(app, view, seek_pos(range.min));
     if (top.line > 0){
